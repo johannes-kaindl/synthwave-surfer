@@ -27,12 +27,13 @@ Synthwave Surfer ist die Audio-Schicht des **Kuro-Universums**: Theme + Companio
 
 **Bekannte Einschränkung:** Tone.js lädt nicht auf `file://`-Origin (CORS). Audio nur via HTTP-Server. Phase-2-Plugin-Migration löst das.
 
-**Nächster Schritt (Phase 2):** Plugin-Migration nach `<vault>/.obsidian/plugins/synthwave-surfer/` (TypeScript, Obsidian View, swdrum-Codeblock-Renderer). Löst CORS und ermöglicht Kuro-Integration.
+**Nächster Schritt (Phase 1.5 — Sound-Quality-Iteration):** Sound-Output auf 4 Achsen mies (Algo-Tuning, Synth-Klang-Color, Mix, Preset-Distinktion). Iteration-Cycle in single-file-HTML schneller als Plugin-Build-Cycle — vermeidet doppelte Arbeit auf neuer Code-Architektur. Phase 1.5 VOR Phase 2 Plugin-Migration. Basis: `ss-post-burst-c-presets-wav`.
 
 **Roadmap:**
-- Phase 2: Plugin-Migration (TS, Obsidian View, swdrum-Codeblock-Renderer)
+- **Phase 1.5:** Sound-Quality-Iteration (Algo-Tuning, Synth-Color, Mix, Preset-Distinktion) — nächste Cowork-Session
+- Phase 2: Plugin-Migration (TS, Obsidian View, swdrum-Codeblock-Renderer) — NACH Phase 1.5
 - Phase 3: Song-Form-Engine + Mood-Macros
 - Phase 4: Kuro-Integration via Plugin-Events + Marketplace-Release
 
-**Why:** Phase 1 legt das Fundament: SWMD als Brücken-Format, Multi-Phase-Presets als kuratierter Einstieg, externe API für Animation-Sync.
-**How to apply:** Phase 2 beginnt mit neuer Spec/Plan-Session auf Basis von `ss-post-burst-c-presets-wav`.
+**Why:** Phase 1 legt das Fundament: SWMD als Brücken-Format, Multi-Phase-Presets als kuratierter Einstieg, externe API für Animation-Sync. Phase 1.5 macht den Sound gut bevor Plugin-Migration den Iteration-Speed verlangsamt.
+**How to apply:** Phase 1.5 Cowork-Session mit Hörtest-Fokus starten. Kein neuer Plan-28-Tasks-Zyklus — direktes Tinkering + Commit per Sound-Fix.
