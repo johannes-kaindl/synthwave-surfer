@@ -248,7 +248,7 @@ git commit -m "feat: add markdown table parser for .swmd codec"
 
 The splitter is the routing layer. It splits a `.swmd` document by `## Phase: name` headings (or top-level `## Bass` / `## Lead` / etc. for single-phase backwards-compat).
 
-- [ ] **Step 4.1: Add failing tests**
+- [x] **Step 4.1: Add failing tests**
 
 ```javascript
 ['splitSwmdSections — single phase (no "Phase:" prefix)', () => {
@@ -271,9 +271,9 @@ The splitter is the routing layer. It splits a `.swmd` document by `## Phase: na
 }],
 ```
 
-- [ ] **Step 4.2: Run tests, verify they fail (splitSwmdSections undefined)**
+- [x] **Step 4.2: Run tests, verify they fail (splitSwmdSections undefined)**
 
-- [ ] **Step 4.3: Implement `splitSwmdSections`**
+- [x] **Step 4.3: Implement `splitSwmdSections`**
 
 Append after `parseMarkdownTable`:
 
@@ -332,9 +332,9 @@ function splitSwmdSections(text) {
 }
 ```
 
-- [ ] **Step 4.4: Run tests, verify they pass**
+- [x] **Step 4.4: Run tests, verify they pass**
 
-- [ ] **Step 4.5: Commit**
+- [x] **Step 4.5: Commit**
 
 ```bash
 git add synthwave_surfer.html

@@ -517,6 +517,59 @@ function parseMarkdownTable(text) {
   return rows;
 }
 
+function splitSwmdSections(text) {
+  // Strip frontmatter if present so it doesn't pollute section splitting
+  const body = text.replace(/^---\n[\s\S]+?\n---\n?/, '');
+
+  // First-level split: ## headings
+  const parts = body.split(/\n## /);
+  // parts[0] is anything before first ## — ignored
+
+  const phases = [];
+  const fileSections = {};
+  let currentPhase = null;
+
+  for (let i = 1; i < parts.length; i++) {
+    const part = parts[i];
+    const nlIdx = part.indexOf('\n');
+    const header = (nlIdx >= 0 ? part.slice(0, nlIdx) : part).trim();
+    const body = nlIdx >= 0 ? part.slice(nlIdx + 1) : '';
+
+    if (header.startsWith('Phase:')) {
+      const name = header.slice('Phase:'.length).trim();
+      currentPhase = { name, sections: {} };
+      phases.push(currentPhase);
+      // Body of a "## Phase: X" heading contains the ### Bass / ### Lead / ### Pad / ### Drums sections
+      const phaseSubparts = body.split(/\n### /);
+      // phaseSubparts[0] is whitespace before first ###
+      for (let j = 1; j < phaseSubparts.length; j++) {
+        const subPart = phaseSubparts[j];
+        const subNl = subPart.indexOf('\n');
+        const subHeader = (subNl >= 0 ? subPart.slice(0, subNl) : subPart).trim();
+        const subBody = subNl >= 0 ? subPart.slice(subNl + 1) : '';
+        const key = subHeader.split(' ·')[0].trim();
+        currentPhase.sections[key] = subBody;
+      }
+    } else {
+      // File-level section (e.g. "FX Bus", "Routing") OR backwards-compat single-phase top-level (Bass, Lead, etc.)
+      const key = header.split(' ·')[0].trim();
+      const isPhaseLevelKey = ['Bass', 'Lead', 'Pad', 'Drums'].includes(key);
+      if (isPhaseLevelKey) {
+        // Backwards-compat: no explicit phase, use implicit "default"
+        if (!currentPhase || currentPhase.name !== 'default') {
+          currentPhase = { name: 'default', sections: {} };
+          phases.push(currentPhase);
+        }
+        currentPhase.sections[key] = body;
+      } else {
+        fileSections[key] = body;
+      }
+    }
+  }
+
+  return { phases, fileSections };
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    Form builders
    ═══════════════════════════════════════════════════════════════════ */
@@ -1980,6 +2033,24 @@ function runCodecTests() {
     }],
     ['parseMarkdownTable — returns [] for no table', () => {
       assert(parseMarkdownTable('just text').length === 0, 'empty array');
+    }],
+    ['splitSwmdSections — single phase (no "Phase:" prefix)', () => {
+      const text = '---\nx: y\n---\n\n## Bass · Stratos\nstuff\n\n## Lead · Crystal\nmore stuff\n\n## FX Bus\nfx';
+      const sections = splitSwmdSections(text);
+      assert(Array.isArray(sections.phases), 'phases is an array');
+      assert(sections.phases.length === 1, 'one implicit phase');
+      assert(sections.phases[0].name === 'default', 'implicit phase name');
+      assert('Bass' in sections.phases[0].sections, 'phase has Bass');
+      assert('Lead' in sections.phases[0].sections, 'phase has Lead');
+      assert('FX Bus' in sections.fileSections, 'FX Bus is file-level');
+    }],
+    ['splitSwmdSections — multi-phase', () => {
+      const text = '---\nx: y\n---\n\n## Phase: calm\n\n### Bass · Stratos\n\n[bass]\n\n### Lead · Crystal\n\n[lead]\n\n## Phase: intense\n\n### Bass · Stratos\n\n[bass2]\n\n## FX Bus\n[fx]';
+      const sections = splitSwmdSections(text);
+      assert(sections.phases.length === 2, 'two phases');
+      assert(sections.phases[0].name === 'calm', 'first phase named');
+      assert(sections.phases[1].name === 'intense', 'second phase named');
+      assert('FX Bus' in sections.fileSections, 'FX Bus is file-level');
     }],
   ];
   for (const [name, fn] of tests) {
