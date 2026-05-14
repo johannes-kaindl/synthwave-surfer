@@ -2117,7 +2117,175 @@ open:  . . . . . . . x . . . . . . . x
     bass: { model: 'stratos', volume: 0.65, detune: 0, attack: 0.008, decay: 0.3, sustain: 0.65, release: 0.4, cutoff: 0.4, resonance: 0.25, fenvAmount: 0.3, fenvDecay: 0.4, character: 0.3, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
     lead: { model: 'vapor', volume: 0.45, detune: 0, attack: 0.04, decay: 0.4, sustain: 0.5, release: 0.8, cutoff: 0.6, resonance: 0.25, fenvAmount: 0.4, fenvDecay: 0.5, character: 0.7, lfoTarget: 'pitch', lfoRate: 0.2, lfoDepth: 0.08, arp: 'off', send: true },
     pad:  { model: 'vapor', volume: 0.42, detune: 0, attack: 1.0, decay: 0.5, sustain: 0.8, release: 2.2, cutoff: 0.4, resonance: 0.1, fenvAmount: 0.2, fenvDecay: 0.7, character: 0.9, lfoTarget: 'filter', lfoRate: 0.06, lfoDepth: 0.35, arp: 'off', send: true },
-    master: { reverbSize: 0.65, reverbWet: 0.55, delayTime: 0.5, delayFB: 0.4, delayWet: 0.5, sidechain: 0.5, tapeSat: 0.4, masterGain: 0.78 }
+    master: { reverbSize: 0.65, reverbWet: 0.55, delayTime: 0.5, delayFB: 0.4, delayWet: 0.5, sidechain: 0.5, tapeSat: 0.4, masterGain: 0.78 },
+    fixedSwmd: `---
+synthwave-surfer: "1.0"
+name: Highway Cruise
+algo: outrun
+bpm: 108
+mode: aeolian
+pattern-mode: fixed
+bass-root: 48
+lead-root: 60
+mood: nostalgic
+energy: medium
+default-phase: cruising
+---
+
+## Phase: cruising
+
+### Bass · stratos
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.65 |
+| character | 0.30 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  4   |    |    |    |    |    |    |    |    |    |    |    |    |    |  ● |    |    |
+|  2   |    |    |    |    |  ● |  ─ |    |    |    |    |  ● |    |    |    |    |    |
+|  0   |  ● |  ─ |  ─ |  ─ |    |    |    |    |  ● |  ─ |    |    |  ● |    |  ─ |  ─ |
+
+### Lead · vapor
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.45 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  6   |    |    |    |    |    |    |    |    |  ● |  ─ |  ─ |  ─ |    |    |    |    |
+|  4   |  ● |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |    |    |    |    |    |  ● |  ─ |  ─ |  ─ |
+|  2   |    |    |    |    |    |    |    |  ● |    |    |    |    |    |    |    |    |
+
+### Pad · vapor
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.42 |
+
+### Progression
+| Bar     |  1   |  2   |  3   |  4   |
+|---------|------|------|------|------|
+| Degrees | 0,2,4 | -3,0,2 | -2,2,4 | 0,4,5 |
+
+### Drums
+### Pattern
+\`\`\`swdrum
+kick:  x . . . . . . . x . . . . . . .
+snare: . . . . x . . . . . . . x . . .
+hihat: x . . . x . . . x . . . x . . .
+open:  . . . . . . . . . . . . . . . .
+\`\`\`
+
+## Phase: breakdown
+
+### Bass · stratos
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.45 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  0   |  ● |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |  ● |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |
+
+### Lead · vapor
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.30 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  4   |    |    |    |    |  ● |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |    |    |    |    |
+
+### Pad · vapor
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.50 |
+
+### Progression
+| Bar     |  1   |  2   |  3   |  4   |
+|---------|------|------|------|------|
+| Degrees | 0,2,4 | -3,0,2 | -2,2,4 | 0,4,5 |
+
+### Drums
+### Pattern
+\`\`\`swdrum
+kick:  x . . . . . . . . . . . . . . .
+snare: . . . . . . . . . . . . . . . .
+hihat: . . . . . . . . . . . . . . . .
+open:  . . . . . . . . . . . . . . . .
+\`\`\`
+
+## Phase: lift
+
+### Bass · stratos
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.70 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  4   |    |    |    |    |    |    |    |    |    |    |    |    |    |    |  ● |    |
+|  2   |    |    |    |    |  ● |  ─ |    |    |    |    |  ● |  ─ |    |    |    |    |
+|  0   |  ● |  ─ |    |    |    |    |  ● |  ─ |  ● |  ─ |    |    |  ● |  ─ |    |  ─ |
+
+### Lead · vapor
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.55 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  7   |    |    |    |    |    |    |  ● |  ─ |    |    |    |    |    |    |    |    |
+|  6   |    |    |    |    |  ● |  ─ |    |    |    |    |    |  ● |  ─ |  ─ |    |    |
+|  4   |  ● |  ─ |  ─ |  ─ |    |    |    |    |  ● |  ─ |  ─ |    |    |    |    |    |
+|  2   |    |    |    |    |    |    |    |    |    |    |    |    |    |    |  ● |  ─ |
+
+### Pad · vapor
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.42 |
+
+### Progression
+| Bar     |  1   |  2   |  3   |  4   |
+|---------|------|------|------|------|
+| Degrees | 0,2,4 | -3,0,2 | -2,2,4 | 0,4,5 |
+
+### Drums
+### Pattern
+\`\`\`swdrum
+kick:  x . . . x . . . x . . . x . . .
+snare: . . . . x . . . . . . . x . . .
+hihat: x . x . x . x . x . x . x . x .
+open:  . . . . . . . x . . . . . . . x
+\`\`\`
+
+## FX Bus
+| Effect | Param | Value |
+|--------|-------|-------|
+| reverb | size | 0.65 |
+| reverb | wet | 0.55 |
+| delay | time | 0.50 |
+| delay | feedback | 0.40 |
+| delay | wet | 0.50 |
+| sidechain | depth | 0.50 |
+| tapeSat | drive | 0.40 |
+| master | gain | 0.78 |
+`
   },
   'Blade Runner Rain': {
     tag: 'Noir · cinematic', algoName: 'noir', bpm: 80, mode: 'aeolian', seed: 2019,
