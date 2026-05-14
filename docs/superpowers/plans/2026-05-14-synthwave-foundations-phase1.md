@@ -1998,7 +1998,7 @@ git commit -m "feat: extend applyFactoryPreset to load .swmd template literal wh
 **Files:**
 - Modify: `synthwave_surfer.html` — extend `'Miami Nights'` entry in `FACTORY_PRESETS` (line 1987)
 
-- [ ] **Step 21.1: Add `fixedSwmd` field to Miami Nights**
+- [x] **Step 21.1: Add `fixedSwmd` field to Miami Nights**
 
 Find the closing `},` of the `'Miami Nights'` entry (the line that ends with `master: { ... } }`) and add a `fixedSwmd: \`...\`` field before it. Replace:
 
@@ -2151,7 +2151,7 @@ open:  . . . . . . . x . . . . . . . x
 
 Open `synthwave_surfer.html`. Click **Miami Nights** in the factory row. The Pattern toggle should switch to "⚙ Fixed", the Phase Selector should show pills `calm` and `pumping`, and audio should play the `pumping` phase (the default). Click `calm` — audio should switch.
 
-- [ ] **Step 21.3: Commit**
+- [x] **Step 21.3: Commit**
 
 ```bash
 git add synthwave_surfer.html
@@ -2165,7 +2165,7 @@ git commit -m "feat: add multi-phase fixed pattern for Miami Nights preset"
 **Files:**
 - Modify: `synthwave_surfer.html` — add `fixedSwmd` to `'Highway Cruise'` (line 1994)
 
-- [ ] **Step 22.1: Add `fixedSwmd` field to Highway Cruise**
+- [x] **Step 22.1: Add `fixedSwmd` field to Highway Cruise**
 
 Find the `'Highway Cruise'` entry. After the `master: {...}` line, add a comma and the `fixedSwmd` field. Use this template literal:
 
@@ -2346,7 +2346,7 @@ Also change `mode: 'aeolian'` (was `'aeolian'` already — fine).
 
 Click **Highway Cruise**. Phase pills `cruising`, `breakdown`, `lift` should appear. Click each — audio switches.
 
-- [ ] **Step 22.3: Commit**
+- [x] **Step 22.3: Commit**
 
 ```bash
 git add synthwave_surfer.html
@@ -2360,7 +2360,7 @@ git commit -m "feat: add multi-phase fixed pattern for Highway Cruise preset"
 **Files:**
 - Modify: `synthwave_surfer.html` — add `fixedSwmd` to `'Blade Runner Rain'` (line 2001)
 
-- [ ] **Step 23.1: Add `fixedSwmd` field**
+- [x] **Step 23.1: Add `fixedSwmd` field**
 
 Append to the `'Blade Runner Rain'` entry, after `master: {...},`:
 
@@ -2532,7 +2532,7 @@ open:  . . . . . . . . . . . . . . . .
 
 Click **Blade Runner Rain**. Phases `calm`, `rising`, `outro` should appear and switch correctly.
 
-- [ ] **Step 23.3: Commit**
+- [x] **Step 23.3: Commit**
 
 ```bash
 git add synthwave_surfer.html
@@ -2546,7 +2546,7 @@ git commit -m "feat: add multi-phase fixed pattern for Blade Runner Rain preset"
 **Files:**
 - Modify: `synthwave_surfer.html` — add `fixedSwmd` to `'Carpenter Synth'` (line 2008). Change `mode: 'phrygian'` to `mode: 'aeolian'` for harmonic consistency with the spec.
 
-- [ ] **Step 24.1: Add `fixedSwmd` field and change mode to aeolian**
+- [x] **Step 24.1: Add `fixedSwmd` field and change mode to aeolian**
 
 Find `mode: 'phrygian'` in the Carpenter Synth entry and change to `mode: 'aeolian'`. Then append `fixedSwmd`:
 
@@ -2674,7 +2674,7 @@ open:  . . . . . . . . . . . . . . . .
 
 Click **Carpenter Synth**. Phases `tension`, `release` should appear and switch.
 
-- [ ] **Step 24.3: Commit**
+- [x] **Step 24.3: Commit**
 
 ```bash
 git add synthwave_surfer.html
@@ -2688,7 +2688,7 @@ git commit -m "feat: add multi-phase fixed pattern for Carpenter Synth preset"
 **Files:**
 - Modify: `synthwave_surfer.html` — add `fixedSwmd` to `'Mall Bliss'` (line 2015)
 
-- [ ] **Step 25.1: Add `fixedSwmd` field**
+- [x] **Step 25.1: Add `fixedSwmd` field**
 
 Append to Mall Bliss after `master: {...},`:
 
@@ -2821,7 +2821,7 @@ open:  . . . . . . . x . . . . . . . x
 
 Click **Mall Bliss**. Phases `floating`, `arrival` should appear and switch correctly.
 
-- [ ] **Step 25.3: Commit**
+- [x] **Step 25.3: Commit**
 
 ```bash
 git add synthwave_surfer.html
@@ -2835,7 +2835,7 @@ git commit -m "feat: add multi-phase fixed pattern for Mall Bliss preset"
 **Files:**
 - Modify: `synthwave_surfer.html` — add `fixedSwmd` to `'VHS Sunset'` (line 2022). Change `mode: 'pentatonic_minor'` to `mode: 'aeolian'`.
 
-- [ ] **Step 26.1: Add `fixedSwmd` field and change mode**
+- [x] **Step 26.1: Add `fixedSwmd` field and change mode**
 
 Find `mode: 'pentatonic_minor'` and change to `mode: 'aeolian'`. Append `fixedSwmd`:
 
@@ -2964,7 +2964,7 @@ open:  . . . . . . . . . . . . . . . .
 
 Click **VHS Sunset**. Phases `glow`, `fade` should appear.
 
-- [ ] **Step 26.3: Commit**
+- [x] **Step 26.3: Commit**
 
 ```bash
 git add synthwave_surfer.html
@@ -2978,7 +2978,7 @@ git commit -m "feat: add multi-phase fixed pattern for VHS Sunset preset"
 **Files:**
 - Modify: `synthwave_surfer.html` — replace `exportWav()` body (lines 1724-1752)
 
-- [ ] **Step 27.1: Replace `exportWav()` to use destructured `transport` from offline context**
+- [x] **Step 27.1: Replace `exportWav()` to use destructured `transport` from offline context**
 
 Find the existing `async function exportWav() { ... }` (line 1724) and replace its body:
 
@@ -3024,7 +3024,7 @@ The change is on the `Tone.Offline(...)` call: `({ transport }) => { ... transpo
 4. Open the WAV in a media player or audio editor. It should contain the audio you heard, not silence.
 5. Repeat for a Factory Preset with `fixedSwmd` (e.g. Miami Nights). The exported WAV should match the fixed-pattern audio of the **current phase**.
 
-- [ ] **Step 27.3: Commit**
+- [x] **Step 27.3: Commit**
 
 ```bash
 git add synthwave_surfer.html
@@ -3093,11 +3093,11 @@ Generate any state. Click **⬇ State JSON**. Open file — must be valid JSON w
 3. Audio plays. Phase pills are hidden.
 4. WAV export still works.
 
-- [ ] **Step 28.8: Update memory file**
+- [x] **Step 28.8: Update memory file**
 
 Edit `claude/memory/project_synthwave_surfer.md` to reflect Phase 1 complete and Phase 2 (plugin migration) as the next step. Replace any reference to the old plan filename with the new one.
 
-- [ ] **Step 28.9: Final commit + tag**
+- [x] **Step 28.9: Final commit + tag**
 
 ```bash
 git add claude/memory/project_synthwave_surfer.md
