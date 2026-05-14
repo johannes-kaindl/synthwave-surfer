@@ -539,16 +539,28 @@ function splitSwmdSections(text) {
       const name = header.slice('Phase:'.length).trim();
       currentPhase = { name, sections: {} };
       phases.push(currentPhase);
-      // Body of a "## Phase: X" heading contains the ### Bass / ### Lead / ### Pad / ### Drums sections
+      // Body of a "## Phase: X" heading contains the ### Bass / ### Lead / ### Pad / ### Drums sections,
+      // each of which has nested ### Settings / ### Pattern / ### Progression children that must stay
+      // grouped under their parent instrument so downstream parsers (parsePianoRoll, parseInstrumentSettings)
+      // can re-match the child sub-headers inside the parent body.
+      const PARENT_KEYS = ['Bass', 'Lead', 'Pad', 'Drums'];
       const phaseSubparts = body.split(/\n### /);
       // phaseSubparts[0] is whitespace before first ###
+      let currentParentKey = null;
       for (let j = 1; j < phaseSubparts.length; j++) {
         const subPart = phaseSubparts[j];
         const subNl = subPart.indexOf('\n');
         const subHeader = (subNl >= 0 ? subPart.slice(0, subNl) : subPart).trim();
         const subBody = subNl >= 0 ? subPart.slice(subNl + 1) : '';
         const key = subHeader.split(' ·')[0].trim();
-        currentPhase.sections[key] = subBody;
+        if (PARENT_KEYS.includes(key)) {
+          currentParentKey = key;
+          currentPhase.sections[key] = subBody;
+        } else if (currentParentKey) {
+          // Child sub-section — re-prepend `### <subHeader>\n` and append to current parent's body
+          currentPhase.sections[currentParentKey] += '### ' + subHeader + '\n' + subBody;
+        }
+        // Orphan children (no current parent) are silently dropped — not spec'd input.
       }
     } else {
       // File-level section (e.g. "FX Bus", "Routing") OR backwards-compat single-phase top-level (Bass, Lead, etc.)
