@@ -1567,7 +1567,7 @@ git commit -m "feat: branch generate() on patternMode (generative vs fixed-phase
   - CSS: insert after `.harmonic-toggle.strict` style (~line 104)
   - JS: append handler near other toggle handlers (~line 1747)
 
-- [ ] **Step 16.1: Add CSS** (after line 104, the `.harmonic-toggle.strict` line)
+- [x] **Step 16.1: Add CSS** (after line 104, the `.harmonic-toggle.strict` line)
 
 ```css
 .pattern-toggle { padding: 10px 16px; border: 1px solid var(--rule); background: rgba(10, 6, 18, 0.4); cursor: pointer; font-family: inherit; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--steel); display: flex; align-items: center; gap: 10px; user-select: none; transition: all 0.15s ease; }
@@ -1578,14 +1578,14 @@ git commit -m "feat: branch generate() on patternMode (generative vs fixed-phase
 
 If `--purple` is not defined, replace with an existing accent var (`--green` works as fallback). Verify by inspecting the CSS variables block at the top of `<style>`.
 
-- [ ] **Step 16.2: Add HTML** — find the line containing `harmonic-toggle natural` (line 235) and add immediately after:
+- [x] **Step 16.2: Add HTML** — find the line containing `harmonic-toggle natural` (line 235) and add immediately after:
 
 ```html
       <div class="track-divider"></div>
       <div class="pattern-toggle generative" id="pattern-toggle">⚙ Generativ</div>
 ```
 
-- [ ] **Step 16.3: Add handler** — find the `harmonic-toggle` click handler (~line 1747) and add this immediately after:
+- [x] **Step 16.3: Add handler** — find the `harmonic-toggle` click handler (~line 1747) and add this immediately after:
 
 ```javascript
 $('pattern-toggle').addEventListener('click', () => {
@@ -1600,11 +1600,11 @@ $('pattern-toggle').addEventListener('click', () => {
 });
 ```
 
-- [ ] **Step 16.4: Verify in browser**
+- [x] **Step 16.4: Verify in browser**
 
 Open `synthwave_surfer.html`. Click the new toggle (it should switch text between "⚙ Generativ" and "⚙ Fixed"). With `currentSwmd === null`, switching to Fixed should show the warning status. Audio still plays in generative mode.
 
-- [ ] **Step 16.5: Commit**
+- [x] **Step 16.5: Commit**
 
 ```bash
 git add synthwave_surfer.html

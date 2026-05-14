@@ -102,6 +102,10 @@
   .harmonic-toggle:hover { border-color: var(--green); }
   .harmonic-toggle.natural { border-color: var(--green); color: var(--green); background: rgba(91,255,138,0.06); }
   .harmonic-toggle.strict { border-color: var(--amber); color: var(--amber); background: rgba(255,181,71,0.08); }
+  .pattern-toggle { padding: 10px 16px; border: 1px solid var(--rule); background: rgba(10, 6, 18, 0.4); cursor: pointer; font-family: inherit; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--steel); display: flex; align-items: center; gap: 10px; user-select: none; transition: all 0.15s ease; }
+  .pattern-toggle:hover { border-color: var(--purple); }
+  .pattern-toggle.generative { border-color: var(--steel); color: var(--steel); }
+  .pattern-toggle.fixed { border-color: var(--purple); color: var(--purple); background: rgba(160,106,255,0.08); }
 
   .track-panel { border: 1px solid var(--rule); padding: 16px 20px; margin-bottom: 16px; background: rgba(10, 6, 18, 0.4); position: relative; }
   .track-panel-label { position: absolute; top: -8px; left: 16px; background: var(--bg-deep); padding: 0 10px; font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 700; }
@@ -233,6 +237,8 @@
       <div class="loop-toggle" id="loop-toggle"><span class="loop-symbol">∞</span>Loop</div>
       <div class="track-divider"></div>
       <div class="harmonic-toggle natural" id="harmonic-toggle">♩ Natural</div>
+      <div class="track-divider"></div>
+      <div class="pattern-toggle generative" id="pattern-toggle">⚙ Generativ</div>
     </div>
   </div>
 
@@ -2211,6 +2217,17 @@ $('harmonic-toggle').addEventListener('click', () => {
   const btn = $('harmonic-toggle');
   btn.className = 'harmonic-toggle ' + harmonicMode;
   btn.textContent = harmonicMode === 'natural' ? '♩ Natural' : '♩ Strict';
+  if (currentState) generate();
+});
+
+$('pattern-toggle').addEventListener('click', () => {
+  patternMode = patternMode === 'generative' ? 'fixed' : 'generative';
+  const btn = $('pattern-toggle');
+  btn.className = 'pattern-toggle ' + patternMode;
+  btn.textContent = patternMode === 'generative' ? '⚙ Generativ' : '⚙ Fixed';
+  if (patternMode === 'fixed' && !currentSwmd) {
+    setStatus('⚠ No fixed pattern loaded — pick a Factory Preset or import .swmd', true);
+  }
   if (currentState) generate();
 });
 
