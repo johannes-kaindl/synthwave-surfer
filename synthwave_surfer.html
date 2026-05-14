@@ -2456,11 +2456,128 @@ open:  . . . . . . . . . . . . . . . .
 `
   },
   'Carpenter Synth': {
-    tag: 'Noir · dark', algoName: 'noir', bpm: 90, mode: 'phrygian', seed: 1978,
+    tag: 'Noir · dark', algoName: 'noir', bpm: 90, mode: 'aeolian', seed: 1978,
     bass: { model: 'alkali', volume: 0.7, detune: 0, attack: 0.005, decay: 0.3, sustain: 0.7, release: 0.4, cutoff: 0.35, resonance: 0.5, fenvAmount: 0.6, fenvDecay: 0.3, character: 0.6, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.2, arp: 'off', send: false },
     lead: { model: 'alkali', volume: 0.5, detune: 0, attack: 0.01, decay: 0.4, sustain: 0.5, release: 0.6, cutoff: 0.5, resonance: 0.4, fenvAmount: 0.5, fenvDecay: 0.5, character: 0.5, lfoTarget: 'off', lfoRate: 0.3, lfoDepth: 0.15, arp: 'off', send: true },
     pad:  { model: 'vapor', volume: 0.4, detune: 0, attack: 1.5, decay: 0.6, sustain: 0.85, release: 3.0, cutoff: 0.35, resonance: 0.15, fenvAmount: 0.2, fenvDecay: 0.6, character: 0.7, lfoTarget: 'filter', lfoRate: 0.05, lfoDepth: 0.3, arp: 'off', send: true },
-    master: { reverbSize: 0.75, reverbWet: 0.65, delayTime: 0.45, delayFB: 0.4, delayWet: 0.3, sidechain: 0, tapeSat: 0.5, masterGain: 0.78 }
+    master: { reverbSize: 0.75, reverbWet: 0.65, delayTime: 0.45, delayFB: 0.4, delayWet: 0.3, sidechain: 0, tapeSat: 0.5, masterGain: 0.78 },
+    fixedSwmd: `---
+synthwave-surfer: "1.0"
+name: Carpenter Synth
+algo: noir
+bpm: 90
+mode: aeolian
+pattern-mode: fixed
+bass-root: 48
+lead-root: 60
+mood: brooding
+energy: medium
+default-phase: tension
+---
+
+## Phase: tension
+
+### Bass · alkali
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.70 |
+| character | 0.60 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  0   |  ● |  ─ |  ─ |  ─ |  ● |  ─ |  ─ |  ─ |  ● |  ─ |  ─ |  ─ |  ● |  ─ |  ─ |  ─ |
+
+### Lead · alkali
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.50 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  3   |    |    |    |    |  ● |  ─ |  ─ |  ─ |    |    |    |    |    |    |    |    |
+|  1   |    |  ● |  ─ |  ─ |    |    |    |    |  ● |  ─ |  ─ |  ─ |    |    |    |    |
+|  0   |  ● |    |    |    |    |    |    |    |    |    |    |    |  ● |  ─ |  ─ |  ─ |
+
+### Pad · vapor
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.40 |
+
+### Progression
+| Bar     |  1   |  2   |  3   |  4   |
+|---------|------|------|------|------|
+| Degrees | 0,2,4 | 0,2,4 | 0,2,4 | 0,2,4 |
+
+### Drums
+### Pattern
+\`\`\`swdrum
+kick:  x . . . x . . . x . . . x . . .
+snare: . . . . . . . . . . . . . . . .
+hihat: . . . . . . . . . . . . . . . .
+open:  . . . . . . . . . . . . . . . .
+\`\`\`
+
+## Phase: release
+
+### Bass · alkali
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.55 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  0   |  ● |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |  ● |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |
+
+### Lead · alkali
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.45 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  4   |    |    |    |    |    |    |    |    |  ● |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |
+|  2   |  ● |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |    |    |    |    |    |    |    |    |
+
+### Pad · vapor
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.45 |
+
+### Progression
+| Bar     |  1   |  2   |  3   |  4   |
+|---------|------|------|------|------|
+| Degrees | 0,2,4 | -3,0,2 | -2,2,4 | 0,2,4 |
+
+### Drums
+### Pattern
+\`\`\`swdrum
+kick:  x . . . . . . . x . . . . . . .
+snare: . . . . x . . . . . . . x . . .
+hihat: x . . . x . . . x . . . x . . .
+open:  . . . . . . . . . . . . . . . .
+\`\`\`
+
+## FX Bus
+| Effect | Param | Value |
+|--------|-------|-------|
+| reverb | size | 0.75 |
+| reverb | wet | 0.65 |
+| delay | time | 0.45 |
+| delay | feedback | 0.40 |
+| delay | wet | 0.30 |
+| tapeSat | drive | 0.50 |
+| master | gain | 0.78 |
+`
   },
   'Mall Bliss': {
     tag: 'Dreamwave · hazy', algoName: 'dreamwave', bpm: 100, mode: 'aeolian', seed: 1985,
