@@ -1985,11 +1985,132 @@ function syncMasterUI() {
    ═══════════════════════════════════════════════════════════════════ */
 const FACTORY_PRESETS = {
   'Miami Nights': {
-    tag: 'Outrun · classic', algoName: 'outrun', bpm: 120, mode: 'pentatonic_minor', seed: 1986,
+    tag: 'Outrun · classic', algoName: 'outrun', bpm: 120, mode: 'aeolian', seed: 1986,
     bass: { model: 'stratos', volume: 0.7, detune: 0, attack: 0.005, decay: 0.25, sustain: 0.7, release: 0.3, cutoff: 0.5, resonance: 0.3, fenvAmount: 0.4, fenvDecay: 0.3, character: 0.5, lfoTarget: 'pwm', lfoRate: 0.15, lfoDepth: 0.4, arp: 'off', send: false },
     lead: { model: 'crystal', volume: 0.45, detune: 0, attack: 0.01, decay: 0.4, sustain: 0.25, release: 1.0, cutoff: 0.7, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.6, lfoTarget: 'off', lfoRate: 0.3, lfoDepth: 0.2, arp: 'off', send: true },
     pad:  { model: 'vapor', volume: 0.4, detune: 0, attack: 1.2, decay: 0.5, sustain: 0.85, release: 2.5, cutoff: 0.45, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.8, lfoTarget: 'filter', lfoRate: 0.08, lfoDepth: 0.3, arp: 'off', send: true },
-    master: { reverbSize: 0.6, reverbWet: 0.5, delayTime: 0.55, delayFB: 0.45, delayWet: 0.45, sidechain: 0.75, tapeSat: 0.35, masterGain: 0.8 }
+    master: { reverbSize: 0.6, reverbWet: 0.5, delayTime: 0.55, delayFB: 0.45, delayWet: 0.45, sidechain: 0.75, tapeSat: 0.35, masterGain: 0.8 },
+    fixedSwmd: `---
+synthwave-surfer: "1.0"
+name: Miami Nights
+algo: outrun
+bpm: 120
+mode: aeolian
+pattern-mode: fixed
+bass-root: 48
+lead-root: 60
+mood: nostalgic
+energy: high
+default-phase: pumping
+---
+
+## Phase: calm
+
+### Bass · stratos
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.50 |
+| character | 0.40 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  0   |  ● |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |  ● |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |
+
+### Lead · crystal
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.30 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  4   |  ● |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |    |    |    |    |    |    |    |    |
+|  2   |    |    |    |    |    |    |    |    |  ● |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |  ─ |
+
+### Pad · vapor
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.40 |
+
+### Progression
+| Bar     |  1   |  2   |  3   |  4   |
+|---------|------|------|------|------|
+| Degrees | 0,2,4 | 5,0,2 | -2,2,4 | -3,2,4 |
+
+### Drums
+### Pattern
+\`\`\`swdrum
+kick:  x . . . . . . . x . . . . . . .
+snare: . . . . x . . . . . . . x . . .
+hihat: x . x . x . x . x . x . x . x .
+open:  . . . . . . . . . . . . . . . .
+\`\`\`
+
+## Phase: pumping
+
+### Bass · stratos
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.70 |
+| character | 0.50 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  4   |    |    |    |    |    |    |    |    |    |    |    |    |    |    |  ● |    |
+|  2   |    |    |    |    |  ● |    |    |    |    |    |  ● |    |    |    |    |    |
+|  0   |  ● |  ─ |    |    |    |    |  ● |  ─ |  ● |  ─ |    |    |  ● |  ─ |    |  ─ |
+
+### Lead · crystal
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.45 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  6   |    |    |    |    |    |    |  ● |  ─ |    |    |    |    |    |    |    |    |
+|  4   |  ● |  ─ |  ─ |  ─ |    |    |    |    |  ● |  ─ |  ─ |    |    |    |    |    |
+|  2   |    |    |    |    |  ● |  ─ |    |    |    |    |    |    |  ● |  ─ |  ─ |  ─ |
+
+### Pad · vapor
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.40 |
+
+### Progression
+| Bar     |  1   |  2   |  3   |  4   |
+|---------|------|------|------|------|
+| Degrees | 0,2,4 | 5,0,2 | -2,2,4 | -3,2,4 |
+
+### Drums
+### Pattern
+\`\`\`swdrum
+kick:  x . . . x . . . x . . . x . . .
+snare: . . . . x . . . . . . . x . . .
+hihat: x . x . x . x . x . x . x . x .
+open:  . . . . . . . x . . . . . . . x
+\`\`\`
+
+## FX Bus
+| Effect | Param | Value |
+|--------|-------|-------|
+| reverb | size | 0.60 |
+| reverb | wet | 0.50 |
+| delay | time | 0.55 |
+| delay | feedback | 0.45 |
+| delay | wet | 0.45 |
+| sidechain | depth | 0.75 |
+| tapeSat | drive | 0.35 |
+| master | gain | 0.80 |
+`
   },
   'Highway Cruise': {
     tag: 'Outrun · chilled', algoName: 'outrun', bpm: 108, mode: 'aeolian', seed: 1984,
