@@ -1322,7 +1322,7 @@ git commit -m "feat: expose frozen window.synthwaveSurfer API surface"
 
 This function takes the parsed `.swmd` + algo metadata and produces the `form` object that `scheduleAll()` consumes.
 
-- [ ] **Step 14.1: Add failing test**
+- [x] **Step 14.1: Add failing test**
 
 ```javascript
 ['buildFormFromSwmd — produces form with bass/lead parts', () => {
@@ -1354,9 +1354,9 @@ This function takes the parsed `.swmd` + algo metadata and produces the `form` o
 }],
 ```
 
-- [ ] **Step 14.2: Run test, verify it fails**
+- [x] **Step 14.2: Run test, verify it fails**
 
-- [ ] **Step 14.3: Implement `buildFormFromSwmd`**
+- [x] **Step 14.3: Implement `buildFormFromSwmd`**
 
 Append right before `function generate()` (line 2037):
 
@@ -1395,9 +1395,9 @@ function buildFormFromSwmd(swmd, phase, algo) {
 }
 ```
 
-- [ ] **Step 14.4: Run test, verify it passes**
+- [x] **Step 14.4: Run test, verify it passes**
 
-- [ ] **Step 14.5: Commit**
+- [x] **Step 14.5: Commit**
 
 ```bash
 git add synthwave_surfer.html

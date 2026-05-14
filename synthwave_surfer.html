@@ -2106,6 +2106,39 @@ function renderFactoryRow() {
   }
 }
 
+function buildFormFromSwmd(swmd, phase, algo) {
+  const padProg = phase.padChords || algo.padProg;
+  const chordMap = buildChordMap(padProg, algo.totalBars);
+  const bassLine = phase.bassPattern.length > 0
+    ? phase.bassPattern
+    : algo.riffGen(mulberry32(1), SCALES.aeolian.length);
+  const leadLine = phase.leadPattern.length > 0
+    ? phase.leadPattern
+    : [];
+
+  const parts = [];
+  // Bass: loop bassLine every bar, transposed to chord root
+  for (let b = 0; b < algo.totalBars; b++) {
+    const rootOffset = chordMap[b]?.root ?? 0;
+    parts.push({ voice: 'bass', line: transpose(bassLine, rootOffset), startBar: b });
+  }
+  // Lead: loop in 4-bar blocks starting at bar 4
+  if (leadLine.length > 0) {
+    for (let b = 4; b < algo.totalBars; b += 6) {
+      parts.push({ voice: 'lead', line: leadLine, startBar: b });
+    }
+  }
+
+  return {
+    parts,
+    riff: bassLine,
+    melodyA: leadLine,
+    melodyB: leadLine,
+    padProg,
+    drumGrid: phase.drumGrid,
+  };
+}
+
 /* Generate */
 function generate() {
   const seed = parseInt($('seed').value) || 1;
@@ -2684,6 +2717,33 @@ default-phase: calm
       assert(typeof window.synthwaveSurfer.onPhaseChange === 'function', 'onPhaseChange fn');
       assert(typeof window.synthwaveSurfer.getMeta === 'function', 'getMeta fn');
       assert(Object.isFrozen(window.synthwaveSurfer), 'API is frozen');
+    }],
+    ['buildFormFromSwmd — produces form with bass/lead parts', () => {
+      const swmd = {
+        meta: {},
+        phases: [{
+          name: 'default',
+          bassPattern: [{ degree: 0, duration: 4 }, { degree: 2, duration: 4 },
+                        { degree: 4, duration: 4 }, { degree: 5, duration: 4 }],
+          leadPattern: [{ degree: 6, duration: 8 }, { degree: 4, duration: 8 }],
+          bassSettings: { model: 'stratos' },
+          leadSettings: { model: 'crystal' },
+          padSettings:  { model: 'vapor' },
+          padChords: [[0, 2, 4]],
+          drumGrid: { kick: Array(16).fill(false).map((_,i)=>i%4===0),
+                      snare: Array(16).fill(false), hihat: Array(16).fill(false),
+                      open: Array(16).fill(false) },
+        }],
+        fxSettings: {},
+      };
+      const algo = ALGORITHMS.outrun;
+      const phase = swmd.phases[0];
+      const form = buildFormFromSwmd(swmd, phase, algo);
+      assert(Array.isArray(form.parts), 'form.parts is array');
+      assert(form.parts.some(p => p.voice === 'bass'), 'has bass parts');
+      assert(form.parts.some(p => p.voice === 'lead'), 'has lead parts');
+      assert(Array.isArray(form.padProg), 'padProg is array');
+      assert(Array.isArray(form.drumGrid && form.drumGrid.kick), 'drumGrid.kick array');
     }],
   ];
   for (const [name, fn] of tests) {
