@@ -1900,7 +1900,7 @@ git commit -m "feat: add Phase Selector UI (pill row, hidden when single phase)"
 **Files:**
 - Modify: `synthwave_surfer.html` — extend `applyFactoryPreset()` (lines 1658-1680)
 
-- [ ] **Step 20.1: Replace `applyFactoryPreset()` body**
+- [x] **Step 20.1: Replace `applyFactoryPreset()` body**
 
 Find:
 ```javascript
@@ -1980,11 +1980,11 @@ function applyFactoryPreset(name) {
 }
 ```
 
-- [ ] **Step 20.2: Verify in browser**
+- [x] **Step 20.2: Verify in browser**
 
 Open the app. Click any of the existing 6 factory presets. They should still play (fall through the `else` branch — generative mode, no `fixedSwmd` yet).
 
-- [ ] **Step 20.3: Commit**
+- [x] **Step 20.3: Commit**
 
 ```bash
 git add synthwave_surfer.html

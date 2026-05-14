@@ -2098,6 +2098,30 @@ function applyFactoryPreset(name) {
   Object.assign(masterState, p.master);
   for (const k of ['bass','lead','pad']) syncTrackUI(k);
   syncMasterUI();
+
+  if (p.fixedSwmd) {
+    try {
+      currentSwmd = swmdParse(p.fixedSwmd);
+      currentPhaseIndex = 0;
+      if (currentSwmd.meta['default-phase']) {
+        const dp = currentSwmd.phases.findIndex(ph => ph.name === currentSwmd.meta['default-phase']);
+        if (dp >= 0) currentPhaseIndex = dp;
+      }
+      patternMode = 'fixed';
+      const btn = $('pattern-toggle');
+      if (btn) { btn.className = 'pattern-toggle fixed'; btn.textContent = '⚙ Fixed'; }
+    } catch (e) {
+      console.error('[applyFactoryPreset] swmd parse error', e);
+      currentSwmd = null;
+      patternMode = 'generative';
+    }
+  } else {
+    currentSwmd = null;
+    patternMode = 'generative';
+    const btn = $('pattern-toggle');
+    if (btn) { btn.className = 'pattern-toggle generative'; btn.textContent = '⚙ Generativ'; }
+  }
+
   generate();
   if (liveSynths) {
     setTrackModel(liveSynths, 'bass', trackParams.bass.model, trackParams.bass);
@@ -2105,7 +2129,7 @@ function applyFactoryPreset(name) {
     setTrackModel(liveSynths, 'pad',  trackParams.pad.model,  trackParams.pad);
     applyAllToGraph(liveSynths);
   }
-  setStatus('✓ Factory preset loaded: ' + name);
+  setStatus('✓ Factory preset loaded: ' + name + (p.fixedSwmd ? ' (fixed)' : ' (generative)'));
 }
 
 function renderFactoryRow() {
