@@ -910,7 +910,7 @@ git commit -m "feat: add full SWMD parser combining all sub-parsers (multi-phase
 **Files:**
 - Modify: `synthwave_surfer.html` — append after `swmdParse`
 
-- [ ] **Step 11.1: Add round-trip test**
+- [x] **Step 11.1: Add round-trip test**
 
 ```javascript
 ['swmdSerialize — single-phase round-trip', () => {
@@ -983,9 +983,9 @@ git commit -m "feat: add full SWMD parser combining all sub-parsers (multi-phase
 }],
 ```
 
-- [ ] **Step 11.2: Run tests, verify they fail (swmdSerialize undefined)**
+- [x] **Step 11.2: Run tests, verify they fail (swmdSerialize undefined)**
 
-- [ ] **Step 11.3: Implement `swmdSerialize`**
+- [x] **Step 11.3: Implement `swmdSerialize`**
 
 Append after `swmdParse`:
 
@@ -1141,9 +1141,9 @@ function serializeInstrumentSettingsTable(settings) {
 
 **Important:** The parser in Task 4 must accept the splitter's `## Phase:` form. We chose to always emit multi-phase form (each file always has at least `## Phase: default`). This is what the round-trip tests in Step 11.1 already assume — single-phase serialization produces a `## Phase: default` block which the parser splits correctly.
 
-- [ ] **Step 11.4: Run tests, verify they pass**
+- [x] **Step 11.4: Run tests, verify they pass**
 
-- [ ] **Step 11.5: Commit**
+- [x] **Step 11.5: Commit**
 
 ```bash
 git add synthwave_surfer.html

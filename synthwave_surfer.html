@@ -764,6 +764,72 @@ function swmdParse(text) {
   };
 }
 
+function swmdSerialize(parsed) {
+  const m = parsed.meta || {};
+  const fmFields = [
+    'synthwave-surfer','name','algo','bpm','mode','pattern-mode',
+    'bass-root','lead-root','mood','energy','default-phase',
+  ];
+  const fmLines = ['---'];
+  for (const k of fmFields) {
+    if (m[k] === undefined || m[k] === '') continue;
+    const needsQuote = k === 'synthwave-surfer';
+    fmLines.push(`${k}: ${needsQuote ? '"' + m[k] + '"' : m[k]}`);
+  }
+  fmLines.push('---');
+  const frontmatter = fmLines.join('\n');
+
+  const phaseSections = parsed.phases.map(phase => {
+    const bassModel = phase.bassSettings?.model || 'stratos';
+    const leadModel = phase.leadSettings?.model || 'crystal';
+    const padModel  = phase.padSettings?.model  || 'vapor';
+
+    const bassBlock = `### Bass · ${bassModel}\n\n` +
+                      `### Settings\n${serializeInstrumentSettingsTable(phase.bassSettings)}\n\n` +
+                      `### Pattern\n${serializePianoRoll(phase.bassPattern)}`;
+    const leadBlock = `### Lead · ${leadModel}\n\n` +
+                      `### Settings\n${serializeInstrumentSettingsTable(phase.leadSettings)}\n\n` +
+                      `### Pattern\n${serializePianoRoll(phase.leadPattern)}`;
+    const padProg = phase.padChords ? serializePadProgression(phase.padChords) : '';
+    const padBlock = `### Pad · ${padModel}\n\n` +
+                     `### Settings\n${serializeInstrumentSettingsTable(phase.padSettings)}\n\n` +
+                     `### Progression\n${padProg}`;
+    const drumBlock = `### Drums\n\n` +
+                      `### Pattern\n${serializeDrums(phase.drumGrid || {})}`;
+
+    return `## Phase: ${phase.name}\n\n${bassBlock}\n\n${leadBlock}\n\n${padBlock}\n\n${drumBlock}`;
+  });
+
+  const fx = parsed.fxSettings || {};
+  const fxRows = [
+    ['reverb','size',     fx.reverbSize],
+    ['reverb','wet',      fx.reverbWet],
+    ['delay','time',      fx.delayTime],
+    ['delay','feedback',  fx.delayFB],
+    ['delay','wet',       fx.delayWet],
+    ['sidechain','depth', fx.sidechain],
+    ['tapeSat','drive',   fx.tapeSat],
+    ['master','gain',     fx.masterGain],
+  ].filter(r => r[2] !== undefined)
+   .map(r => `| ${r[0]} | ${r[1]} | ${typeof r[2] === 'number' ? r[2].toFixed(2) : r[2]} |`)
+   .join('\n');
+  const fxBlock = `## FX Bus\n| Effect | Param | Value |\n|--------|-------|-------|\n${fxRows}`;
+
+  return [frontmatter, ...phaseSections, fxBlock].join('\n\n') + '\n';
+}
+
+function serializeInstrumentSettingsTable(settings) {
+  const rows = Object.entries(settings || {})
+    .map(([k, v]) => {
+      const valStr = typeof v === 'number' ? (Number.isInteger(v) ? String(v) : v.toFixed(2))
+                   : typeof v === 'boolean' ? String(v)
+                   : v;
+      return `| ${k} | ${valStr} |`;
+    })
+    .join('\n');
+  return `| Param | Value |\n|-------|-------|\n${rows}`;
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    Form builders
    ═══════════════════════════════════════════════════════════════════ */
@@ -2439,6 +2505,74 @@ default-phase: calm
       assert(parsed.phases[0].name === 'calm', 'first phase name');
       assert(parsed.phases[1].name === 'intense', 'second phase name');
       assert(parsed.meta['default-phase'] === 'calm', 'default-phase meta');
+    }],
+    ['swmdSerialize — single-phase round-trip', () => {
+      const original = {
+        meta: { name: 'RoundTrip', algo: 'outrun', bpm: '120', mode: 'aeolian',
+                'pattern-mode': 'fixed', 'bass-root': '48', 'lead-root': '60',
+                mood: 'test', energy: 'medium', 'default-phase': 'default',
+                'synthwave-surfer': '1.0' },
+        phases: [{
+          name: 'default',
+          bassPattern: [{ degree: 0, duration: 2 }, { rest: true, duration: 2 }],
+          leadPattern: [{ degree: 4, duration: 4 }],
+          bassSettings: { model: 'stratos', volume: 0.7 },
+          leadSettings: { model: 'crystal', volume: 0.45 },
+          padSettings:  { model: 'vapor', volume: 0.4 },
+          padChords:    [[0, 2, 4]],
+          drumGrid: {
+            kick:  Array(16).fill(false).map((_, i) => i % 4 === 0),
+            snare: Array(16).fill(false).map((_, i) => i === 4 || i === 12),
+            hihat: Array(16).fill(false).map((_, i) => i % 2 === 0),
+            open:  Array(16).fill(false),
+          },
+        }],
+        fxSettings: { reverbSize: 0.6, reverbWet: 0.5, masterGain: 0.8 },
+      };
+      const text = swmdSerialize(original);
+      const reparsed = swmdParse(text);
+      assert(reparsed.meta.name === 'RoundTrip', 'meta round-tripped');
+      assert(reparsed.phases.length === 1, 'one phase');
+      assert(reparsed.phases[0].bassPattern.length === 2, 'bass pattern length');
+      assert(reparsed.phases[0].bassPattern[0].degree === 0, 'bass first note');
+      assert(reparsed.phases[0].bassSettings.volume === 0.7, 'bass volume');
+      assert(reparsed.fxSettings.masterGain === 0.8, 'master gain');
+    }],
+    ['swmdSerialize — multi-phase round-trip', () => {
+      const original = {
+        meta: { name: 'TwoPhases', algo: 'noir', bpm: '80', mode: 'aeolian',
+                'pattern-mode': 'fixed', 'bass-root': '48', 'lead-root': '60',
+                mood: 'cinematic', energy: 'low', 'default-phase': 'calm',
+                'synthwave-surfer': '1.0' },
+        phases: [
+          { name: 'calm',
+            bassPattern: [{ degree: 0, duration: 16 }],
+            leadPattern: [], bassSettings: { model: 'stratos', volume: 0.4 },
+            leadSettings: { model: 'crystal', volume: 0.3 },
+            padSettings:  { model: 'vapor', volume: 0.5 },
+            padChords:    [[0, 2, 4]],
+            drumGrid: { kick: Array(16).fill(false), snare: Array(16).fill(false),
+                        hihat: Array(16).fill(false), open: Array(16).fill(false) }},
+          { name: 'rising',
+            bassPattern: [{ degree: 0, duration: 4 }, { degree: 2, duration: 4 },
+                          { degree: 4, duration: 4 }, { degree: 5, duration: 4 }],
+            leadPattern: [{ degree: 6, duration: 8 }, { degree: 4, duration: 8 }],
+            bassSettings: { model: 'stratos', volume: 0.6 },
+            leadSettings: { model: 'crystal', volume: 0.5 },
+            padSettings:  { model: 'vapor', volume: 0.5 },
+            padChords:    [[0, 2, 4]],
+            drumGrid: { kick: Array(16).fill(false).map((_, i) => i % 4 === 0),
+                        snare: Array(16).fill(false), hihat: Array(16).fill(false),
+                        open: Array(16).fill(false) }},
+        ],
+        fxSettings: { masterGain: 0.75 },
+      };
+      const text = swmdSerialize(original);
+      const reparsed = swmdParse(text);
+      assert(reparsed.phases.length === 2, 'two phases round-tripped');
+      assert(reparsed.phases[0].name === 'calm', 'phase 1 name');
+      assert(reparsed.phases[1].name === 'rising', 'phase 2 name');
+      assert(reparsed.phases[1].bassPattern.length === 4, 'rising bass count');
     }],
   ];
   for (const [name, fn] of tests) {
