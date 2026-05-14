@@ -2147,10 +2147,10 @@ function renderFactoryRow() {
 function buildFormFromSwmd(swmd, phase, algo) {
   const padProg = phase.padChords || algo.padProg;
   const chordMap = buildChordMap(padProg, algo.totalBars);
-  const bassLine = phase.bassPattern.length > 0
+  const bassLine = (phase.bassPattern?.length || 0) > 0
     ? phase.bassPattern
     : algo.riffGen(mulberry32(1), SCALES.aeolian.length);
-  const leadLine = phase.leadPattern.length > 0
+  const leadLine = (phase.leadPattern?.length || 0) > 0
     ? phase.leadPattern
     : [];
 
@@ -2173,7 +2173,7 @@ function buildFormFromSwmd(swmd, phase, algo) {
     melodyA: leadLine,
     melodyB: leadLine,
     padProg,
-    drumGrid: phase.drumGrid,
+    drumGrid: phase.drumGrid || { kick: [], snare: [], hihat: [], open: [] },
   };
 }
 
