@@ -489,6 +489,21 @@ function snapDegree(degree, chordTones, scaleLen, mode, rng) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
+   .swmd Codec — Markdown-based pattern format
+   ═══════════════════════════════════════════════════════════════════ */
+
+function parseYamlFrontmatter(text) {
+  const match = text.match(/^---\n([\s\S]+?)\n---/);
+  if (!match) return {};
+  const result = {};
+  for (const line of match[1].split('\n')) {
+    const m = line.match(/^([\w-]+):\s*"?([^"]*)"?\s*$/);
+    if (m) result[m[1]] = m[2].trim();
+  }
+  return result;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
    Form builders
    ═══════════════════════════════════════════════════════════════════ */
 function buildOutrunForm(rng, material, opts) {
@@ -1925,6 +1940,22 @@ function runCodecTests() {
   let passed = 0, failed = 0;
   const tests = [
     // Tests are added by subsequent tasks
+    ['parseYamlFrontmatter — extracts flat fields', () => {
+      const text = '---\nname: Test\nbpm: 120\nmood: brooding\n---\n\n## Body';
+      const m = parseYamlFrontmatter(text);
+      assert(m.name === 'Test', 'name parsed');
+      assert(m.bpm === '120', 'bpm parsed (string, not coerced)');
+      assert(m.mood === 'brooding', 'mood parsed');
+    }],
+    ['parseYamlFrontmatter — empty for no frontmatter', () => {
+      const m = parseYamlFrontmatter('## Just a heading');
+      assert(Object.keys(m).length === 0, 'empty object');
+    }],
+    ['parseYamlFrontmatter — strips quoted strings', () => {
+      const text = '---\nsynthwave-surfer: "1.0"\n---';
+      const m = parseYamlFrontmatter(text);
+      assert(m['synthwave-surfer'] === '1.0', 'quotes stripped');
+    }],
   ];
   for (const [name, fn] of tests) {
     console.log('▸ ' + name);

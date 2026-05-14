@@ -113,7 +113,7 @@ git commit -m "feat: add inline codec test harness with ?test=1 trigger"
 **Files:**
 - Modify: `synthwave_surfer.html` — insert after line 489 (after `snapDegree` function, before the line 491 Form Builders block)
 
-- [ ] **Step 2.1: Add failing test**
+- [x] **Step 2.1: Add failing test**
 
 In `runCodecTests()`, add to the `tests` array:
 
@@ -136,7 +136,7 @@ In `runCodecTests()`, add to the `tests` array:
 }],
 ```
 
-- [ ] **Step 2.2: Run tests, verify they fail**
+- [x] **Step 2.2: Run tests, verify they fail**
 
 Open `synthwave_surfer.html?test=1` → console should show:
 ```
@@ -144,7 +144,7 @@ Open `synthwave_surfer.html?test=1` → console should show:
   ✗ FAIL: ... ReferenceError: parseYamlFrontmatter is not defined
 ```
 
-- [ ] **Step 2.3: Implement `parseYamlFrontmatter`**
+- [x] **Step 2.3: Implement `parseYamlFrontmatter`**
 
 Insert after line 489 (after `snapDegree`, before the line 491 Form Builders block):
 
@@ -165,7 +165,7 @@ function parseYamlFrontmatter(text) {
 }
 ```
 
-- [ ] **Step 2.4: Run tests, verify they pass**
+- [x] **Step 2.4: Run tests, verify they pass**
 
 Reload `synthwave_surfer.html?test=1`. Console should show:
 ```
@@ -176,7 +176,7 @@ Reload `synthwave_surfer.html?test=1`. Console should show:
 [etc., all green]
 ```
 
-- [ ] **Step 2.5: Commit**
+- [x] **Step 2.5: Commit**
 
 ```bash
 git add synthwave_surfer.html
