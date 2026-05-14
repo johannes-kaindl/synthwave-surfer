@@ -21,18 +21,18 @@ New code is inserted in these regions (in order):
 | Region | Insertion point | What goes there |
 |---|---|---|
 | **Codec helpers** | after line 489 (after `snapDegree`, before line 491 Form Builders block) | Frontmatter parser, section splitter, table parser, piano-roll parser/serializer, drum parser/serializer, pad parser/serializer, FX parser, instrument-settings parser, full SWMD parser/serializer |
-| **Phase Engine** | after FACTORY_PRESETS (~line 1656) | State variables, `setPhase()`, `getCurrentPhaseObj()`, listener machinery |
+| **Phase Engine** | after FACTORY_PRESETS (~line 1999) | State variables, `setPhase()`, `getCurrentPhaseObj()`, listener machinery |
 | **buildFormFromSwmd** | right after Phase Engine | Builds a `form` object from a parsed `.swmd` for the current phase |
 | **External API** | after Phase Engine | Frozen `window.synthwaveSurfer` object |
-| **Modified `generate()`** | line 1695 | Branches on `patternMode === 'fixed' && currentSwmd` |
-| **Modified `applyFactoryPreset()`** | line 1658 | Loads `fixedSwmd`, calls `swmdParse`, sets phase mode |
+| **Modified `generate()`** | line 2037 | Branches on `patternMode === 'fixed' && currentSwmd` |
+| **Modified `applyFactoryPreset()`** | line 2000 | Loads `fixedSwmd`, calls `swmdParse`, sets phase mode |
 | **Modified `exportWav()`** | line 1356 | Pass `transport` from offline context destructured arg |
 | **HTML — Tracks panel** | line 235 (after `harmonic-toggle`) | Pattern-mode toggle + Phase Selector container |
 | **HTML — Export panel** | line 302 (after `export-wav`) | SWMD ⬇/⬆ buttons + State JSON button |
 | **CSS** | line 104 (after `.harmonic-toggle.strict`) | `.pattern-toggle`, `.phase-pill` |
 | **Test harness** | end of `<script>` (~line 1912) | `runCodecTests()` + `?test=1` URL trigger |
 
-State variables added (~line 1432, near `let currentState = null;`):
+State variables added (~line 1774, near `let currentState = null;`):
 ```javascript
 let patternMode = 'generative';        // 'generative' | 'fixed'
 let currentSwmd = null;                // result of swmdParse() or null
@@ -1156,8 +1156,8 @@ git commit -m "feat: add SWMD serializer always emitting multi-phase form"
 
 **Files:**
 - Modify: `synthwave_surfer.html`
-  - Add state vars near line 1432
-  - Add Phase Engine functions after FACTORY_PRESETS (~line 1656)
+  - Add state vars near line 1774
+  - Add Phase Engine functions after FACTORY_PRESETS (~line 1999)
 
 - [ ] **Step 12.1: Add failing tests**
 
@@ -1195,7 +1195,7 @@ git commit -m "feat: add SWMD serializer always emitting multi-phase form"
 
 - [ ] **Step 12.2: Run tests, verify they fail (functions undefined)**
 
-- [ ] **Step 12.3: Add state variables near line 1432 (next to `let currentState = null;`)**
+- [ ] **Step 12.3: Add state variables near line 1774 (next to `let currentState = null;`)**
 
 ```javascript
 let patternMode = 'generative';
@@ -1204,7 +1204,7 @@ let currentPhaseIndex = 0;
 const phaseChangeListeners = [];
 ```
 
-- [ ] **Step 12.4: Add Phase Engine functions right after `FACTORY_PRESETS` (~line 1656)**
+- [ ] **Step 12.4: Add Phase Engine functions right after `FACTORY_PRESETS` (~line 1999)**
 
 ```javascript
 /* ═══════════════════════════════════════════════════════════════════
@@ -1358,7 +1358,7 @@ This function takes the parsed `.swmd` + algo metadata and produces the `form` o
 
 - [ ] **Step 14.3: Implement `buildFormFromSwmd`**
 
-Append right before `function generate()` (line 1695):
+Append right before `function generate()` (line 2037):
 
 ```javascript
 function buildFormFromSwmd(swmd, phase, algo) {
