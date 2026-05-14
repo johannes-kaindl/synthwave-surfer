@@ -769,7 +769,7 @@ git commit -m "feat: add FX and instrument settings parsers for .swmd codec"
 **Files:**
 - Modify: `synthwave_surfer.html` — append after `parseInstrumentSettings`
 
-- [ ] **Step 10.1: Add failing tests**
+- [x] **Step 10.1: Add failing tests**
 
 ```javascript
 ['swmdParse — minimal single-phase document', () => {
@@ -857,9 +857,9 @@ default-phase: calm
 }],
 ```
 
-- [ ] **Step 10.2: Run tests, verify they fail**
+- [x] **Step 10.2: Run tests, verify they fail**
 
-- [ ] **Step 10.3: Implement `swmdParse`**
+- [x] **Step 10.3: Implement `swmdParse`**
 
 Append after `parseInstrumentSettings`:
 
@@ -894,9 +894,9 @@ function swmdParse(text) {
 }
 ```
 
-- [ ] **Step 10.4: Run tests, verify they pass**
+- [x] **Step 10.4: Run tests, verify they pass**
 
-- [ ] **Step 10.5: Commit**
+- [x] **Step 10.5: Commit**
 
 ```bash
 git add synthwave_surfer.html

@@ -735,6 +735,35 @@ function parseInstrumentSettings(sectionText) {
   return result;
 }
 
+function swmdParse(text) {
+  const meta = parseYamlFrontmatter(text);
+  const split = splitSwmdSections(text);
+
+  const phases = split.phases.map(phase => {
+    const bassSection = phase.sections['Bass'] || '';
+    const leadSection = phase.sections['Lead'] || '';
+    const padSection  = phase.sections['Pad']  || '';
+    const drumSection = phase.sections['Drums'] || '';
+    return {
+      name: phase.name,
+      bassPattern:  parsePianoRoll(bassSection),
+      leadPattern:  parsePianoRoll(leadSection),
+      bassSettings: parseInstrumentSettings(bassSection),
+      leadSettings: parseInstrumentSettings(leadSection),
+      padSettings:  parseInstrumentSettings(padSection),
+      padChords:    parsePadProgression(padSection),
+      drumGrid:     parseDrums(drumSection),
+    };
+  });
+
+  const fxSection = split.fileSections['FX Bus'] || '';
+  return {
+    meta,
+    phases,
+    fxSettings: parseFx(fxSection),
+  };
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    Form builders
    ═══════════════════════════════════════════════════════════════════ */
@@ -2327,6 +2356,89 @@ function runCodecTests() {
       assert(s.volume === 0.7, 'volume coerced to number');
       assert(s.character === 0.5, 'character coerced');
       assert(s.lfoTarget === 'pwm', 'lfoTarget string preserved');
+    }],
+    ['swmdParse — minimal single-phase document', () => {
+      const text = `---
+synthwave-surfer: "1.0"
+name: Test
+algo: outrun
+bpm: 120
+mode: aeolian
+pattern-mode: fixed
+bass-root: 48
+lead-root: 60
+mood: nostalgic
+energy: medium
+---
+
+## Bass · Stratos
+
+### Settings
+| Param | Value |
+|-------|-------|
+| model | stratos |
+| volume | 0.7 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |
+|------|----|----|----|----|
+|  0   |  ● |  ─ |    |    |
+
+## FX Bus
+| Effect | Param | Value |
+|--------|-------|-------|
+| master | gain | 0.8 |
+`;
+      const parsed = swmdParse(text);
+      assert(parsed.meta.name === 'Test', 'meta name');
+      assert(parsed.meta.mood === 'nostalgic', 'meta mood');
+      assert(parsed.phases.length === 1, 'one implicit phase');
+      assert(parsed.phases[0].name === 'default', 'default phase name');
+      assert(parsed.phases[0].bassPattern.length === 2, 'bass pattern parsed');
+      assert(parsed.phases[0].bassSettings.model === 'stratos', 'bass settings');
+      assert(parsed.fxSettings.masterGain === 0.8, 'fx parsed');
+    }],
+    ['swmdParse — multi-phase document', () => {
+      const text = `---
+synthwave-surfer: "1.0"
+name: MultiTest
+algo: noir
+bpm: 80
+mode: aeolian
+pattern-mode: fixed
+default-phase: calm
+---
+
+## Phase: calm
+
+### Bass · Stratos
+
+#### Pattern (replaced inline below since #### is not parsed; pattern lives under ### Pattern in real spec)
+
+### Pattern
+| Grad |  1 |  2 |
+|------|----|----|
+|  0   |  ● |  ─ |
+
+## Phase: intense
+
+### Bass · Stratos
+
+### Pattern
+| Grad |  1 |  2 |
+|------|----|----|
+|  4   |  ● |  ─ |
+
+## FX Bus
+| Effect | Param | Value |
+|--------|-------|-------|
+| reverb | wet | 0.5 |
+`;
+      const parsed = swmdParse(text);
+      assert(parsed.phases.length === 2, 'two phases parsed');
+      assert(parsed.phases[0].name === 'calm', 'first phase name');
+      assert(parsed.phases[1].name === 'intense', 'second phase name');
+      assert(parsed.meta['default-phase'] === 'calm', 'default-phase meta');
     }],
   ];
   for (const [name, fn] of tests) {
