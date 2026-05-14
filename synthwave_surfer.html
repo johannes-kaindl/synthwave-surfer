@@ -306,6 +306,8 @@
     <div class="controls">
       <button id="export-midi" class="export" disabled>⬇ MIDI</button>
       <button id="export-wav" class="export" disabled>⬇ WAV</button>
+      <button id="export-swmd" class="export" disabled>⬇ SWMD</button>
+      <label class="export" style="cursor:pointer; padding: 8px 14px; border: 1px solid var(--rule); display: inline-flex; align-items: center;">⬆ SWMD<input id="import-swmd-file" type="file" accept=".swmd,.md" style="display:none;"></label>
       <span class="dim" style="font-size: 11px; margin-left: 12px;">MIDI: all tracks · WAV: with mutes &amp; current sound</span>
     </div>
   </div>
@@ -2275,6 +2277,113 @@ $('stop').onclick = () => {
 };
 $('export-midi').onclick = exportMidi;
 $('export-wav').onclick = exportWav;
+
+    function exportSwmd() {
+      if (!currentState) { setStatus('⚠ Generate first', true); return; }
+      let parsed = currentSwmd;
+      if (!parsed) {
+        // Build a one-phase swmd from current state for export
+        parsed = buildSwmdFromCurrentState();
+      }
+      const text = swmdSerialize(parsed);
+      const fname = `${currentState.algoName}_${parsed.meta.name || currentState.seed}.md`;
+      download(new TextEncoder().encode(text), fname, 'text/markdown');
+      setStatus('✓ SWMD exported');
+    }
+
+    function buildSwmdFromCurrentState() {
+      const algo = ALGORITHMS[currentState.algoName];
+      const bassPart = currentState.form.parts.find(p => p.voice === 'bass');
+      const leadPart = currentState.form.parts.find(p => p.voice === 'lead');
+      return {
+        meta: {
+          'synthwave-surfer': '1.0',
+          name: currentState.algoName + '_' + currentState.seed,
+          algo: currentState.algoName,
+          bpm: String(currentState.bpm),
+          mode: currentState.mode,
+          'pattern-mode': 'fixed',
+          'bass-root': '48',
+          'lead-root': '60',
+          'default-phase': 'default',
+        },
+        phases: [{
+          name: 'default',
+          bassPattern: bassPart ? bassPart.line : (currentState.material.riff || []),
+          leadPattern: leadPart ? leadPart.line : (currentState.material.melodyA || []),
+          bassSettings: { ...trackParams.bass },
+          leadSettings: { ...trackParams.lead },
+          padSettings:  { ...trackParams.pad },
+          padChords:    algo.padProg,
+          drumGrid:     defaultDrumGridForAlgo(algo),
+        }],
+        fxSettings: { ...masterState },
+      };
+    }
+
+    function defaultDrumGridForAlgo(algo) {
+      const K = Array(16).fill(false), S = Array(16).fill(false),
+            H = Array(16).fill(false), O = Array(16).fill(false);
+      if (algo.drumPattern === 'driving') {
+        [0,4,8,12].forEach(i => { K[i] = true; });
+        [4,12].forEach(i => { S[i] = true; });
+        [0,2,4,6,8,10,12,14].forEach(i => { H[i] = true; });
+      } else if (algo.drumPattern === 'sparse') {
+        [0].forEach(i => { K[i] = true; });
+        [8].forEach(i => { S[i] = true; });
+        [0,4,8,12].forEach(i => { H[i] = true; });
+      } else { // shuffle / dreamy / other
+        [0,8].forEach(i => { K[i] = true; });
+        [8].forEach(i => { S[i] = true; });
+        [0,2,4,6,8,10,12,14].forEach(i => { H[i] = true; });
+      }
+      return { kick: K, snare: S, hihat: H, open: O };
+    }
+
+    function importSwmd(file) {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          const parsed = swmdParse(ev.target.result);
+          currentSwmd = parsed;
+          currentPhaseIndex = 0;
+          // Apply meta
+          if (parsed.meta.bpm)  $('bpm').value = parsed.meta.bpm;
+          if (parsed.meta.mode) $('mode').value = parsed.meta.mode;
+          if (parsed.meta.algo) {
+            document.querySelectorAll('input[name="algo"]').forEach(r => r.checked = (r.value === parsed.meta.algo));
+            document.querySelectorAll('.algo-card').forEach(c => c.classList.toggle('active', c.dataset.algo === parsed.meta.algo));
+          }
+          // Apply default-phase if set
+          if (parsed.meta['default-phase']) {
+            const dp = parsed.phases.findIndex(p => p.name === parsed.meta['default-phase']);
+            if (dp >= 0) currentPhaseIndex = dp;
+          }
+          // Apply track + fx settings from current phase
+          const phase = parsed.phases[currentPhaseIndex];
+          if (phase.bassSettings) Object.assign(trackParams.bass, phase.bassSettings);
+          if (phase.leadSettings) Object.assign(trackParams.lead, phase.leadSettings);
+          if (phase.padSettings)  Object.assign(trackParams.pad, phase.padSettings);
+          if (parsed.fxSettings)  Object.assign(masterState, parsed.fxSettings);
+          for (const k of ['bass','lead','pad']) syncTrackUI(k);
+          syncMasterUI();
+          patternMode = 'fixed';
+          $('pattern-toggle').className = 'pattern-toggle fixed';
+          $('pattern-toggle').textContent = '⚙ Fixed';
+          generate();
+          setStatus('✓ SWMD imported: ' + (parsed.meta.name || file.name));
+        } catch (e) {
+          console.error(e);
+          setStatus('⚠ SWMD parse error: ' + e.message, true);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    $('export-swmd').onclick = exportSwmd;
+    $('import-swmd-file').addEventListener('change', e => {
+      if (e.target.files[0]) { importSwmd(e.target.files[0]); e.target.value = ''; }
+    });
 
 /* User presets */
 const PRESET_STORAGE_KEY = 'synthwave_surfer_presets_v1';

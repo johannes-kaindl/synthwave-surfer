@@ -1620,14 +1620,14 @@ git commit -m "feat: add Pattern Mode toggle (Generativ / Fixed) to Tracks panel
   - HTML: insert in Export panel (~line 302, after `export-wav` button)
   - JS: append handlers near other export wiring (~line 1798)
 
-- [ ] **Step 17.1: Add HTML** — find the line `<button id="export-wav" class="export" disabled>⬇ WAV</button>` (line 302) and add immediately after:
+- [x] **Step 17.1: Add HTML** — find the line `<button id="export-wav" class="export" disabled>⬇ WAV</button>` (line 302) and add immediately after:
 
 ```html
       <button id="export-swmd" class="export" disabled>⬇ SWMD</button>
       <label class="export" style="cursor:pointer; padding: 8px 14px; border: 1px solid var(--rule); display: inline-flex; align-items: center;">⬆ SWMD<input id="import-swmd-file" type="file" accept=".swmd,.md" style="display:none;"></label>
 ```
 
-- [ ] **Step 17.2: Add `exportSwmd()` and `importSwmd()` and the input/click handlers**
+- [x] **Step 17.2: Add `exportSwmd()` and `importSwmd()` and the input/click handlers**
 
 Append after the line `$('export-wav').onclick = exportWav;` (~line 1798):
 
@@ -1740,13 +1740,13 @@ $('import-swmd-file').addEventListener('change', e => {
 });
 ```
 
-- [ ] **Step 17.3: Verify in browser**
+- [x] **Step 17.3: Verify in browser**
 
 1. Open `synthwave_surfer.html`. Click **Generate**.
 2. Click **⬇ SWMD**. A `.md` file downloads. Open it in any text editor to confirm it has frontmatter, `## Phase: default`, instrument sections, and `## FX Bus`.
 3. Click **⬆ SWMD** and pick the file you just exported. The toggle should switch to Fixed and audio should play (potentially with a different sound if track params changed).
 
-- [ ] **Step 17.4: Commit**
+- [x] **Step 17.4: Commit**
 
 ```bash
 git add synthwave_surfer.html
