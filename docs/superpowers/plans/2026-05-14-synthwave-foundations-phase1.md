@@ -26,7 +26,7 @@ New code is inserted in these regions (in order):
 | **External API** | after Phase Engine | Frozen `window.synthwaveSurfer` object |
 | **Modified `generate()`** | line 2037 | Branches on `patternMode === 'fixed' && currentSwmd` |
 | **Modified `applyFactoryPreset()`** | line 2000 | Loads `fixedSwmd`, calls `swmdParse`, sets phase mode |
-| **Modified `exportWav()`** | line 1356 | Pass `transport` from offline context destructured arg |
+| **Modified `exportWav()`** | line 1724 | Pass `transport` from offline context destructured arg |
 | **HTML — Tracks panel** | line 235 (after `harmonic-toggle`) | Pattern-mode toggle + Phase Selector container |
 | **HTML — Export panel** | line 302 (after `export-wav`) | SWMD ⬇/⬆ buttons + State JSON button |
 | **CSS** | line 104 (after `.harmonic-toggle.strict`) | `.pattern-toggle`, `.phase-pill` |
@@ -1996,7 +1996,7 @@ git commit -m "feat: extend applyFactoryPreset to load .swmd template literal wh
 ## Task 21: Curated preset — Miami Nights (multi-phase)
 
 **Files:**
-- Modify: `synthwave_surfer.html` — extend `'Miami Nights'` entry in `FACTORY_PRESETS` (line 1614)
+- Modify: `synthwave_surfer.html` — extend `'Miami Nights'` entry in `FACTORY_PRESETS` (line 1987)
 
 - [ ] **Step 21.1: Add `fixedSwmd` field to Miami Nights**
 
@@ -2163,7 +2163,7 @@ git commit -m "feat: add multi-phase fixed pattern for Miami Nights preset"
 ## Task 22: Curated preset — Highway Cruise (multi-phase)
 
 **Files:**
-- Modify: `synthwave_surfer.html` — add `fixedSwmd` to `'Highway Cruise'` (line 1621)
+- Modify: `synthwave_surfer.html` — add `fixedSwmd` to `'Highway Cruise'` (line 1994)
 
 - [ ] **Step 22.1: Add `fixedSwmd` field to Highway Cruise**
 
@@ -2358,7 +2358,7 @@ git commit -m "feat: add multi-phase fixed pattern for Highway Cruise preset"
 ## Task 23: Curated preset — Blade Runner Rain (multi-phase)
 
 **Files:**
-- Modify: `synthwave_surfer.html` — add `fixedSwmd` to `'Blade Runner Rain'` (line 1628)
+- Modify: `synthwave_surfer.html` — add `fixedSwmd` to `'Blade Runner Rain'` (line 2001)
 
 - [ ] **Step 23.1: Add `fixedSwmd` field**
 
@@ -2544,7 +2544,7 @@ git commit -m "feat: add multi-phase fixed pattern for Blade Runner Rain preset"
 ## Task 24: Curated preset — Carpenter Synth (multi-phase)
 
 **Files:**
-- Modify: `synthwave_surfer.html` — add `fixedSwmd` to `'Carpenter Synth'` (line 1635). Change `mode: 'phrygian'` to `mode: 'aeolian'` for harmonic consistency with the spec.
+- Modify: `synthwave_surfer.html` — add `fixedSwmd` to `'Carpenter Synth'` (line 2008). Change `mode: 'phrygian'` to `mode: 'aeolian'` for harmonic consistency with the spec.
 
 - [ ] **Step 24.1: Add `fixedSwmd` field and change mode to aeolian**
 
@@ -2686,7 +2686,7 @@ git commit -m "feat: add multi-phase fixed pattern for Carpenter Synth preset"
 ## Task 25: Curated preset — Mall Bliss (multi-phase)
 
 **Files:**
-- Modify: `synthwave_surfer.html` — add `fixedSwmd` to `'Mall Bliss'` (line 1642)
+- Modify: `synthwave_surfer.html` — add `fixedSwmd` to `'Mall Bliss'` (line 2015)
 
 - [ ] **Step 25.1: Add `fixedSwmd` field**
 
@@ -2833,7 +2833,7 @@ git commit -m "feat: add multi-phase fixed pattern for Mall Bliss preset"
 ## Task 26: Curated preset — VHS Sunset (multi-phase)
 
 **Files:**
-- Modify: `synthwave_surfer.html` — add `fixedSwmd` to `'VHS Sunset'` (line 1649). Change `mode: 'pentatonic_minor'` to `mode: 'aeolian'`.
+- Modify: `synthwave_surfer.html` — add `fixedSwmd` to `'VHS Sunset'` (line 2022). Change `mode: 'pentatonic_minor'` to `mode: 'aeolian'`.
 
 - [ ] **Step 26.1: Add `fixedSwmd` field and change mode**
 
@@ -2976,11 +2976,11 @@ git commit -m "feat: add multi-phase fixed pattern for VHS Sunset preset"
 ## Task 27: Fix WAV export (offline transport)
 
 **Files:**
-- Modify: `synthwave_surfer.html` — replace `exportWav()` body (lines 1356-1384)
+- Modify: `synthwave_surfer.html` — replace `exportWav()` body (lines 1724-1752)
 
 - [ ] **Step 27.1: Replace `exportWav()` to use destructured `transport` from offline context**
 
-Find the existing `async function exportWav() { ... }` (line 1356) and replace its body:
+Find the existing `async function exportWav() { ... }` (line 1724) and replace its body:
 
 ```javascript
 async function exportWav() {
