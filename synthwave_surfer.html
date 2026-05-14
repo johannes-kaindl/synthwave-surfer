@@ -693,6 +693,48 @@ function serializePadProgression(prog) {
   return `${header}\n${sep}\n${degrees}`;
 }
 
+function parseFx(sectionText) {
+  const rows = parseMarkdownTable(sectionText);
+  const ms = {};
+  const map = {
+    reverb:    { size: 'reverbSize', wet: 'reverbWet' },
+    delay:     { time: 'delayTime', feedback: 'delayFB', wet: 'delayWet' },
+    sidechain: { depth: 'sidechain' },
+    tapesat:   { drive: 'tapeSat' },
+    master:    { gain: 'masterGain' },
+  };
+  for (const row of rows) {
+    const effect = (row['Effect'] || '').toLowerCase();
+    const param = (row['Param'] || '').toLowerCase();
+    const value = parseFloat(row['Value']);
+    if (Number.isNaN(value)) continue;
+    if (map[effect] && map[effect][param]) ms[map[effect][param]] = value;
+  }
+  return ms;
+}
+
+const NUMERIC_INSTRUMENT_KEYS = new Set([
+  'volume','detune','attack','decay','sustain','release',
+  'cutoff','resonance','fenvAmount','fenvDecay','character',
+  'lfoRate','lfoDepth'
+]);
+const BOOL_INSTRUMENT_KEYS = new Set(['send']);
+
+function parseInstrumentSettings(sectionText) {
+  const settingsMatch = sectionText.match(/### Settings\n([\s\S]+?)(?=\n###|\n##|$)/);
+  const tableText = settingsMatch ? settingsMatch[1] : sectionText;
+  const rows = parseMarkdownTable(tableText);
+  const result = {};
+  for (const row of rows) {
+    const key = row['Param']; const val = row['Value'];
+    if (!key || val === undefined) continue;
+    if (NUMERIC_INSTRUMENT_KEYS.has(key)) result[key] = parseFloat(val);
+    else if (BOOL_INSTRUMENT_KEYS.has(key)) result[key] = (val === 'true');
+    else result[key] = val;
+  }
+  return result;
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    Form builders
    ═══════════════════════════════════════════════════════════════════ */
@@ -2268,6 +2310,23 @@ function runCodecTests() {
       const reparsed = parsePadProgression('### Progression\n' + text);
       assert(reparsed.length === 4, 'four bars round-tripped');
       assert(reparsed[0][2] === 4 && reparsed[1][0] === -2, 'values preserved');
+    }],
+    ['parseFx — extracts master state shape', () => {
+      const text = '| Effect | Param | Value |\n|--------|-------|-------|\n| reverb | size | 0.6 |\n| reverb | wet | 0.5 |\n| delay | time | 0.55 |\n| sidechain | depth | 0.7 |\n| master | gain | 0.8 |';
+      const fx = parseFx(text);
+      assert(fx.reverbSize === 0.6, 'reverbSize mapped');
+      assert(fx.reverbWet === 0.5, 'reverbWet mapped');
+      assert(fx.delayTime === 0.55, 'delayTime mapped');
+      assert(fx.sidechain === 0.7, 'sidechain depth mapped');
+      assert(fx.masterGain === 0.8, 'master gain mapped');
+    }],
+    ['parseInstrumentSettings — coerces numerics', () => {
+      const text = '### Settings\n| Param | Value |\n|-------|-------|\n| model | stratos |\n| volume | 0.7 |\n| character | 0.5 |\n| lfoTarget | pwm |';
+      const s = parseInstrumentSettings(text);
+      assert(s.model === 'stratos', 'string preserved');
+      assert(s.volume === 0.7, 'volume coerced to number');
+      assert(s.character === 0.5, 'character coerced');
+      assert(s.lfoTarget === 'pwm', 'lfoTarget string preserved');
     }],
   ];
   for (const [name, fn] of tests) {

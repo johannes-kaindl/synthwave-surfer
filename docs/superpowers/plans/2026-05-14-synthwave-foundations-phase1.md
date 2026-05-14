@@ -681,7 +681,7 @@ git commit -m "feat: add pad progression parser/serializer for .swmd codec"
 **Files:**
 - Modify: `synthwave_surfer.html` — append after `serializePadProgression`
 
-- [ ] **Step 9.1: Add failing tests**
+- [x] **Step 9.1: Add failing tests**
 
 ```javascript
 ['parseFx — extracts master state shape', () => {
@@ -703,9 +703,9 @@ git commit -m "feat: add pad progression parser/serializer for .swmd codec"
 }],
 ```
 
-- [ ] **Step 9.2: Run tests, verify they fail**
+- [x] **Step 9.2: Run tests, verify they fail**
 
-- [ ] **Step 9.3: Implement both parsers**
+- [x] **Step 9.3: Implement both parsers**
 
 Append after `serializePadProgression`:
 
@@ -753,9 +753,9 @@ function parseInstrumentSettings(sectionText) {
 }
 ```
 
-- [ ] **Step 9.4: Run tests, verify they pass**
+- [x] **Step 9.4: Run tests, verify they pass**
 
-- [ ] **Step 9.5: Commit**
+- [x] **Step 9.5: Commit**
 
 ```bash
 git add synthwave_surfer.html
