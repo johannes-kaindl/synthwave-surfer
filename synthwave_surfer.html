@@ -670,6 +670,29 @@ function serializeDrums(grid) {
        + '\n```';
 }
 
+function parsePadProgression(sectionText) {
+  const progMatch = sectionText.match(/### Progression\n([\s\S]+?)(?=\n###|\n##|$)/);
+  const tableText = progMatch ? progMatch[1] : sectionText;
+  const rows = parseMarkdownTable(tableText);
+  const degreeRow = rows.find(r => r['Bar'] === 'Degrees' || r['Bar'] === 'Degree');
+  if (!degreeRow) return null;
+  const chords = [];
+  for (let i = 1; i <= 8; i++) {
+    const val = degreeRow[String(i)];
+    if (val === undefined || val === '') break;
+    chords.push(val.split(',').map(s => parseInt(s.trim(), 10)));
+  }
+  return chords.length > 0 ? chords : null;
+}
+
+function serializePadProgression(prog) {
+  const N = prog.length;
+  const header = `| Bar     |` + prog.map((_, i) => `  ${i + 1}   |`).join('');
+  const sep    = `|---------|` + prog.map(() => '------|').join('');
+  const degrees = `| Degrees |` + prog.map(c => ` ${c.join(',')} |`).join('');
+  return `${header}\n${sep}\n${degrees}`;
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    Form builders
    ═══════════════════════════════════════════════════════════════════ */
@@ -2227,6 +2250,24 @@ function runCodecTests() {
       assert(reparsed.kick[0] === true, 'kick preserved');
       assert(reparsed.snare[4] === true, 'snare preserved');
       assert(reparsed.open[15] === true, 'open preserved');
+    }],
+    ['parsePadProgression — 4-bar progression', () => {
+      const text = '### Progression\n| Bar     |  1   |  2   |  3   |  4   |\n|---------|------|------|------|------|\n| Degrees | 0,2,4 | -2,0,2 | 2,4,6 | -1,1,3 |';
+      const prog = parsePadProgression(text);
+      assert(prog !== null, 'progression parsed');
+      assert(prog.length === 4, 'four bars');
+      assert(prog[0].length === 3 && prog[0][0] === 0 && prog[0][2] === 4, 'bar 1: [0,2,4]');
+      assert(prog[1][0] === -2, 'bar 2: negative degree');
+    }],
+    ['parsePadProgression — null for no Degrees row', () => {
+      assert(parsePadProgression('### Progression\n| Bar | 1 |\n|-----|---|\n| Other | x |') === null, 'null without Degrees');
+    }],
+    ['serializePadProgression — round-trip', () => {
+      const prog = [[0, 2, 4], [-2, 0, 2], [2, 4, 6], [-1, 1, 3]];
+      const text = serializePadProgression(prog);
+      const reparsed = parsePadProgression('### Progression\n' + text);
+      assert(reparsed.length === 4, 'four bars round-tripped');
+      assert(reparsed[0][2] === 4 && reparsed[1][0] === -2, 'values preserved');
     }],
   ];
   for (const [name, fn] of tests) {

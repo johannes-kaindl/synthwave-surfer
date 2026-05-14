@@ -611,7 +611,7 @@ git commit -m "feat: add swdrum parser/serializer with round-trip test"
 **Files:**
 - Modify: `synthwave_surfer.html` — append after `serializeDrums`
 
-- [ ] **Step 8.1: Add failing tests**
+- [x] **Step 8.1: Add failing tests**
 
 ```javascript
 ['parsePadProgression — 4-bar progression', () => {
@@ -634,9 +634,9 @@ git commit -m "feat: add swdrum parser/serializer with round-trip test"
 }],
 ```
 
-- [ ] **Step 8.2: Run tests, verify they fail**
+- [x] **Step 8.2: Run tests, verify they fail**
 
-- [ ] **Step 8.3: Implement parser and serializer**
+- [x] **Step 8.3: Implement parser and serializer**
 
 Append after `serializeDrums`:
 
@@ -665,9 +665,9 @@ function serializePadProgression(prog) {
 }
 ```
 
-- [ ] **Step 8.4: Run tests, verify they pass**
+- [x] **Step 8.4: Run tests, verify they pass**
 
-- [ ] **Step 8.5: Commit**
+- [x] **Step 8.5: Commit**
 
 ```bash
 git add synthwave_surfer.html
