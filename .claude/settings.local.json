@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(session-start)",
+      "Skill(superpowers:subagent-driven-development)",
+      "Bash(git check-ignore *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
