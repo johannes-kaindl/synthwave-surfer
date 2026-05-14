@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synthwave Surfer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+<style>
+  :root {
+    --bg-deep: #0a0612; --bg-warm: #1a0c18;
+    --amber: #ffb547; --amber-dim: #8a5e1f;
+    --magenta: #ff2d95; --cyan: #3ed8d8;
+    --steel: #7c8aa8; --paper: #f0e6d2; --rule: #3a2438;
+    --green: #5bff8a; --purple: #a06aff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: radial-gradient(ellipse at top, var(--bg-warm) 0%, var(--bg-deep) 70%), var(--bg-deep);
+    min-height: 100vh; color: var(--paper);
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: repeating-linear-gradient(0deg, rgba(255,181,71,0.025) 0, rgba(255,181,71,0.025) 1px, transparent 1px, transparent 3px);
+    pointer-events: none; z-index: 1;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px; position: relative; z-index: 2; }
+  header { text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--rule); position: relative; }
+  header::after { content: ''; position: absolute; bottom: -3px; left: 50%; transform: translateX(-50%); width: 60px; height: 1px; background: var(--magenta); box-shadow: 0 0 12px var(--magenta); }
+  h1 { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 600; font-size: 56px; color: var(--amber); letter-spacing: 0.02em; text-shadow: 0 0 24px rgba(255, 181, 71, 0.4); line-height: 1; }
+  .subtitle { font-size: 11px; letter-spacing: 0.35em; color: var(--steel); margin-top: 12px; text-transform: uppercase; }
+  .ornament { color: var(--magenta); font-family: 'Cormorant Garamond', serif; font-size: 18px; margin: 0 12px; opacity: 0.7; }
+  .version { font-family: 'JetBrains Mono', monospace; color: var(--steel); font-size: 10px; letter-spacing: 0.2em; margin-top: 6px; }
+  .panel { background: rgba(10, 6, 18, 0.6); border: 1px solid var(--rule); padding: 20px 24px; margin-bottom: 20px; position: relative; }
+  .panel-label { position: absolute; top: -8px; left: 16px; background: var(--bg-deep); padding: 0 10px; font-size: 10px; letter-spacing: 0.3em; color: var(--magenta); text-transform: uppercase; }
+  .controls { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
+  .control { display: flex; flex-direction: column; gap: 6px; }
+  .control label { font-size: 10px; letter-spacing: 0.2em; color: var(--steel); text-transform: uppercase; }
+  input[type="text"], input[type="number"], select {
+    background: var(--bg-deep); color: var(--amber); border: 1px solid var(--amber-dim);
+    font-family: inherit; font-size: 14px; padding: 8px 12px; min-width: 120px;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--amber); box-shadow: 0 0 0 1px var(--amber), 0 0 12px rgba(255, 181, 71, 0.3); }
+  input.seed-input { width: 110px; } input.bpm-input { width: 70px; }
+  button { background: transparent; color: var(--paper); border: 1px solid var(--paper); font-family: inherit; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; padding: 9px 18px; cursor: pointer; transition: all 0.15s ease; }
+  button:hover:not(:disabled) { color: var(--bg-deep); background: var(--amber); border-color: var(--amber); box-shadow: 0 0 16px rgba(255, 181, 71, 0.5); }
+  button.primary { color: var(--amber); border-color: var(--amber); }
+  button.primary:hover:not(:disabled) { background: var(--amber); }
+  button.play { color: var(--magenta); border-color: var(--magenta); }
+  button.play:hover:not(:disabled) { background: var(--magenta); border-color: var(--magenta); color: var(--bg-deep); box-shadow: 0 0 20px rgba(255, 45, 149, 0.6); }
+  button.export { color: var(--cyan); border-color: var(--cyan); }
+  button.export:hover:not(:disabled) { background: var(--cyan); border-color: var(--cyan); color: var(--bg-deep); box-shadow: 0 0 16px rgba(62, 216, 216, 0.5); }
+  button.small { padding: 6px 12px; font-size: 10px; }
+  button:disabled { opacity: 0.25; cursor: not-allowed; }
+  .status { margin-left: auto; font-size: 11px; color: var(--cyan); letter-spacing: 0.15em; text-transform: uppercase; min-height: 1em; }
+  .status.warn { color: var(--magenta); }
+
+  .algo-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--rule); }
+  .algo-card { padding: 12px 16px; border: 1px solid var(--rule); cursor: pointer; transition: all 0.15s; background: rgba(10,6,18,0.4); }
+  .algo-card:hover { border-color: var(--amber-dim); }
+  .algo-card[data-algo="outrun"].active { border-color: var(--magenta); background: rgba(255, 45, 149, 0.08); }
+  .algo-card[data-algo="outrun"].active .algo-name { color: var(--magenta); }
+  .algo-card[data-algo="noir"].active { border-color: var(--amber); background: rgba(255, 181, 71, 0.08); }
+  .algo-card[data-algo="noir"].active .algo-name { color: var(--amber); }
+  .algo-card[data-algo="dreamwave"].active { border-color: var(--cyan); background: rgba(62, 216, 216, 0.08); }
+  .algo-card[data-algo="dreamwave"].active .algo-name { color: var(--cyan); }
+  .algo-card input[type="radio"] { display: none; }
+  .algo-name { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 22px; color: var(--amber); margin-bottom: 4px; }
+  .algo-desc { font-size: 10px; color: var(--steel); letter-spacing: 0.05em; line-height: 1.4; }
+
+  /* Factory presets — prominent */
+  .factory-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+  .factory-chip {
+    padding: 10px 14px; border: 1px solid var(--rule); background: rgba(10,6,18,0.4);
+    cursor: pointer; transition: all 0.15s ease; display: flex; flex-direction: column; gap: 4px;
+  }
+  .factory-chip:hover { border-color: var(--purple); background: rgba(160, 106, 255, 0.06); }
+  .factory-chip .fp-name { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: var(--purple); }
+  .factory-chip .fp-tag { font-size: 9px; letter-spacing: 0.15em; color: var(--steel); text-transform: uppercase; }
+
+  .tracks-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .track-toggle { padding: 10px 16px; border: 1px solid var(--rule); background: rgba(10, 6, 18, 0.4); cursor: pointer; font-family: inherit; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--steel); display: flex; align-items: center; gap: 10px; user-select: none; transition: all 0.15s ease; }
+  .track-toggle:hover { border-color: var(--amber-dim); }
+  .track-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
+  .track-toggle.off { opacity: 0.45; }
+  .track-toggle.off .track-dot { background: transparent; box-shadow: none; border: 1px solid currentColor; }
+  .track-toggle[data-track="bass"].on { border-color: var(--amber); color: var(--amber); background: rgba(255,181,71,0.06); }
+  .track-toggle[data-track="lead"].on { border-color: var(--magenta); color: var(--magenta); background: rgba(255,45,149,0.06); }
+  .track-toggle[data-track="pad"].on { border-color: var(--cyan); color: var(--cyan); background: rgba(62,216,216,0.06); }
+  .track-toggle[data-track="drums"].on { border-color: var(--paper); color: var(--paper); background: rgba(240,230,210,0.04); }
+  .track-divider { width: 1px; height: 24px; background: var(--rule); margin: 0 6px; }
+  .loop-toggle { padding: 10px 16px; border: 1px solid var(--rule); background: rgba(10, 6, 18, 0.4); cursor: pointer; font-family: inherit; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--steel); display: flex; align-items: center; gap: 10px; user-select: none; transition: all 0.15s ease; }
+  .loop-toggle:hover { border-color: var(--cyan); color: var(--cyan); }
+  .loop-toggle.on { border-color: var(--cyan); color: var(--cyan); background: rgba(62,216,216,0.1); box-shadow: 0 0 16px rgba(62,216,216,0.25); }
+  .loop-toggle .loop-symbol { font-size: 18px; line-height: 1; }
+  .loop-toggle.on .loop-symbol { animation: spin 6s linear infinite; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .harmonic-toggle { padding: 10px 16px; border: 1px solid var(--rule); background: rgba(10, 6, 18, 0.4); cursor: pointer; font-family: inherit; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--steel); display: flex; align-items: center; gap: 10px; user-select: none; transition: all 0.15s ease; }
+  .harmonic-toggle:hover { border-color: var(--green); }
+  .harmonic-toggle.natural { border-color: var(--green); color: var(--green); background: rgba(91,255,138,0.06); }
+  .harmonic-toggle.strict { border-color: var(--amber); color: var(--amber); background: rgba(255,181,71,0.08); }
+
+  .track-panel { border: 1px solid var(--rule); padding: 16px 20px; margin-bottom: 16px; background: rgba(10, 6, 18, 0.4); position: relative; }
+  .track-panel-label { position: absolute; top: -8px; left: 16px; background: var(--bg-deep); padding: 0 10px; font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 700; }
+  .track-panel[data-track="bass"] .track-panel-label { color: var(--amber); }
+  .track-panel[data-track="lead"] .track-panel-label { color: var(--magenta); }
+  .track-panel[data-track="pad"] .track-panel-label { color: var(--cyan); }
+  .track-header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px dashed var(--rule); }
+  .track-header label { font-size: 10px; letter-spacing: 0.2em; color: var(--steel); text-transform: uppercase; margin-right: 6px; }
+  .track-header select { padding: 6px 10px; font-size: 12px; min-width: 140px; }
+  .send-toggle { padding: 4px 10px; font-size: 9px; letter-spacing: 0.2em; }
+  .send-toggle.on { background: var(--cyan); color: var(--bg-deep); border-color: var(--cyan); }
+
+  .section-divider {
+    font-size: 9px; letter-spacing: 0.3em; color: var(--purple); text-transform: uppercase;
+    margin: 14px 0 8px; padding-bottom: 4px; border-bottom: 1px dashed var(--rule);
+  }
+  .slider-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px 16px; }
+  .slider-row { display: flex; flex-direction: column; gap: 3px; }
+  .slider-header { display: flex; justify-content: space-between; font-size: 9px; letter-spacing: 0.12em; }
+  .slider-name { color: var(--steel); text-transform: uppercase; }
+  .slider-value { color: var(--amber); font-variant-numeric: tabular-nums; }
+  input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 3px; background: var(--rule); outline: none; cursor: pointer; padding: 0; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 12px; height: 12px; border-radius: 0; background: var(--amber); border: 1px solid var(--amber); cursor: pointer; box-shadow: 0 0 4px rgba(255, 181, 71, 0.6); }
+  input[type="range"]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 0; background: var(--amber); border: 1px solid var(--amber); cursor: pointer; box-shadow: 0 0 4px rgba(255, 181, 71, 0.6); }
+  .track-panel[data-track="bass"] input[type="range"]::-webkit-slider-thumb { background: var(--amber); border-color: var(--amber); box-shadow: 0 0 4px rgba(255, 181, 71, 0.5); }
+  .track-panel[data-track="lead"] input[type="range"]::-webkit-slider-thumb { background: var(--magenta); border-color: var(--magenta); box-shadow: 0 0 4px rgba(255, 45, 149, 0.5); }
+  .track-panel[data-track="pad"] input[type="range"]::-webkit-slider-thumb { background: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 4px rgba(62, 216, 216, 0.5); }
+
+  .master-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px 18px; }
+
+  .meters-row { display: flex; gap: 16px; align-items: stretch; flex-wrap: wrap; }
+  .vu-container { display: flex; flex-direction: column; gap: 6px; flex: 0 0 100px; }
+  .vu-label { font-size: 9px; letter-spacing: 0.2em; color: var(--steel); text-transform: uppercase; text-align: center; }
+  .vu-bar { width: 100%; height: 14px; background: var(--bg-deep); border: 1px solid var(--rule); position: relative; overflow: hidden; }
+  .vu-fill { position: absolute; left: 0; top: 0; height: 100%; background: linear-gradient(90deg, var(--green) 0%, var(--green) 60%, var(--amber) 75%, var(--magenta) 95%); transition: width 0.05s linear; }
+  .vu-peak { position: absolute; top: 0; width: 2px; height: 100%; background: var(--paper); transition: left 0.3s ease-out; }
+  .spectrum-container { flex: 1; min-width: 280px; }
+  .spectrum-label { font-size: 9px; letter-spacing: 0.2em; color: var(--steel); text-transform: uppercase; margin-bottom: 6px; }
+  #spectrum { display: block; width: 100%; height: 60px; background: var(--bg-deep); border: 1px solid var(--rule); }
+
+  .canvas-wrap { position: relative; }
+  canvas { display: block; width: 100%; background: var(--bg-deep); border: 1px solid var(--rule); }
+  #roll { height: 240px; }
+  .legend { display: flex; gap: 20px; margin-top: 12px; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--steel); flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-swatch { width: 12px; height: 12px; border: 1px solid currentColor; }
+  .log { font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.55; white-space: pre; overflow-x: auto; color: var(--paper); }
+  .log .key { color: var(--magenta); } .log .val { color: var(--amber); } .log .note { color: var(--cyan); } .log .dim { color: var(--steel); } .log .rule { color: var(--rule); } .log .factory { color: var(--purple); }
+  .epigraph { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--steel); text-align: center; margin: 8px 0 0; }
+
+  .preset-grid { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; }
+  .preset-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .preset-chip { padding: 6px 12px; border: 1px solid var(--rule); background: rgba(10, 6, 18, 0.4); font-size: 10px; letter-spacing: 0.1em; color: var(--steel); cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .preset-chip:hover { border-color: var(--cyan); color: var(--cyan); }
+  .preset-chip .del { color: var(--magenta); opacity: 0.6; cursor: pointer; padding: 0 2px; }
+  .preset-chip .del:hover { opacity: 1; }
+  .preset-empty { color: var(--steel); font-size: 10px; font-style: italic; opacity: 0.6; }
+
+  footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--rule); text-align: center; color: var(--steel); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; }
+  @media (max-width: 640px) {
+    h1 { font-size: 38px; }
+    .controls { flex-direction: column; align-items: stretch; }
+    .control { width: 100%; }
+    input[type="text"], input[type="number"], select { width: 100%; }
+    .track-divider { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Synthwave Surfer</h1>
+    <div class="subtitle"><span class="ornament">✦</span>Riding the Neon Wave<span class="ornament">✦</span></div>
+    <p class="epigraph">— Six synths. Three algorithms. One endless sunset. —</p>
+    <div class="version">v1.0 · Factory Presets · LFOs · Tape Saturation · Gated Reverb</div>
+  </header>
+
+  <div class="panel">
+    <span class="panel-label">Console</span>
+    <div class="controls">
+      <div class="control"><label for="seed">Seed</label><input id="seed" type="text" class="seed-input" value="1986" inputmode="numeric"></div>
+      <div class="control"><label for="mode">Scale</label>
+        <select id="mode">
+          <option value="pentatonic_minor">Minor Pentatonic</option>
+          <option value="aeolian">Aeolian</option>
+          <option value="phrygian">Phrygian</option>
+          <option value="dorian">Dorian</option>
+        </select>
+      </div>
+      <div class="control"><label for="bpm">BPM</label><input id="bpm" type="text" class="bpm-input" value="120" inputmode="numeric"></div>
+      <button id="randomize">⚄ Random Seed</button>
+      <button id="generate" class="primary">⚙ Generate</button>
+      <button id="play" class="play" disabled>▶ Play</button>
+      <button id="stop" disabled>■ Stop</button>
+      <span id="status" class="status"></span>
+    </div>
+    <div class="algo-row">
+      <label class="algo-card active" data-algo="outrun">
+        <input type="radio" name="algo" value="outrun" checked>
+        <div class="algo-name">Outrun</div>
+        <div class="algo-desc">120 BPM · driving 8th-note bass · pumping sidechain · bright lead hooks · Am–F–C–G</div>
+      </label>
+      <label class="algo-card" data-algo="noir">
+        <input type="radio" name="algo" value="noir">
+        <div class="algo-name">Noir</div>
+        <div class="algo-desc">85 BPM · sparse lead with rests · long pads · dark mood · Am–G–F–E</div>
+      </label>
+      <label class="algo-card" data-algo="dreamwave">
+        <input type="radio" name="algo" value="dreamwave">
+        <div class="algo-name">Dreamwave</div>
+        <div class="algo-desc">100 BPM · 16th arpeggio bass · chorused lead · washed pads · Am–C–F–G</div>
+      </label>
+    </div>
+  </div>
+
+  <div class="panel">
+    <span class="panel-label">Factory Presets</span>
+    <div class="factory-row" id="factory-row"></div>
+  </div>
+
+  <div class="panel">
+    <span class="panel-label">Tracks &amp; Loop</span>
+    <div class="tracks-row">
+      <div class="track-toggle on" data-track="bass"><span class="track-dot"></span>Bass</div>
+      <div class="track-toggle on" data-track="lead"><span class="track-dot"></span>Lead</div>
+      <div class="track-toggle on" data-track="pad"><span class="track-dot"></span>Pad</div>
+      <div class="track-toggle on" data-track="drums"><span class="track-dot"></span>Drums</div>
+      <div class="track-divider"></div>
+      <div class="loop-toggle" id="loop-toggle"><span class="loop-symbol">∞</span>Loop</div>
+      <div class="track-divider"></div>
+      <div class="harmonic-toggle natural" id="harmonic-toggle">♩ Natural</div>
+    </div>
+  </div>
+
+  <div id="track-panels"></div>
+
+  <div class="panel">
+    <span class="panel-label">Master · FX &amp; Bus</span>
+    <div class="master-grid">
+      <div class="slider-row"><div class="slider-header"><span class="slider-name">Reverb Size</span><span class="slider-value" id="v-reverbSize">0.55</span></div><input type="range" id="reverbSize" min="0" max="1" step="0.01" value="0.55"></div>
+      <div class="slider-row"><div class="slider-header"><span class="slider-name">Reverb Wet</span><span class="slider-value" id="v-reverbWet">0.45</span></div><input type="range" id="reverbWet" min="0" max="1" step="0.01" value="0.45"></div>
+      <div class="slider-row"><div class="slider-header"><span class="slider-name">Delay Time</span><span class="slider-value" id="v-delayTime">0.50</span></div><input type="range" id="delayTime" min="0" max="1" step="0.01" value="0.50"></div>
+      <div class="slider-row"><div class="slider-header"><span class="slider-name">Delay FB</span><span class="slider-value" id="v-delayFB">0.40</span></div><input type="range" id="delayFB" min="0" max="1" step="0.01" value="0.40"></div>
+      <div class="slider-row"><div class="slider-header"><span class="slider-name">Delay Wet</span><span class="slider-value" id="v-delayWet">0.40</span></div><input type="range" id="delayWet" min="0" max="1" step="0.01" value="0.40"></div>
+      <div class="slider-row"><div class="slider-header"><span class="slider-name">Sidechain</span><span class="slider-value" id="v-sidechain">0.70</span></div><input type="range" id="sidechain" min="0" max="1" step="0.01" value="0.70"></div>
+      <div class="slider-row"><div class="slider-header"><span class="slider-name">Tape Sat</span><span class="slider-value" id="v-tapeSat">0.30</span></div><input type="range" id="tapeSat" min="0" max="1" step="0.01" value="0.30"></div>
+      <div class="slider-row"><div class="slider-header"><span class="slider-name">Master Gain</span><span class="slider-value" id="v-masterGain">0.80</span></div><input type="range" id="masterGain" min="0" max="1.2" step="0.01" value="0.80"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <span class="panel-label">Meter</span>
+    <div class="meters-row">
+      <div class="vu-container">
+        <div class="vu-label">L</div>
+        <div class="vu-bar"><div class="vu-fill" id="vu-l"></div><div class="vu-peak" id="vu-l-peak"></div></div>
+      </div>
+      <div class="vu-container">
+        <div class="vu-label">R</div>
+        <div class="vu-bar"><div class="vu-fill" id="vu-r"></div><div class="vu-peak" id="vu-r-peak"></div></div>
+      </div>
+      <div class="spectrum-container">
+        <div class="spectrum-label">Spectrum</div>
+        <canvas id="spectrum" width="800" height="60"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <span class="panel-label">User Presets</span>
+    <div class="preset-grid">
+      <input id="preset-name" type="text" placeholder="Preset name..." style="width: 100%;">
+      <button id="preset-save" class="small">💾 Save</button>
+      <button id="preset-export" class="small">⬇ Export</button>
+    </div>
+    <div class="preset-list" id="preset-list">
+      <span class="preset-empty">No user presets saved yet.</span>
+    </div>
+    <input id="preset-import-file" type="file" accept=".json" style="display: none;">
+    <div style="margin-top: 10px;"><button id="preset-import" class="small">⬆ Import JSON</button></div>
+  </div>
+
+  <div class="panel">
+    <span class="panel-label">Piano Roll</span>
+    <div class="canvas-wrap"><canvas id="roll" width="2200" height="480"></canvas></div>
+    <div class="legend">
+      <div class="legend-item" style="color: var(--amber)"><span class="legend-swatch"></span>Bass</div>
+      <div class="legend-item" style="color: var(--magenta)"><span class="legend-swatch"></span>Lead</div>
+      <div class="legend-item" style="color: var(--cyan)"><span class="legend-swatch"></span>Pad</div>
+      <div class="legend-item" style="color: var(--steel)"><span class="legend-swatch"></span>Bar Lines</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <span class="panel-label">Export</span>
+    <div class="controls">
+      <button id="export-midi" class="export" disabled>⬇ MIDI</button>
+      <button id="export-wav" class="export" disabled>⬇ WAV</button>
+      <span class="dim" style="font-size: 11px; margin-left: 12px;">MIDI: all tracks · WAV: with mutes &amp; current sound</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <span class="panel-label">Score</span>
+    <pre class="log" id="log">Press <span class="key">GENERATE</span> to start.</pre>
+  </div>
+
+  <footer>Outrun × Noir × Dreamwave &nbsp;·&nbsp; Tone.js / Web Audio API</footer>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   PRNG, scales
+   ═══════════════════════════════════════════════════════════════════ */
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function() {
+    a = (a + 0x6D2B79F5) | 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const SCALES = {
+  aeolian:          [0, 2, 3, 5, 7, 8, 10],
+  phrygian:         [0, 1, 3, 5, 7, 8, 10],
+  dorian:           [0, 2, 3, 5, 7, 9, 10],
+  pentatonic_minor: [0, 3, 5, 7, 10],
+};
+const MODE_LABELS = { aeolian: 'A Aeolian', phrygian: 'A Phrygian', dorian: 'A Dorian', pentatonic_minor: 'A Minor Pentatonic' };
+const AEOLIAN = SCALES.aeolian;
+function degreeToMidi(degree, scale, rootMidi) {
+  const len = scale.length;
+  const oct = Math.floor(degree / len);
+  const inOct = ((degree % len) + len) % len;
+  return rootMidi + oct * 12 + scale[inOct];
+}
+const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+function midiToName(m) { return NOTE_NAMES[((m%12)+12)%12] + (Math.floor(m/12)-1); }
+
+/* ═══════════════════════════════════════════════════════════════════
+   Bass riff & lead melody generators
+   ═══════════════════════════════════════════════════════════════════ */
+function generateOutrunRiff(rng, scaleLen) {
+  const out = [];
+  const pattern = [0, 0, -scaleLen, 0, 0, 0, 2, -scaleLen];
+  for (let i = 0; i < 8; i++) {
+    let degree = pattern[i];
+    if (rng() < 0.15) degree = pattern[Math.floor(rng() * pattern.length)];
+    out.push({ degree, duration: 2 });
+  }
+  return out;
+}
+function generateNoirRiff(rng, scaleLen) {
+  const choices = [
+    [{degree:0, duration:8}, {degree:0, duration:8}],
+    [{degree:0, duration:8}, {degree:-1, duration:8}],
+    [{degree:0, duration:12}, {degree:-scaleLen, duration:4}],
+    [{degree:0, duration:8}, {degree:2, duration:8}],
+  ];
+  return choices[Math.floor(rng() * choices.length)].map(n => ({...n}));
+}
+function generateDreamwaveRiff(rng, scaleLen) {
+  const patterns = [
+    [0, 2, 4, 2, 0, 2, 4, 2, 0, 2, 4, 2, 0, 2, 4, 2],
+    [0, 4, 2, 4, 0, 4, 2, 4, 0, 4, 2, 4, 0, 4, 2, 4],
+    [0, 2, 4, 7, 0, 2, 4, 7, 0, 2, 4, 7, 0, 2, 4, 7],
+    [0, 4, 2, 0, 0, 4, 2, 0, -scaleLen, 4, 2, 0, 0, 4, 2, 0],
+  ];
+  return patterns[Math.floor(rng() * patterns.length)].map(d => ({ degree: d, duration: 1 }));
+}
+
+function generateOutrunLead(rng, scaleLen, bars, ctx = {}) {
+  const { chordMap = null, harmonicMode = 'natural', startBar = 4 } = ctx;
+  const total = bars * 16; const out = []; let pos = 0;
+  let degree = Math.min(4, scaleLen - 1);
+  while (pos < total) {
+    if (pos > 4 && rng() < 0.15) {
+      const a = Math.min([2,4,4][Math.floor(rng()*3)], total - pos);
+      out.push({ rest: true, duration: a }); pos += a; continue;
+    }
+    let dur = [4, 4, 6, 4, 2, 8, 4][Math.floor(rng() * 7)];
+    if (pos + dur > total) dur = total - pos;
+    if (chordMap) {
+      const bar = Math.min(startBar + Math.floor(pos / 16), chordMap.length - 1);
+      degree = snapDegree(degree, chordMap[bar].tones, scaleLen, harmonicMode, rng);
+    }
+    out.push({ degree, duration: dur }); pos += dur;
+    if (pos < total) {
+      const r = rng();
+      if (r < 0.45) degree += rng() < 0.5 ? 1 : -1;
+      else if (r < 0.8) degree += rng() < 0.5 ? 2 : -2;
+      else degree += rng() < 0.5 ? 3 : -3;
+      degree = Math.max(0, Math.min(scaleLen + 2, degree));
+    }
+  }
+  return out;
+}
+function generateNoirLead(rng, scaleLen, bars, ctx = {}) {
+  const { chordMap = null, harmonicMode = 'natural', startBar = 4 } = ctx;
+  const total = bars * 16; const out = []; let pos = 0;
+  let degree = Math.min(2, scaleLen - 1);
+  out.push({ rest: true, duration: 4 }); pos = 4;
+  while (pos < total) {
+    if (rng() < 0.35) {
+      const a = Math.min([4,6,8,4,12][Math.floor(rng()*5)], total - pos);
+      out.push({ rest: true, duration: a }); pos += a; continue;
+    }
+    let dur = [8, 12, 6, 8, 4, 16][Math.floor(rng() * 6)];
+    if (pos + dur > total) dur = total - pos;
+    if (chordMap) {
+      const bar = Math.min(startBar + Math.floor(pos / 16), chordMap.length - 1);
+      degree = snapDegree(degree, chordMap[bar].tones, scaleLen, harmonicMode, rng);
+    }
+    out.push({ degree, duration: dur }); pos += dur;
+    if (pos < total) {
+      const r = rng();
+      if (r < 0.55) degree += rng() < 0.5 ? 1 : -1;
+      else if (r < 0.85) degree += rng() < 0.5 ? 2 : -2;
+      else degree += rng() < 0.5 ? 4 : -4;
+      degree = Math.max(0, Math.min(scaleLen + 1, degree));
+    }
+  }
+  return out;
+}
+function generateDreamwaveLead(rng, scaleLen, bars, ctx = {}) {
+  const { chordMap = null, harmonicMode = 'natural', startBar = 4 } = ctx;
+  const total = bars * 16; const out = []; let pos = 0;
+  let degree = Math.min(2, scaleLen - 1);
+  while (pos < total) {
+    if (pos > 2 && rng() < 0.12) {
+      const a = Math.min([2,2,4][Math.floor(rng()*3)], total - pos);
+      out.push({ rest: true, duration: a }); pos += a; continue;
+    }
+    let dur = [2, 4, 4, 2, 6, 4, 3][Math.floor(rng() * 7)];
+    if (pos + dur > total) dur = total - pos;
+    if (chordMap) {
+      const bar = Math.min(startBar + Math.floor(pos / 16), chordMap.length - 1);
+      degree = snapDegree(degree, chordMap[bar].tones, scaleLen, harmonicMode, rng);
+    }
+    out.push({ degree, duration: dur }); pos += dur;
+    if (pos < total) {
+      const r = rng();
+      if (r < 0.5) degree += rng() < 0.5 ? 1 : -1;
+      else if (r < 0.85) degree += rng() < 0.5 ? 2 : -2;
+      else degree += rng() < 0.5 ? 3 : -3;
+      degree = Math.max(0, Math.min(scaleLen + 2, degree));
+    }
+  }
+  return out;
+}
+function transpose(line, iv) {
+  return line.map(n => n.rest ? { ...n } : { degree: n.degree + iv, duration: n.duration });
+}
+
+function buildChordMap(padProg, totalBars) {
+  const map = [];
+  const barsPerChord = totalBars / padProg.length;
+  for (let b = 0; b < totalBars; b++) {
+    const ci = Math.min(Math.floor(b / barsPerChord), padProg.length - 1);
+    map.push({ root: padProg[ci][0], tones: padProg[ci] });
+  }
+  return map;
+}
+
+function nearestChordDegree(degree, chordTones, scaleLen) {
+  let best = degree, minDist = Infinity;
+  for (const ct of chordTones) {
+    for (let oct = -1; oct <= 1; oct++) {
+      const cand = ct + oct * scaleLen;
+      const dist = Math.abs(cand - degree);
+      if (dist < minDist) { minDist = dist; best = cand; }
+    }
+  }
+  return best;
+}
+
+function snapDegree(degree, chordTones, scaleLen, mode, rng) {
+  const pc = ((degree % scaleLen) + scaleLen) % scaleLen;
+  const chordPcs = chordTones.map(ct => ((ct % scaleLen) + scaleLen) % scaleLen);
+  if (chordPcs.includes(pc)) return degree;
+  if (mode === 'strict') return nearestChordDegree(degree, chordTones, scaleLen);
+  return rng() < 0.5 ? nearestChordDegree(degree, chordTones, scaleLen) : degree;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Form builders
+   ═══════════════════════════════════════════════════════════════════ */
+function buildOutrunForm(rng, material, opts) {
+  const { riff, melodyA, melodyB } = material;
+  const chordMap = opts.chordMap;
+  const parts = [];
+  for (let b = 0; b < 16; b++) {
+    const rootOffset = chordMap ? chordMap[b].root : 0;
+    parts.push({ voice: 'bass', line: transpose(riff, rootOffset), startBar: b });
+  }
+  parts.push({ voice: 'lead', line: melodyA, startBar: 4 });
+  parts.push({ voice: 'lead', line: melodyB, startBar: 10 });
+  return { parts, riff, melodyA, melodyB };
+}
+function buildNoirForm(rng, material, opts) {
+  const { riff, melodyA, melodyB } = material;
+  const chordMap = opts && opts.chordMap;
+  const parts = [];
+  for (let b = 2; b < 16; b++) {
+    const rootOffset = chordMap ? chordMap[b].root : 0;
+    parts.push({ voice: 'bass', line: transpose(riff, rootOffset), startBar: b });
+  }
+  parts.push({ voice: 'lead', line: melodyA, startBar: 4 });
+  parts.push({ voice: 'lead', line: melodyB, startBar: 8 });
+  return { parts, riff, melodyA, melodyB };
+}
+function buildDreamwaveForm(rng, material, opts) {
+  const { riff, melodyA, melodyB } = material;
+  const chordMap = opts.chordMap;
+  const parts = [];
+  for (let b = 0; b < 16; b++) {
+    const rootOffset = chordMap ? chordMap[b].root : 0;
+    parts.push({ voice: 'bass', line: transpose(riff, rootOffset), startBar: b });
+  }
+  parts.push({ voice: 'lead', line: melodyA, startBar: 4 });
+  parts.push({ voice: 'lead', line: melodyB, startBar: 10 });
+  return { parts, riff, melodyA, melodyB };
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Algorithm config
+   ═══════════════════════════════════════════════════════════════════ */
+const ALGORITHMS = {
+  outrun: {
+    totalBars: 16, buildForm: buildOutrunForm,
+    riffGen: generateOutrunRiff,
+    leadGenA: (rng, sl, ctx) => generateOutrunLead(rng, sl, 4, { ...ctx, startBar: 4 }),
+    leadGenB: (rng, sl, ctx) => generateOutrunLead(rng, sl, 4, { ...ctx, startBar: 10 }),
+    padProg: [[0,2,4], [-2,0,2], [2,4,6], [-1,1,3]],
+    padStartBar: 2, padEndBar: 16, padRoot: 60,
+    drumStartBar: 2, drumEndBar: 16, drumIntenseFrom: 10, drumBreakFrom: 8, drumBreakTo: 10,
+    drumPattern: 'driving',
+    swing: 0.08, sidechain: true,
+    defaultBpm: 120, defaultMode: 'pentatonic_minor',
+  },
+  noir: {
+    totalBars: 16, buildForm: buildNoirForm,
+    riffGen: generateNoirRiff,
+    leadGenA: (rng, sl, ctx) => generateNoirLead(rng, sl, 4, { ...ctx, startBar: 4 }),
+    leadGenB: (rng, sl, ctx) => generateNoirLead(rng, sl, 4, { ...ctx, startBar: 8 }),
+    padProg: [[0,2,4], [-1,1,3], [-2,0,2], [-3,-1,1]],
+    padStartBar: 0, padEndBar: 16, padRoot: 60,
+    drumStartBar: 6, drumEndBar: 12, drumIntenseFrom: 999, drumBreakFrom: 999, drumBreakTo: 0,
+    drumPattern: 'sparse',
+    swing: 0, sidechain: false,
+    defaultBpm: 85, defaultMode: 'aeolian',
+  },
+  dreamwave: {
+    totalBars: 16, buildForm: buildDreamwaveForm,
+    riffGen: generateDreamwaveRiff,
+    leadGenA: (rng, sl, ctx) => generateDreamwaveLead(rng, sl, 4, { ...ctx, startBar: 4 }),
+    leadGenB: (rng, sl, ctx) => generateDreamwaveLead(rng, sl, 4, { ...ctx, startBar: 10 }),
+    padProg: [[0,2,4], [2,4,6], [-2,0,2], [-1,1,3]],
+    padStartBar: 1, padEndBar: 16, padRoot: 60,
+    drumStartBar: 4, drumEndBar: 16, drumIntenseFrom: 10, drumBreakFrom: 8, drumBreakTo: 10,
+    drumPattern: 'shuffle',
+    swing: 0.12, sidechain: true,
+    defaultBpm: 100, defaultMode: 'aeolian',
+  },
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   Synth Models — six total. First three are Synthwave-essential.
+   ═══════════════════════════════════════════════════════════════════ */
+function buildSynthModel(modelName, polyphonic) {
+  if (modelName === 'stratos') {
+    // Jupiter-8 PWM bass — pulse wave with LFO-modulated width, sub-osc, 24dB LP
+    const synth = polyphonic
+      ? new Tone.PolySynth(Tone.MonoSynth, {
+          oscillator: { type: 'pulse', width: 0.3 },
+          envelope: { attack: 0.005, decay: 0.3, sustain: 0.7, release: 0.4 },
+          filter: { Q: 4, type: 'lowpass', rolloff: -24 },
+          filterEnvelope: { attack: 0.005, decay: 0.3, sustain: 0.6, release: 0.4, baseFrequency: 200, octaves: 3 }
+        })
+      : new Tone.MonoSynth({
+          oscillator: { type: 'pulse', width: 0.3 },
+          envelope: { attack: 0.005, decay: 0.3, sustain: 0.7, release: 0.4 },
+          filter: { Q: 4, type: 'lowpass', rolloff: -24 },
+          filterEnvelope: { attack: 0.005, decay: 0.3, sustain: 0.6, release: 0.4, baseFrequency: 200, octaves: 3 }
+        });
+    // Pulse width modulation LFO — internal to Stratos, not the per-track LFO
+    const pwmLfo = new Tone.LFO(0.4, 0.2, 0.5);
+    if (!polyphonic) {
+      pwmLfo.connect(synth.oscillator.width);
+    }
+    pwmLfo.start();
+    // Tiny saturation for warmth
+    const sat = new Tone.Distortion({ distortion: 0.08, oversample: '2x' });
+    return { synth, character: sat, characterAmount: 0.4, internalLfo: pwmLfo, type: 'stratos' };
+  }
+
+  if (modelName === 'crystal') {
+    // DX7-style FM bell — Tone.FMSynth with high modulation index
+    const synth = polyphonic
+      ? new Tone.PolySynth(Tone.FMSynth, {
+          harmonicity: 3.0,
+          modulationIndex: 8,
+          oscillator: { type: 'sine' },
+          envelope: { attack: 0.01, decay: 0.5, sustain: 0.2, release: 1.2 },
+          modulation: { type: 'sine' },
+          modulationEnvelope: { attack: 0.01, decay: 0.5, sustain: 0, release: 0.5 }
+        })
+      : new Tone.FMSynth({
+          harmonicity: 3.0,
+          modulationIndex: 8,
+          oscillator: { type: 'sine' },
+          envelope: { attack: 0.01, decay: 0.5, sustain: 0.2, release: 1.2 },
+          modulation: { type: 'sine' },
+          modulationEnvelope: { attack: 0.01, decay: 0.5, sustain: 0, release: 0.5 }
+        });
+    // Mild chorus on lead bells for that 80s shimmer
+    const chorus = new Tone.Chorus({ frequency: 1.2, delayTime: 2.5, depth: 0.4, feedback: 0.05 }).start();
+    chorus.wet.value = 0.4;
+    return { synth, character: chorus, characterAmount: 0.6, type: 'crystal' };
+  }
+
+  if (modelName === 'vapor') {
+    // Juno-106 style: dual detuned saws + intense chorus
+    const synth = polyphonic
+      ? new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: 'fatsawtooth', count: 3, spread: 30 },
+          envelope: { attack: 0.8, decay: 0.5, sustain: 0.85, release: 2.4 }
+        })
+      : new Tone.MonoSynth({
+          oscillator: { type: 'fatsawtooth', count: 3, spread: 30 },
+          envelope: { attack: 0.05, decay: 0.4, sustain: 0.6, release: 0.6 },
+          filter: { Q: 1.5, type: 'lowpass', rolloff: -12 },
+          filterEnvelope: { attack: 0.05, decay: 0.4, sustain: 0.7, release: 0.6, baseFrequency: 400, octaves: 2 }
+        });
+    const chorus = new Tone.Chorus({ frequency: 0.6, delayTime: 4, depth: 0.8, feedback: 0.15 }).start();
+    chorus.wet.value = 0.7;
+    return { synth, character: chorus, characterAmount: 0.8, type: 'vapor' };
+  }
+
+  if (modelName === 'alkali') {
+    const synth = polyphonic
+      ? new Tone.PolySynth(Tone.MonoSynth, {
+          oscillator: { type: 'fatsawtooth', count: 2, spread: 10 },
+          envelope: { attack: 0.005, decay: 0.3, sustain: 0.6, release: 0.4 },
+          filter: { Q: 5, type: 'lowpass', rolloff: -24 },
+          filterEnvelope: { attack: 0.005, decay: 0.3, sustain: 0.5, release: 0.4, baseFrequency: 200, octaves: 3 }
+        })
+      : new Tone.MonoSynth({
+          oscillator: { type: 'fatsawtooth', count: 2, spread: 10 },
+          envelope: { attack: 0.005, decay: 0.3, sustain: 0.6, release: 0.4 },
+          filter: { Q: 5, type: 'lowpass', rolloff: -24 },
+          filterEnvelope: { attack: 0.005, decay: 0.3, sustain: 0.5, release: 0.4, baseFrequency: 200, octaves: 3 }
+        });
+    const distortion = new Tone.Distortion({ distortion: 0.22, oversample: '2x' });
+    return { synth, character: distortion, characterAmount: 0.5, type: 'alkali' };
+  }
+
+  if (modelName === 'acid') {
+    const synth = new Tone.MonoSynth({
+      oscillator: { type: 'sawtooth' },
+      envelope: { attack: 0.003, decay: 0.4, sustain: 0.2, release: 0.2 },
+      filter: { Q: 10, type: 'lowpass', rolloff: -24 },
+      filterEnvelope: { attack: 0.003, decay: 0.4, sustain: 0.1, release: 0.3, baseFrequency: 200, octaves: 4 },
+      portamento: 0.05
+    });
+    const cheby = new Tone.Chebyshev(4); cheby.wet.value = 0.15;
+    return { synth, character: cheby, characterAmount: 0.3, type: 'acid' };
+  }
+
+  if (modelName === 'ether') {
+    const synth = polyphonic
+      ? new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: 'fatsawtooth', count: 3, spread: 20 },
+          envelope: { attack: 0.5, decay: 0.4, sustain: 0.7, release: 1.5 }
+        })
+      : new Tone.MonoSynth({
+          oscillator: { type: 'fatsawtooth', count: 3, spread: 20 },
+          envelope: { attack: 0.05, decay: 0.4, sustain: 0.6, release: 0.6 },
+          filter: { Q: 1.5, type: 'lowpass', rolloff: -12 },
+          filterEnvelope: { attack: 0.05, decay: 0.4, sustain: 0.7, release: 0.6, baseFrequency: 400, octaves: 2 }
+        });
+    const chorus = new Tone.Chorus({ frequency: 0.8, delayTime: 3.5, depth: 0.5, feedback: 0.1 }).start();
+    chorus.wet.value = 0.4;
+    return { synth, character: chorus, characterAmount: 0.5, type: 'ether' };
+  }
+}
+
+/* Apply per-track params. Now includes LFO routing. */
+function applyTrackParams(model, params, isPoly, lfoNodes) {
+  if (!model || !model.synth) return;
+  const env = { attack: params.attack, decay: params.decay, sustain: params.sustain, release: params.release };
+  const fenvBase = 50 + params.cutoff * 4500;
+  const fenvOct = 1 + params.fenvAmount * 5;
+  const fenvDecay = 0.05 + params.fenvDecay * 1.5;
+  const Q = params.resonance * 18;
+
+  if (isPoly && model.synth.set) {
+    const upd = { envelope: env };
+    if (model.type !== 'crystal') {
+      upd.filter = { Q };
+      upd.filterEnvelope = { baseFrequency: fenvBase, octaves: fenvOct, decay: fenvDecay };
+    }
+    try { model.synth.set(upd); } catch(e) {}
+    try { model.synth.set({ detune: params.detune }); } catch(e) {}
+  } else {
+    try {
+      model.synth.envelope.attack = env.attack;
+      model.synth.envelope.decay = env.decay;
+      model.synth.envelope.sustain = env.sustain;
+      model.synth.envelope.release = env.release;
+      if (model.synth.filter && model.synth.filter.Q) model.synth.filter.Q.value = Q;
+      if (model.synth.filterEnvelope) {
+        model.synth.filterEnvelope.baseFrequency = fenvBase;
+        model.synth.filterEnvelope.octaves = fenvOct;
+        model.synth.filterEnvelope.decay = fenvDecay;
+      }
+      if (model.synth.detune) model.synth.detune.value = params.detune;
+    } catch(e) {}
+  }
+
+  // Character
+  if (model.character && model.character.wet) {
+    model.character.wet.value = params.character * (model.characterAmount || 0.3);
+  } else if (model.character && model.character.distortion !== undefined) {
+    model.character.distortion = params.character * 0.5;
+  }
+
+  // LFO routing — disconnect and re-route based on target
+  if (lfoNodes && lfoNodes.lfo) {
+    lfoNodes.lfo.frequency.value = 0.05 + params.lfoRate * 8;  // 0.05..8 Hz
+    lfoNodes.lfo.amplitude.value = params.lfoDepth;
+    // Route LFO output based on target
+    try { lfoNodes.lfo.disconnect(); } catch(e) {}
+    if (params.lfoTarget === 'off' || params.lfoDepth <= 0.01) {
+      // do nothing
+    } else if (params.lfoTarget === 'pitch') {
+      // ±100 cent vibrato
+      lfoNodes.lfo.min = -100;
+      lfoNodes.lfo.max = 100;
+      if (model.synth.detune) try { lfoNodes.lfo.connect(model.synth.detune); } catch(e) {}
+    } else if (params.lfoTarget === 'filter') {
+      lfoNodes.lfo.min = 200;
+      lfoNodes.lfo.max = 4000;
+      if (model.synth.filter && model.synth.filter.frequency) {
+        try { lfoNodes.lfo.connect(model.synth.filter.frequency); } catch(e) {}
+      }
+    } else if (params.lfoTarget === 'pwm') {
+      lfoNodes.lfo.min = 0.1;
+      lfoNodes.lfo.max = 0.9;
+      // Only works for pulse-osc synths (Stratos)
+      if (model.type === 'stratos' && model.synth.oscillator && model.synth.oscillator.width) {
+        try { lfoNodes.lfo.connect(model.synth.oscillator.width); } catch(e) {}
+      }
+    } else if (params.lfoTarget === 'amp') {
+      lfoNodes.lfo.min = 1 - params.lfoDepth;
+      lfoNodes.lfo.max = 1;
+      // Connect to track's tremolo gain node
+      if (lfoNodes.tremGain) try { lfoNodes.lfo.connect(lfoNodes.tremGain.gain); } catch(e) {}
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Audio graph with full master chain
+   ═══════════════════════════════════════════════════════════════════ */
+let liveSynths = null;
+function disposeLive() {
+  if (!liveSynths) return;
+  try {
+    if (liveSynths.parts) liveSynths.parts.forEach(p => p.dispose && p.dispose());
+    Object.entries(liveSynths).forEach(([k, v]) => {
+      if (k === 'parts') return;
+      if (Array.isArray(v)) v.forEach(x => x && x.dispose && x.dispose());
+      else if (v && typeof v.dispose === 'function') v.dispose();
+    });
+  } catch(e) { console.warn(e); }
+  liveSynths = null;
+}
+
+function buildAudioGraph() {
+  // Master chain — Compressor → Tape Sat → Limiter → Master Gain → Meter → Output
+  const compressor = new Tone.Compressor({ threshold: -16, ratio: 3.5, attack: 0.01, release: 0.18 });
+  const tapeSat = new Tone.Distortion({ distortion: 0.3, oversample: '2x' });
+  tapeSat.wet.value = 0.3;
+  const limiter = new Tone.Limiter(-1);
+  const masterGain = new Tone.Gain(0.8);
+  const meter = new Tone.Meter({ channels: 2, smoothing: 0.5 });
+  const analyser = new Tone.FFT(512);
+  compressor.chain(tapeSat, limiter, masterGain, meter, Tone.Destination);
+  masterGain.connect(analyser);
+
+  // Send buses
+  const reverb = new Tone.Freeverb(0.55, 2800); reverb.wet.value = 1.0;
+  const delay = new Tone.FeedbackDelay({ delayTime: '8n.', feedback: 0.4, wet: 1.0 });
+  const reverbSend = new Tone.Gain(0.45);
+  const delaySend = new Tone.Gain(0.4);
+  reverbSend.connect(reverb); reverb.connect(compressor);
+  delaySend.connect(delay); delay.connect(reverb);
+
+  // Per-track bus with LFO support
+  function makeTrackBus() {
+    const tremGain = new Tone.Gain(1);     // for LFO amp routing
+    const volume = new Tone.Volume(-6);
+    const duckGain = new Tone.Gain(1);     // sidechain
+    const sendGain = new Tone.Gain(1);
+    const dryGain = new Tone.Gain(1);
+    const lfo = new Tone.LFO(2, 0, 1).start();
+    lfo.amplitude.value = 0;
+    tremGain.connect(duckGain);
+    duckGain.connect(volume);
+    volume.connect(dryGain); dryGain.connect(compressor);
+    volume.connect(sendGain); sendGain.connect(reverbSend); sendGain.connect(delaySend);
+    return { tremGain, volume, duckGain, sendGain, dryGain, lfo };
+  }
+  const bassBus = makeTrackBus();
+  const leadBus = makeTrackBus();
+  const padBus = makeTrackBus();
+
+  // Drums — kick direct, snare with gated reverb, hat direct
+  const kick = new Tone.MembraneSynth({ pitchDecay: 0.04, octaves: 6, envelope: { attack: 0.001, decay: 0.42, sustain: 0, release: 0.12 } });
+  const kickVol = new Tone.Volume(-3); kick.connect(kickVol); kickVol.connect(compressor);
+
+  // GATED REVERB — the 80s drum signature.
+  // Snare → bandpass → vol → splits to (dry+compressor) and (gated reverb chain).
+  // Gate logic: a Gain node we slam to 1 when snare hits, ramp to 0 after 280ms.
+  const snare = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.001, decay: 0.16, sustain: 0 } });
+  const snareFilter = new Tone.Filter(1800, 'bandpass');
+  const snareVol = new Tone.Volume(-10);
+  snare.chain(snareFilter, snareVol, compressor);
+  const snareGateGain = new Tone.Gain(0);
+  const snareGateReverb = new Tone.Reverb({ decay: 1.4, preDelay: 0.01, wet: 1.0 });
+  const snareGateVol = new Tone.Volume(-6);
+  snareVol.connect(snareGateGain);
+  snareGateGain.chain(snareGateReverb, snareGateVol, compressor);
+
+  const hat = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.001, decay: 0.045, sustain: 0 } });
+  const hatFilter = new Tone.Filter(7500, 'highpass');
+  const hatVol = new Tone.Volume(-24); hat.chain(hatFilter, hatVol, compressor);
+
+  return {
+    compressor, tapeSat, limiter, masterGain, meter, analyser,
+    reverb, delay, reverbSend, delaySend,
+    bassBus, leadBus, padBus,
+    kick, snare, hat, kickVol, snareVol, hatVol, snareFilter, hatFilter,
+    snareGateGain, snareGateReverb, snareGateVol,
+    bassModel: null, leadModel: null, padModel: null,
+    parts: [],
+  };
+}
+
+function setTrackModel(graph, trackKey, modelName, params) {
+  const isPoly = (trackKey === 'pad');
+  const bus = trackKey === 'bass' ? graph.bassBus : trackKey === 'lead' ? graph.leadBus : graph.padBus;
+  if (graph[trackKey + 'Model']) {
+    try {
+      const old = graph[trackKey + 'Model'];
+      old.synth.disconnect();
+      if (old.character) old.character.disconnect && old.character.disconnect();
+      if (old.internalLfo) old.internalLfo.dispose && old.internalLfo.dispose();
+      old.synth.dispose && old.synth.dispose();
+      old.character && old.character.dispose && old.character.dispose();
+    } catch(e) {}
+  }
+  const model = buildSynthModel(modelName, isPoly);
+  graph[trackKey + 'Model'] = model;
+  // Wire: synth → character → bus.tremGain → bus.duckGain → bus.volume
+  if (model.character) {
+    model.synth.chain(model.character, bus.tremGain);
+  } else {
+    model.synth.connect(bus.tremGain);
+  }
+  applyTrackParams(model, params, isPoly, bus);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   State
+   ═══════════════════════════════════════════════════════════════════ */
+function defaultTrackParams(model, isPad) {
+  return {
+    model, volume: 0.7, detune: 0,
+    attack: isPad ? 0.8 : 0.01, decay: 0.3, sustain: isPad ? 0.8 : 0.5, release: isPad ? 1.8 : 0.4,
+    cutoff: 0.55, resonance: 0.3, fenvAmount: 0.5, fenvDecay: 0.4,
+    character: 0.5,
+    lfoTarget: 'off', lfoRate: 0.4, lfoDepth: 0.3,
+    arp: 'off', send: true
+  };
+}
+const trackParams = {
+  bass: defaultTrackParams('stratos', false),
+  lead: defaultTrackParams('crystal', false),
+  pad: defaultTrackParams('vapor', true),
+};
+trackParams.bass.volume = 0.7;
+trackParams.lead.volume = 0.5;
+trackParams.pad.volume = 0.45;
+trackParams.bass.send = false;
+const masterState = {
+  reverbSize: 0.55, reverbWet: 0.45, delayTime: 0.5, delayFB: 0.4, delayWet: 0.4,
+  sidechain: 0.7, tapeSat: 0.3, masterGain: 0.8,
+};
+const muteState = { bass: false, lead: false, pad: false, drums: false };
+let loopMode = false;
+
+function applyAllToGraph(g) {
+  if (!g) return;
+  g.reverb.roomSize.value = masterState.reverbSize;
+  g.reverbSend.gain.value = masterState.reverbWet;
+  g.delay.delayTime.value = 0.1 + masterState.delayTime * 0.4;
+  g.delay.feedback.value = masterState.delayFB * 0.7;
+  g.delaySend.gain.value = masterState.delayWet * 0.6;
+  g.tapeSat.wet.value = masterState.tapeSat;
+  g.tapeSat.distortion = 0.15 + masterState.tapeSat * 0.3;
+  g.masterGain.gain.value = masterState.masterGain;
+  for (const k of ['bass','lead','pad']) {
+    const bus = k === 'bass' ? g.bassBus : k === 'lead' ? g.leadBus : g.padBus;
+    const p = trackParams[k];
+    bus.volume.volume.value = volumeToDb(p.volume);
+    bus.sendGain.gain.value = p.send ? 1.0 : 0.0;
+    if (g[k + 'Model']) applyTrackParams(g[k + 'Model'], p, k === 'pad', bus);
+  }
+  g.bassBus.volume.mute = muteState.bass;
+  g.leadBus.volume.mute = muteState.lead;
+  g.padBus.volume.mute = muteState.pad;
+  g.kickVol.mute = muteState.drums;
+  g.snareVol.mute = muteState.drums;
+  g.snareGateVol.mute = muteState.drums;
+  g.hatVol.mute = muteState.drums;
+}
+function volumeToDb(v) {
+  if (v <= 0.001) return -60;
+  return 20 * Math.log10(v);
+}
+function triggerSidechain(g, time, amount) {
+  if (!g || amount <= 0.01) return;
+  const padFloor = 1 - amount * 0.85;
+  const bassFloor = 1 - amount * 0.3;
+  g.padBus.duckGain.gain.cancelScheduledValues(time);
+  g.padBus.duckGain.gain.setValueAtTime(padFloor, time);
+  g.padBus.duckGain.gain.exponentialRampToValueAtTime(1.0, time + 0.32);
+  g.bassBus.duckGain.gain.cancelScheduledValues(time);
+  g.bassBus.duckGain.gain.setValueAtTime(bassFloor, time);
+  g.bassBus.duckGain.gain.exponentialRampToValueAtTime(1.0, time + 0.18);
+}
+
+/* Gated reverb trigger — call on each snare hit. Slams gate open, then closes hard. */
+function triggerGatedReverb(g, time) {
+  if (!g || !g.snareGateGain) return;
+  g.snareGateGain.gain.cancelScheduledValues(time);
+  g.snareGateGain.gain.setValueAtTime(0, time);
+  g.snareGateGain.gain.linearRampToValueAtTime(1.0, time + 0.005);
+  g.snareGateGain.gain.setValueAtTime(1.0, time + 0.18);
+  g.snareGateGain.gain.linearRampToValueAtTime(0.0, time + 0.22);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Scheduling
+   ═══════════════════════════════════════════════════════════════════ */
+function scheduleAll(form, melodyScale, bpm, g, algo) {
+  Tone.Transport.bpm.value = bpm;
+  Tone.Transport.swing = algo.swing;
+  Tone.Transport.swingSubdivision = '16n';
+  const sec16 = 60 / bpm / 4;
+  const secBeat = 60 / bpm;
+  const secBar = secBeat * 4;
+  const loopLength = algo.totalBars * secBar;
+
+  const parts = [];
+  const makePart = (events, callback) => {
+    const p = new Tone.Part(callback, events);
+    p.loop = loopMode; p.loopStart = 0; p.loopEnd = loopLength;
+    p.start(0); parts.push(p);
+  };
+
+  const bassEvents = [], leadEvents = [];
+  for (const part of form.parts) {
+    const arr = part.voice === 'bass' ? bassEvents : leadEvents;
+    const rootMidi = part.voice === 'bass' ? 45 : 69;
+    let cursor = part.startBar * 16;
+    for (const n of part.line) {
+      if (!n.rest) {
+        const midi = degreeToMidi(n.degree, melodyScale, rootMidi);
+        arr.push({
+          time: cursor * sec16,
+          note: Tone.Frequency(midi, 'midi').toNote(),
+          duration: n.duration * sec16 * 0.92
+        });
+      }
+      cursor += n.duration;
+    }
+  }
+  makePart(bassEvents, (time, v) => {
+    if (g.bassModel) {
+      try { g.bassModel.synth.triggerAttackRelease(v.note, v.duration, time); } catch(e) {}
+    }
+  });
+  makePart(leadEvents, (time, v) => {
+    if (g.leadModel) {
+      try { g.leadModel.synth.triggerAttackRelease(v.note, v.duration, time); } catch(e) {}
+    }
+  });
+
+  const padEvents = [];
+  for (let bar = algo.padStartBar; bar < algo.padEndBar; bar++) {
+    const chord = algo.padProg[(bar - algo.padStartBar) % algo.padProg.length];
+    const notes = chord.map(d => Tone.Frequency(degreeToMidi(d, AEOLIAN, algo.padRoot), 'midi').toNote());
+    padEvents.push({ time: bar * secBar, notes, duration: secBar * 0.96 });
+  }
+  makePart(padEvents, (time, v) => {
+    if (g.padModel) {
+      try {
+        g.padModel.synth.triggerAttackRelease(v.notes, v.duration, time);
+      } catch(e) {
+        try { g.padModel.synth.triggerAttackRelease(v.notes[0], v.duration, time); } catch(e2) {}
+      }
+    }
+  });
+
+  const drumEvents = [];
+  const pattern = algo.drumPattern;
+  for (let bar = algo.drumStartBar; bar < algo.drumEndBar; bar++) {
+    const intense = bar >= algo.drumIntenseFrom;
+    const isBreak = (bar >= algo.drumBreakFrom && bar < algo.drumBreakTo);
+    for (let beat = 0; beat < 4; beat++) {
+      const beatT = (bar * 4 + beat) * secBeat;
+      if (pattern === 'driving') {
+        let kickHit = isBreak ? false : (intense ? true : (beat === 0 || beat === 2));
+        if (kickHit) drumEvents.push({ time: beatT, type: 'kick' });
+        if (beat === 1 || beat === 3) drumEvents.push({ time: beatT, type: 'snare', vel: intense ? 0.9 : 0.7 });
+        for (let e = 0; e < 2; e++) drumEvents.push({ time: beatT + e * (secBeat / 2), type: 'hat', vel: e === 0 ? 0.6 : 0.4 });
+      } else if (pattern === 'sparse') {
+        if (beat === 0 && bar % 2 === 0) drumEvents.push({ time: beatT, type: 'kick' });
+        if (beat === 2) drumEvents.push({ time: beatT, type: 'snare', vel: 0.5 });
+        for (let e = 0; e < 2; e++) drumEvents.push({ time: beatT + e * (secBeat / 2), type: 'hat', vel: 0.25 });
+      } else if (pattern === 'shuffle') {
+        if (isBreak) {
+          if (beat === 2) drumEvents.push({ time: beatT, type: 'snare', vel: 0.6 });
+        } else {
+          if (beat === 0 || (intense && beat === 2)) drumEvents.push({ time: beatT, type: 'kick' });
+          if (beat === 2) drumEvents.push({ time: beatT, type: 'snare', vel: intense ? 0.85 : 0.7 });
+          for (let e = 0; e < 4; e++) {
+            const vel = e === 0 ? 0.55 : (e === 2 ? 0.45 : 0.3);
+            drumEvents.push({ time: beatT + e * (secBeat / 4), type: 'hat', vel });
+          }
+        }
+      }
+    }
+  }
+  makePart(drumEvents, (time, v) => {
+    if (v.type === 'kick') {
+      g.kick.triggerAttackRelease('C2', '8n', time, 0.95);
+      if (algo.sidechain && !muteState.drums) triggerSidechain(g, time, masterState.sidechain);
+    } else if (v.type === 'snare') {
+      g.snare.triggerAttackRelease('16n', time, v.vel);
+      if (!muteState.drums) triggerGatedReverb(g, time);
+    } else if (v.type === 'hat') {
+      g.hat.triggerAttackRelease('32n', time, v.vel);
+    }
+  });
+
+  g.parts = parts;
+  return { parts, totalTime: loopLength + 2.8 };
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Piano roll
+   ═══════════════════════════════════════════════════════════════════ */
+function drawRoll(form, melodyScale, algo, playheadProgress, mutes) {
+  const canvas = document.getElementById('roll');
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = canvas.clientWidth; const cssH = canvas.clientHeight;
+  canvas.width = cssW * dpr; canvas.height = cssH * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.fillStyle = '#0a0612'; ctx.fillRect(0, 0, cssW, cssH);
+  const TB = algo.totalBars;
+  const BAR_W = cssW / TB; const SIXTEENTH_W = BAR_W / 16;
+  const allMidi = [];
+  for (const part of form.parts) {
+    const rootMidi = part.voice === 'bass' ? 45 : 69;
+    for (const n of part.line) if (!n.rest) allMidi.push(degreeToMidi(n.degree, melodyScale, rootMidi));
+  }
+  for (const ch of algo.padProg) for (const d of ch) allMidi.push(degreeToMidi(d, AEOLIAN, algo.padRoot));
+  const lo = Math.min(...allMidi) - 2; const hi = Math.max(...allMidi) + 2;
+  const rows = hi - lo + 1; const rowH = cssH / rows;
+  for (let m = lo; m <= hi; m++) {
+    const pc = ((m % 12) + 12) % 12;
+    if (pc === 9) {
+      ctx.fillStyle = 'rgba(255, 181, 71, 0.08)';
+      ctx.fillRect(0, cssH - (m - lo + 1) * rowH, cssW, rowH);
+    }
+  }
+  for (let b = 0; b <= TB; b++) {
+    const x = b * BAR_W;
+    ctx.strokeStyle = b % 4 === 0 ? 'rgba(124, 138, 168, 0.5)' : 'rgba(58, 36, 56, 0.7)';
+    ctx.lineWidth = b % 4 === 0 ? 1.5 : 1;
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, cssH); ctx.stroke();
+  }
+  ctx.globalAlpha = mutes.pad ? 0.18 : 1;
+  ctx.fillStyle = 'rgba(62, 216, 216, 0.16)';
+  for (let bar = algo.padStartBar; bar < algo.padEndBar; bar++) {
+    const chord = algo.padProg[(bar - algo.padStartBar) % algo.padProg.length];
+    for (const d of chord) {
+      const m = degreeToMidi(d, AEOLIAN, algo.padRoot);
+      ctx.fillRect(bar * BAR_W + 1, cssH - (m - lo + 1) * rowH + 1, BAR_W - 2, rowH - 2);
+    }
+  }
+  ctx.globalAlpha = 1;
+  for (const part of form.parts) {
+    const isMuted = part.voice === 'bass' ? mutes.bass : mutes.lead;
+    ctx.globalAlpha = isMuted ? 0.22 : 1;
+    const rootMidi = part.voice === 'bass' ? 45 : 69;
+    const color = part.voice === 'bass' ? '#ffb547' : '#ff2d95';
+    let cursor = part.startBar * 16;
+    for (const n of part.line) {
+      if (!n.rest) {
+        const m = degreeToMidi(n.degree, melodyScale, rootMidi);
+        const x = cursor * SIXTEENTH_W;
+        const w = n.duration * SIXTEENTH_W;
+        const y = cssH - (m - lo + 1) * rowH;
+        ctx.fillStyle = color;
+        if (!isMuted) { ctx.shadowColor = color; ctx.shadowBlur = 6; }
+        ctx.fillRect(x + 1, y + 1, Math.max(2, w - 2), rowH - 2);
+        ctx.shadowBlur = 0;
+      }
+      cursor += n.duration;
+    }
+  }
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = '#7c8aa8'; ctx.font = '10px "JetBrains Mono", monospace';
+  for (let b = 0; b < TB; b++) ctx.fillText('B' + (b + 1), b * BAR_W + 4, 12);
+  if (playheadProgress > 0 && playheadProgress < 1) {
+    const phX = playheadProgress * cssW;
+    ctx.strokeStyle = '#f0e6d2'; ctx.lineWidth = 1.5;
+    ctx.shadowColor = '#f0e6d2'; ctx.shadowBlur = 8;
+    ctx.beginPath(); ctx.moveTo(phX, 0); ctx.lineTo(phX, cssH); ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Meters
+   ═══════════════════════════════════════════════════════════════════ */
+let metersRAF = null;
+let vuPeakL = 0, vuPeakR = 0;
+function renderMeters() {
+  if (!liveSynths || !liveSynths.meter || !liveSynths.analyser) return;
+  const meterVals = liveSynths.meter.getValue();
+  const fftVals = liveSynths.analyser.getValue();
+  let lDb = 0, rDb = 0;
+  if (Array.isArray(meterVals)) { lDb = meterVals[0]; rDb = meterVals[1]; }
+  else { lDb = rDb = meterVals; }
+  const dbToPct = db => Math.max(0, Math.min(100, (db + 48) / 48 * 100));
+  const lP = dbToPct(lDb), rP = dbToPct(rDb);
+  document.getElementById('vu-l').style.width = lP + '%';
+  document.getElementById('vu-r').style.width = rP + '%';
+  vuPeakL = Math.max(vuPeakL * 0.96, lP);
+  vuPeakR = Math.max(vuPeakR * 0.96, rP);
+  document.getElementById('vu-l-peak').style.left = vuPeakL + '%';
+  document.getElementById('vu-r-peak').style.left = vuPeakR + '%';
+  const canvas = document.getElementById('spectrum');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  const ctx = canvas.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.fillStyle = '#0a0612'; ctx.fillRect(0, 0, W, H);
+  const bins = fftVals.length;
+  const barW = W / bins * 2;
+  for (let i = 0; i < bins / 2; i++) {
+    const v = fftVals[i];
+    const norm = Math.max(0, Math.min(1, (v + 100) / 100));
+    const bh = norm * H;
+    const x = i * barW;
+    const grad = ctx.createLinearGradient(0, H, 0, H - bh);
+    grad.addColorStop(0, '#ff2d95'); grad.addColorStop(0.6, '#ffb547'); grad.addColorStop(1, '#3ed8d8');
+    ctx.fillStyle = grad;
+    ctx.fillRect(x, H - bh, barW - 1, bh);
+  }
+  metersRAF = requestAnimationFrame(renderMeters);
+}
+function stopMeters() {
+  cancelAnimationFrame(metersRAF); metersRAF = null;
+  document.getElementById('vu-l').style.width = '0%';
+  document.getElementById('vu-r').style.width = '0%';
+  vuPeakL = vuPeakR = 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Log
+   ═══════════════════════════════════════════════════════════════════ */
+function lineToStr(line, scale, rootMidi) {
+  return line.map(n => {
+    if (n.rest) return ('·' + n.duration).padEnd(8);
+    const midi = degreeToMidi(n.degree, scale, rootMidi);
+    return (midiToName(midi) + '·' + n.duration).padEnd(8);
+  }).join('');
+}
+function buildLog(state) {
+  const { seed, mode, bpm, material, algoName } = state;
+  const algo = ALGORITHMS[algoName]; const scale = SCALES[mode];
+  const r = s => `<span class="rule">${s}</span>`;
+  const k = s => `<span class="key">${s}</span>`;
+  const v = s => `<span class="val">${s}</span>`;
+  const d = s => `<span class="dim">${s}</span>`;
+  const n = s => `<span class="note">${s}</span>`;
+  const lines = [];
+  lines.push(r('═══════════════════════════════════════════════════════════════════'));
+  lines.push(`  ${k('ALGORITHM')}  ${v(algoName.toUpperCase().padEnd(12))}   ${k('SEED')}  ${v(seed.toString().padEnd(8))}`);
+  lines.push(`  ${k('SCALE')}  ${v(MODE_LABELS[mode].padEnd(20))}   ${k('BPM')}  ${v(bpm.toString().padEnd(4))}   ${k('BARS')}  ${v(algo.totalBars)}`);
+  lines.push(r('═══════════════════════════════════════════════════════════════════'));
+  lines.push('');
+  lines.push(`  ${k('Bass Riff (1 bar)')}   ${n(lineToStr(material.riff, scale, 45))}`);
+  lines.push(`  ${k('Lead Melody A')}       ${n(lineToStr(material.melodyA, scale, 69))}`);
+  lines.push(`  ${k('Lead Melody B')}       ${n(lineToStr(material.melodyB, scale, 69))}`);
+  lines.push(`  ${d('Format: Note·Duration (16ths) · (·Duration = rest)')}`);
+  lines.push('');
+  lines.push(r('───────────────────────────────────────────────────────────────────'));
+  lines.push(`  ${k('SOUND DESIGN')}`);
+  lines.push(r('───────────────────────────────────────────────────────────────────'));
+  const MDL_LABELS = {
+    stratos: 'Stratos · Jupiter-8 PWM',
+    crystal: 'Crystal · DX7 FM Bell',
+    vapor:   'Vapor · Juno-106 Pad',
+    alkali:  'Alkali · MS-20',
+    acid:    'Acid · TB-303',
+    ether:   'Ether · Juno-106 Lead',
+  };
+  for (const t of ['bass', 'lead', 'pad']) {
+    const p = trackParams[t];
+    lines.push(`  ${k(t.toUpperCase().padEnd(6))} ${v(MDL_LABELS[p.model].padEnd(28))}  ${d('LFO →')} ${v(p.lfoTarget.padEnd(8))}  ${d('FX:')} ${v(p.send ? 'on' : 'off')}`);
+  }
+  return lines.join('\n');
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MIDI export
+   ═══════════════════════════════════════════════════════════════════ */
+function writeVarLen(v) { const out = [v & 0x7F]; v >>= 7; while (v > 0) { out.unshift((v & 0x7F) | 0x80); v >>= 7; } return out; }
+const u32 = v => [(v>>24)&0xFF,(v>>16)&0xFF,(v>>8)&0xFF, v&0xFF];
+const u16 = v => [(v>>8)&0xFF, v&0xFF];
+const strBytes = s => Array.from(s).map(c => c.charCodeAt(0));
+function buildMidiTrack(noteEvents, channel, programNumber, trackName) {
+  const events = [];
+  for (const ev of noteEvents) {
+    events.push({ tick: ev.start, type: 'on', note: ev.note, vel: ev.vel });
+    events.push({ tick: ev.start + ev.duration, type: 'off', note: ev.note, vel: 0 });
+  }
+  events.sort((a, b) => a.tick - b.tick || (a.type === 'off' ? -1 : 1));
+  const bytes = [];
+  if (trackName) bytes.push(0, 0xFF, 0x03, trackName.length, ...strBytes(trackName));
+  if (programNumber != null) bytes.push(0, 0xC0 + channel, programNumber);
+  let lastTick = 0;
+  for (const ev of events) {
+    bytes.push(...writeVarLen(ev.tick - lastTick));
+    bytes.push((ev.type === 'on' ? 0x90 : 0x80) + channel, ev.note & 0x7F, ev.vel & 0x7F);
+    lastTick = ev.tick;
+  }
+  bytes.push(0, 0xFF, 0x2F, 0x00);
+  return bytes;
+}
+function buildTempoTrack(bpm) {
+  const mpq = Math.round(60000000 / bpm);
+  return [0, 0xFF, 0x03, 4, ...strBytes('Tmpo'),
+          0, 0xFF, 0x51, 0x03, (mpq>>16)&0xFF, (mpq>>8)&0xFF, mpq&0xFF,
+          0, 0xFF, 0x58, 0x04, 4, 2, 24, 8,
+          0, 0xFF, 0x2F, 0x00];
+}
+function buildMidiFile(tracks, tpq) {
+  const out = [...strBytes('MThd'), ...u32(6), ...u16(1), ...u16(tracks.length), ...u16(tpq)];
+  for (const trk of tracks) out.push(...strBytes('MTrk'), ...u32(trk.length), ...trk);
+  return new Uint8Array(out);
+}
+function exportMidi() {
+  if (!currentState) return;
+  const TPQ = 480, TPS = TPQ / 4;
+  const scale = SCALES[currentState.mode];
+  const algo = ALGORITHMS[currentState.algoName];
+  const bassEvents = [], leadEvents = [];
+  for (const part of currentState.form.parts) {
+    const arr = part.voice === 'bass' ? bassEvents : leadEvents;
+    const rootMidi = part.voice === 'bass' ? 45 : 69;
+    let cursor = part.startBar * 16;
+    for (const n of part.line) {
+      if (!n.rest) arr.push({ start: Math.round(cursor * TPS), duration: Math.round(n.duration * TPS * 0.94), note: degreeToMidi(n.degree, scale, rootMidi), vel: 100 });
+      cursor += n.duration;
+    }
+  }
+  const padEvents = [];
+  for (let bar = algo.padStartBar; bar < algo.padEndBar; bar++) {
+    const chord = algo.padProg[(bar - algo.padStartBar) % algo.padProg.length];
+    const start = bar * 16 * TPS; const dur = Math.round(16 * TPS * 0.96);
+    for (const d of chord) padEvents.push({ start, duration: dur, note: degreeToMidi(d, AEOLIAN, algo.padRoot), vel: 70 });
+  }
+  const drumEvents = [];
+  for (let bar = algo.drumStartBar; bar < algo.drumEndBar; bar++) {
+    const intense = bar >= algo.drumIntenseFrom;
+    const isBreak = (bar >= algo.drumBreakFrom && bar < algo.drumBreakTo);
+    for (let beat = 0; beat < 4; beat++) {
+      const tBeat = (bar * 4 + beat) * TPQ;
+      if (algo.drumPattern === 'driving') {
+        let kickHit = isBreak ? false : (intense ? true : (beat === 0 || beat === 2));
+        if (kickHit) drumEvents.push({ start: tBeat, duration: TPQ/4, note: 36, vel: 110 });
+        if (beat === 1 || beat === 3) drumEvents.push({ start: tBeat, duration: TPQ/4, note: 38, vel: intense ? 100 : 80 });
+        for (let e = 0; e < 2; e++) drumEvents.push({ start: tBeat + e * (TPQ/2), duration: 60, note: 42, vel: e === 0 ? 65 : 45 });
+      } else if (algo.drumPattern === 'sparse') {
+        if (beat === 0 && bar % 2 === 0) drumEvents.push({ start: tBeat, duration: TPQ/4, note: 36, vel: 90 });
+        if (beat === 2) drumEvents.push({ start: tBeat, duration: TPQ/4, note: 38, vel: 60 });
+        for (let e = 0; e < 2; e++) drumEvents.push({ start: tBeat + e * (TPQ/2), duration: 60, note: 42, vel: 30 });
+      } else if (algo.drumPattern === 'shuffle') {
+        if (!isBreak && (beat === 0 || (intense && beat === 2))) drumEvents.push({ start: tBeat, duration: TPQ/4, note: 36, vel: 110 });
+        if (beat === 2) drumEvents.push({ start: tBeat, duration: TPQ/4, note: 38, vel: intense ? 95 : 75 });
+        if (!isBreak) for (let e = 0; e < 4; e++) drumEvents.push({ start: tBeat + e * (TPQ/4), duration: 60, note: 42, vel: e === 0 ? 60 : (e === 2 ? 50 : 35) });
+      }
+    }
+  }
+  const tracks = [
+    buildTempoTrack(currentState.bpm),
+    buildMidiTrack(bassEvents, 0, 38, 'Bass'),
+    buildMidiTrack(leadEvents, 1, 81, 'Lead'),
+    buildMidiTrack(padEvents,  2, 90, 'Pad'),
+  ];
+  if (drumEvents.length > 0) tracks.push(buildMidiTrack(drumEvents, 9, null, 'Drums'));
+  const bytes = buildMidiFile(tracks, TPQ);
+  download(bytes, `synthwave_${currentState.algoName}_${currentState.seed}_${currentState.mode}.mid`, 'audio/midi');
+  setStatus('✓ MIDI exported');
+}
+
+/* WAV export */
+function audioBufferToWav(buffer) {
+  const ch = buffer.numberOfChannels, sr = buffer.sampleRate, nf = buffer.length;
+  const interleaved = new Int16Array(nf * ch);
+  for (let c = 0; c < ch; c++) {
+    const data = buffer.getChannelData(c);
+    for (let i = 0; i < nf; i++) {
+      let s = Math.max(-1, Math.min(1, data[i]));
+      interleaved[i * ch + c] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+    }
+  }
+  const dataSize = interleaved.length * 2;
+  const buf = new ArrayBuffer(44 + dataSize);
+  const dv = new DataView(buf);
+  const w = (o, s) => { for (let i = 0; i < s.length; i++) dv.setUint8(o + i, s.charCodeAt(i)); };
+  w(0,'RIFF'); dv.setUint32(4, 36+dataSize, true); w(8,'WAVE'); w(12,'fmt '); dv.setUint32(16,16,true);
+  dv.setUint16(20,1,true); dv.setUint16(22,ch,true); dv.setUint32(24,sr,true);
+  dv.setUint32(28, sr*ch*2, true); dv.setUint16(32, ch*2, true); dv.setUint16(34,16,true);
+  w(36,'data'); dv.setUint32(40, dataSize, true);
+  let off = 44;
+  for (let i = 0; i < interleaved.length; i++) { dv.setInt16(off, interleaved[i], true); off += 2; }
+  return new Uint8Array(buf);
+}
+async function exportWav() {
+  if (!currentState) return;
+  setStatus('⌛ rendering WAV...');
+  $('export-wav').disabled = true;
+  const bpm = currentState.bpm;
+  const algo = ALGORITHMS[currentState.algoName];
+  const totalSec = (algo.totalBars * 4 * 60 / bpm) + 3;
+  try {
+    const buffer = await Tone.Offline(async () => {
+      const offGraph = buildAudioGraph();
+      setTrackModel(offGraph, 'bass', trackParams.bass.model, trackParams.bass);
+      setTrackModel(offGraph, 'lead', trackParams.lead.model, trackParams.lead);
+      setTrackModel(offGraph, 'pad', trackParams.pad.model, trackParams.pad);
+      applyAllToGraph(offGraph);
+      const wasLoop = loopMode; loopMode = false;
+      scheduleAll(currentState.form, SCALES[currentState.mode], bpm, offGraph, algo);
+      loopMode = wasLoop;
+      Tone.Transport.start(0);
+    }, totalSec);
+    const audioBuf = buffer.get ? buffer.get() : buffer;
+    const wavBytes = audioBufferToWav(audioBuf);
+    download(wavBytes, `synthwave_${currentState.algoName}_${currentState.seed}_${currentState.mode}.wav`, 'audio/wav');
+    setStatus('✓ WAV exported');
+  } catch (e) {
+    console.error(e); setStatus('⚠ Render error: ' + e.message, true);
+  } finally {
+    $('export-wav').disabled = false;
+  }
+}
+function download(bytes, filename, mime) {
+  const blob = new Blob([bytes], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Playhead
+   ═══════════════════════════════════════════════════════════════════ */
+let playheadRAF = null; let playStartCtxTime = 0; let stopScheduleId = null;
+function startPlayhead() {
+  cancelAnimationFrame(playheadRAF);
+  playStartCtxTime = Tone.now() + 0.15;
+  const algo = ALGORITHMS[currentState.algoName];
+  const totalMusic = algo.totalBars * 4 * 60 / currentState.bpm;
+  const tick = () => {
+    if (Tone.Transport.state !== 'started') return;
+    const elapsed = Tone.now() - playStartCtxTime;
+    let progress;
+    if (loopMode) progress = ((elapsed % totalMusic) + totalMusic) % totalMusic / totalMusic;
+    else progress = Math.max(0, Math.min(1, elapsed / totalMusic));
+    drawRoll(currentState.form, SCALES[currentState.mode], algo, progress, muteState);
+    if (loopMode || progress < 1) playheadRAF = requestAnimationFrame(tick);
+  };
+  tick();
+}
+function stopPlayhead() {
+  cancelAnimationFrame(playheadRAF);
+  if (currentState) drawRoll(currentState.form, SCALES[currentState.mode], ALGORITHMS[currentState.algoName], 0, muteState);
+}
+function cancelAutoStop() { if (stopScheduleId !== null) { Tone.Transport.clear(stopScheduleId); stopScheduleId = null; } }
+function scheduleAutoStop(t) {
+  cancelAutoStop();
+  stopScheduleId = Tone.Transport.schedule(() => {
+    Tone.Transport.stop(); setStatus('✓ ended');
+    $('play').disabled = false; $('stop').disabled = true;
+    stopPlayhead(); stopMeters();
+    stopScheduleId = null;
+  }, t);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   UI build
+   ═══════════════════════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+let currentState = null;
+let harmonicMode = 'natural';
+function setStatus(t, warn) { $('status').textContent = t; $('status').className = 'status' + (warn ? ' warn' : ''); }
+
+const TRACK_LABELS = { bass: 'Bass', lead: 'Lead', pad: 'Pad' };
+const MODEL_OPTIONS = [
+  { value: 'stratos', label: 'Stratos (Jupiter-8 PWM)' },
+  { value: 'crystal', label: 'Crystal (DX7 FM Bell)' },
+  { value: 'vapor',   label: 'Vapor (Juno-106 Pad)' },
+  { value: 'alkali',  label: 'Alkali (MS-20)' },
+  { value: 'acid',    label: 'Acid (TB-303)' },
+  { value: 'ether',   label: 'Ether (Juno Lead)' },
+];
+const ARP_OPTIONS = [
+  { value: 'off', label: 'Off' },
+  { value: 'up', label: 'Up' },
+  { value: 'down', label: 'Down' },
+  { value: 'updown', label: 'Up-Down' },
+];
+const LFO_TARGETS = [
+  { value: 'off', label: 'Off' },
+  { value: 'pitch', label: 'Pitch (Vibrato)' },
+  { value: 'filter', label: 'Filter (Sweep)' },
+  { value: 'pwm', label: 'PWM (Stratos only)' },
+  { value: 'amp', label: 'Amp (Tremolo)' },
+];
+const PARAM_SECTIONS = [
+  { label: 'Output', params: [
+    { key: 'volume', label: 'Volume', min: 0, max: 1, step: 0.01 },
+    { key: 'detune', label: 'Detune', min: -100, max: 100, step: 1 },
+  ]},
+  { label: 'Envelope', params: [
+    { key: 'attack', label: 'Attack', min: 0.001, max: 2, step: 0.001 },
+    { key: 'decay', label: 'Decay', min: 0.01, max: 2, step: 0.01 },
+    { key: 'sustain', label: 'Sustain', min: 0, max: 1, step: 0.01 },
+    { key: 'release', label: 'Release', min: 0.01, max: 4, step: 0.01 },
+  ]},
+  { label: 'Filter', params: [
+    { key: 'cutoff', label: 'Cutoff', min: 0, max: 1, step: 0.01 },
+    { key: 'resonance', label: 'Resonance', min: 0, max: 1, step: 0.01 },
+    { key: 'fenvAmount', label: 'Env Amount', min: 0, max: 1, step: 0.01 },
+    { key: 'fenvDecay', label: 'Env Decay', min: 0, max: 1, step: 0.01 },
+  ]},
+  { label: 'Character', params: [
+    { key: 'character', label: 'Amount', min: 0, max: 1, step: 0.01 },
+  ]},
+  { label: 'LFO', params: [
+    { key: 'lfoRate', label: 'Rate', min: 0, max: 1, step: 0.01 },
+    { key: 'lfoDepth', label: 'Depth', min: 0, max: 1, step: 0.01 },
+  ]},
+];
+function formatParamValue(key, val) {
+  if (key === 'detune') return val.toFixed(0) + 'ct';
+  if (['attack','decay','release'].includes(key)) return val.toFixed(2) + 's';
+  if (key === 'lfoRate') return (0.05 + val * 8).toFixed(2) + 'Hz';
+  return Number(val).toFixed(2);
+}
+
+function buildTrackPanels() {
+  const container = $('track-panels');
+  container.innerHTML = '';
+  for (const trackKey of ['bass', 'lead', 'pad']) {
+    const panel = document.createElement('div');
+    panel.className = 'track-panel';
+    panel.dataset.track = trackKey;
+    const label = document.createElement('div');
+    label.className = 'track-panel-label';
+    label.textContent = TRACK_LABELS[trackKey];
+    panel.appendChild(label);
+
+    const header = document.createElement('div');
+    header.className = 'track-header';
+    header.innerHTML = `
+      <label>Model</label>
+      <select data-param="model" data-track="${trackKey}">
+        ${MODEL_OPTIONS.map(o => `<option value="${o.value}">${o.label}</option>`).join('')}
+      </select>
+      <label>LFO →</label>
+      <select data-param="lfoTarget" data-track="${trackKey}">
+        ${LFO_TARGETS.map(o => `<option value="${o.value}">${o.label}</option>`).join('')}
+      </select>
+      <label>Arp</label>
+      <select data-param="arp" data-track="${trackKey}">
+        ${ARP_OPTIONS.map(o => `<option value="${o.value}">${o.label}</option>`).join('')}
+      </select>
+      <button class="send-toggle small" data-track="${trackKey}">FX-Send</button>
+    `;
+    panel.appendChild(header);
+
+    for (const section of PARAM_SECTIONS) {
+      const sectLabel = document.createElement('div');
+      sectLabel.className = 'section-divider';
+      sectLabel.textContent = section.label;
+      panel.appendChild(sectLabel);
+      const grid = document.createElement('div');
+      grid.className = 'slider-grid';
+      for (const def of section.params) {
+        const row = document.createElement('div');
+        row.className = 'slider-row';
+        row.innerHTML = `
+          <div class="slider-header">
+            <span class="slider-name">${def.label}</span>
+            <span class="slider-value" id="v-${trackKey}-${def.key}">0</span>
+          </div>
+          <input type="range" data-track="${trackKey}" data-param="${def.key}" min="${def.min}" max="${def.max}" step="${def.step}">
+        `;
+        grid.appendChild(row);
+      }
+      panel.appendChild(grid);
+    }
+    container.appendChild(panel);
+  }
+  for (const trackKey of ['bass', 'lead', 'pad']) syncTrackUI(trackKey);
+  container.querySelectorAll('input[type="range"]').forEach(el => {
+    el.addEventListener('input', e => {
+      const track = e.target.dataset.track;
+      const param = e.target.dataset.param;
+      trackParams[track][param] = parseFloat(e.target.value);
+      $(`v-${track}-${param}`).textContent = formatParamValue(param, trackParams[track][param]);
+      applyAllToGraph(liveSynths);
+    });
+  });
+  container.querySelectorAll('select').forEach(el => {
+    el.addEventListener('change', e => {
+      const track = e.target.dataset.track;
+      const param = e.target.dataset.param;
+      trackParams[track][param] = e.target.value;
+      if (param === 'model' && liveSynths) {
+        setTrackModel(liveSynths, track, e.target.value, trackParams[track]);
+        applyAllToGraph(liveSynths);
+      } else if (liveSynths) {
+        applyAllToGraph(liveSynths);
+      }
+    });
+  });
+  container.querySelectorAll('.send-toggle').forEach(el => {
+    el.addEventListener('click', () => {
+      const track = el.dataset.track;
+      trackParams[track].send = !trackParams[track].send;
+      el.classList.toggle('on', trackParams[track].send);
+      applyAllToGraph(liveSynths);
+    });
+  });
+}
+
+function syncTrackUI(trackKey) {
+  const p = trackParams[trackKey];
+  for (const section of PARAM_SECTIONS) {
+    for (const def of section.params) {
+      const input = document.querySelector(`input[data-track="${trackKey}"][data-param="${def.key}"]`);
+      if (input) input.value = p[def.key];
+      const valEl = $(`v-${trackKey}-${def.key}`);
+      if (valEl) valEl.textContent = formatParamValue(def.key, p[def.key]);
+    }
+  }
+  const modelSel = document.querySelector(`select[data-track="${trackKey}"][data-param="model"]`);
+  if (modelSel) modelSel.value = p.model;
+  const arpSel = document.querySelector(`select[data-track="${trackKey}"][data-param="arp"]`);
+  if (arpSel) arpSel.value = p.arp;
+  const lfoSel = document.querySelector(`select[data-track="${trackKey}"][data-param="lfoTarget"]`);
+  if (lfoSel) lfoSel.value = p.lfoTarget;
+  const sendBtn = document.querySelector(`.send-toggle[data-track="${trackKey}"]`);
+  if (sendBtn) sendBtn.classList.toggle('on', p.send);
+}
+function syncMasterUI() {
+  for (const k of Object.keys(masterState)) {
+    if ($(k)) { $(k).value = masterState[k]; $('v-' + k).textContent = masterState[k].toFixed(2); }
+  }
+}
+
+['reverbSize','reverbWet','delayTime','delayFB','delayWet','sidechain','tapeSat','masterGain'].forEach(k => {
+  $(k).addEventListener('input', e => {
+    masterState[k] = parseFloat(e.target.value);
+    $('v-' + k).textContent = masterState[k].toFixed(2);
+    applyAllToGraph(liveSynths);
+  });
+});
+
+/* ═══════════════════════════════════════════════════════════════════
+   FACTORY PRESETS — six curated sounds that actually sound like Synthwave
+   ═══════════════════════════════════════════════════════════════════ */
+const FACTORY_PRESETS = {
+  'Miami Nights': {
+    tag: 'Outrun · classic', algoName: 'outrun', bpm: 120, mode: 'pentatonic_minor', seed: 1986,
+    bass: { model: 'stratos', volume: 0.7, detune: 0, attack: 0.005, decay: 0.25, sustain: 0.7, release: 0.3, cutoff: 0.5, resonance: 0.3, fenvAmount: 0.4, fenvDecay: 0.3, character: 0.5, lfoTarget: 'pwm', lfoRate: 0.15, lfoDepth: 0.4, arp: 'off', send: false },
+    lead: { model: 'crystal', volume: 0.45, detune: 0, attack: 0.01, decay: 0.4, sustain: 0.25, release: 1.0, cutoff: 0.7, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.6, lfoTarget: 'off', lfoRate: 0.3, lfoDepth: 0.2, arp: 'off', send: true },
+    pad:  { model: 'vapor', volume: 0.4, detune: 0, attack: 1.2, decay: 0.5, sustain: 0.85, release: 2.5, cutoff: 0.45, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.8, lfoTarget: 'filter', lfoRate: 0.08, lfoDepth: 0.3, arp: 'off', send: true },
+    master: { reverbSize: 0.6, reverbWet: 0.5, delayTime: 0.55, delayFB: 0.45, delayWet: 0.45, sidechain: 0.75, tapeSat: 0.35, masterGain: 0.8 }
+  },
+  'Highway Cruise': {
+    tag: 'Outrun · chilled', algoName: 'outrun', bpm: 108, mode: 'aeolian', seed: 1984,
+    bass: { model: 'stratos', volume: 0.65, detune: 0, attack: 0.008, decay: 0.3, sustain: 0.65, release: 0.4, cutoff: 0.4, resonance: 0.25, fenvAmount: 0.3, fenvDecay: 0.4, character: 0.3, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
+    lead: { model: 'vapor', volume: 0.45, detune: 0, attack: 0.04, decay: 0.4, sustain: 0.5, release: 0.8, cutoff: 0.6, resonance: 0.25, fenvAmount: 0.4, fenvDecay: 0.5, character: 0.7, lfoTarget: 'pitch', lfoRate: 0.2, lfoDepth: 0.08, arp: 'off', send: true },
+    pad:  { model: 'vapor', volume: 0.42, detune: 0, attack: 1.0, decay: 0.5, sustain: 0.8, release: 2.2, cutoff: 0.4, resonance: 0.1, fenvAmount: 0.2, fenvDecay: 0.7, character: 0.9, lfoTarget: 'filter', lfoRate: 0.06, lfoDepth: 0.35, arp: 'off', send: true },
+    master: { reverbSize: 0.65, reverbWet: 0.55, delayTime: 0.5, delayFB: 0.4, delayWet: 0.5, sidechain: 0.5, tapeSat: 0.4, masterGain: 0.78 }
+  },
+  'Blade Runner Rain': {
+    tag: 'Noir · cinematic', algoName: 'noir', bpm: 80, mode: 'aeolian', seed: 2019,
+    bass: { model: 'stratos', volume: 0.55, detune: 0, attack: 0.05, decay: 0.5, sustain: 0.7, release: 1.0, cutoff: 0.3, resonance: 0.2, fenvAmount: 0.2, fenvDecay: 0.5, character: 0.4, lfoTarget: 'pwm', lfoRate: 0.08, lfoDepth: 0.5, arp: 'off', send: false },
+    lead: { model: 'crystal', volume: 0.4, detune: 0, attack: 0.02, decay: 0.6, sustain: 0.3, release: 2.0, cutoff: 0.5, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.7, character: 0.7, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.1, arp: 'off', send: true },
+    pad:  { model: 'vapor', volume: 0.55, detune: 0, attack: 2.0, decay: 0.8, sustain: 0.9, release: 4.0, cutoff: 0.35, resonance: 0.1, fenvAmount: 0.2, fenvDecay: 0.8, character: 1.0, lfoTarget: 'filter', lfoRate: 0.04, lfoDepth: 0.4, arp: 'off', send: true },
+    master: { reverbSize: 0.85, reverbWet: 0.75, delayTime: 0.7, delayFB: 0.55, delayWet: 0.5, sidechain: 0, tapeSat: 0.45, masterGain: 0.75 }
+  },
+  'Carpenter Synth': {
+    tag: 'Noir · dark', algoName: 'noir', bpm: 90, mode: 'phrygian', seed: 1978,
+    bass: { model: 'alkali', volume: 0.7, detune: 0, attack: 0.005, decay: 0.3, sustain: 0.7, release: 0.4, cutoff: 0.35, resonance: 0.5, fenvAmount: 0.6, fenvDecay: 0.3, character: 0.6, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.2, arp: 'off', send: false },
+    lead: { model: 'alkali', volume: 0.5, detune: 0, attack: 0.01, decay: 0.4, sustain: 0.5, release: 0.6, cutoff: 0.5, resonance: 0.4, fenvAmount: 0.5, fenvDecay: 0.5, character: 0.5, lfoTarget: 'off', lfoRate: 0.3, lfoDepth: 0.15, arp: 'off', send: true },
+    pad:  { model: 'vapor', volume: 0.4, detune: 0, attack: 1.5, decay: 0.6, sustain: 0.85, release: 3.0, cutoff: 0.35, resonance: 0.15, fenvAmount: 0.2, fenvDecay: 0.6, character: 0.7, lfoTarget: 'filter', lfoRate: 0.05, lfoDepth: 0.3, arp: 'off', send: true },
+    master: { reverbSize: 0.75, reverbWet: 0.65, delayTime: 0.45, delayFB: 0.4, delayWet: 0.3, sidechain: 0, tapeSat: 0.5, masterGain: 0.78 }
+  },
+  'Mall Bliss': {
+    tag: 'Dreamwave · hazy', algoName: 'dreamwave', bpm: 100, mode: 'aeolian', seed: 1985,
+    bass: { model: 'stratos', volume: 0.6, detune: 0, attack: 0.005, decay: 0.2, sustain: 0.5, release: 0.25, cutoff: 0.55, resonance: 0.3, fenvAmount: 0.5, fenvDecay: 0.3, character: 0.4, lfoTarget: 'off', lfoRate: 0.4, lfoDepth: 0.3, arp: 'off', send: false },
+    lead: { model: 'crystal', volume: 0.45, detune: 0, attack: 0.015, decay: 0.4, sustain: 0.3, release: 1.2, cutoff: 0.65, resonance: 0.2, fenvAmount: 0.4, fenvDecay: 0.5, character: 0.65, lfoTarget: 'pitch', lfoRate: 0.5, lfoDepth: 0.06, arp: 'off', send: true },
+    pad:  { model: 'vapor', volume: 0.45, detune: 0, attack: 1.0, decay: 0.5, sustain: 0.8, release: 2.5, cutoff: 0.5, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.95, lfoTarget: 'filter', lfoRate: 0.1, lfoDepth: 0.4, arp: 'off', send: true },
+    master: { reverbSize: 0.7, reverbWet: 0.6, delayTime: 0.6, delayFB: 0.5, delayWet: 0.5, sidechain: 0.55, tapeSat: 0.4, masterGain: 0.78 }
+  },
+  'VHS Sunset': {
+    tag: 'Dreamwave · warm', algoName: 'dreamwave', bpm: 96, mode: 'pentatonic_minor', seed: 1989,
+    bass: { model: 'stratos', volume: 0.65, detune: -5, attack: 0.008, decay: 0.25, sustain: 0.6, release: 0.3, cutoff: 0.45, resonance: 0.35, fenvAmount: 0.45, fenvDecay: 0.35, character: 0.5, lfoTarget: 'pwm', lfoRate: 0.2, lfoDepth: 0.5, arp: 'off', send: false },
+    lead: { model: 'vapor', volume: 0.5, detune: 6, attack: 0.04, decay: 0.5, sustain: 0.5, release: 1.0, cutoff: 0.55, resonance: 0.2, fenvAmount: 0.35, fenvDecay: 0.55, character: 0.85, lfoTarget: 'pitch', lfoRate: 0.3, lfoDepth: 0.05, arp: 'off', send: true },
+    pad:  { model: 'vapor', volume: 0.45, detune: -8, attack: 1.2, decay: 0.55, sustain: 0.8, release: 2.8, cutoff: 0.42, resonance: 0.12, fenvAmount: 0.25, fenvDecay: 0.7, character: 1.0, lfoTarget: 'filter', lfoRate: 0.08, lfoDepth: 0.45, arp: 'off', send: true },
+    master: { reverbSize: 0.7, reverbWet: 0.6, delayTime: 0.55, delayFB: 0.5, delayWet: 0.55, sidechain: 0.6, tapeSat: 0.55, masterGain: 0.76 }
+  },
+};
+
+function applyFactoryPreset(name) {
+  const p = FACTORY_PRESETS[name];
+  if (!p) return;
+  $('seed').value = p.seed;
+  $('mode').value = p.mode;
+  $('bpm').value = p.bpm;
+  document.querySelectorAll('input[name="algo"]').forEach(r => r.checked = (r.value === p.algoName));
+  document.querySelectorAll('.algo-card').forEach(c => c.classList.toggle('active', c.dataset.algo === p.algoName));
+  Object.assign(trackParams.bass, p.bass);
+  Object.assign(trackParams.lead, p.lead);
+  Object.assign(trackParams.pad, p.pad);
+  Object.assign(masterState, p.master);
+  for (const k of ['bass','lead','pad']) syncTrackUI(k);
+  syncMasterUI();
+  generate();
+  if (liveSynths) {
+    setTrackModel(liveSynths, 'bass', trackParams.bass.model, trackParams.bass);
+    setTrackModel(liveSynths, 'lead', trackParams.lead.model, trackParams.lead);
+    setTrackModel(liveSynths, 'pad',  trackParams.pad.model,  trackParams.pad);
+    applyAllToGraph(liveSynths);
+  }
+  setStatus('✓ Factory preset loaded: ' + name);
+}
+
+function renderFactoryRow() {
+  const row = $('factory-row');
+  row.innerHTML = '';
+  for (const name of Object.keys(FACTORY_PRESETS)) {
+    const card = document.createElement('div');
+    card.className = 'factory-chip';
+    card.innerHTML = `<div class="fp-name">${name}</div><div class="fp-tag">${FACTORY_PRESETS[name].tag}</div>`;
+    card.addEventListener('click', () => applyFactoryPreset(name));
+    row.appendChild(card);
+  }
+}
+
+/* Generate */
+function generate() {
+  const seed = parseInt($('seed').value) || 1;
+  const mode = $('mode').value;
+  const bpm = Math.max(60, Math.min(200, parseInt($('bpm').value) || 110));
+  const algoName = document.querySelector('input[name="algo"]:checked').value;
+  const algo = ALGORITHMS[algoName];
+  $('bpm').value = bpm;
+  const rng = mulberry32(seed);
+  const scale = SCALES[mode];
+  const chordMap = buildChordMap(algo.padProg, algo.totalBars);
+  const ctx = { chordMap, harmonicMode };
+  const material = {
+    riff:    algo.riffGen(rng, scale.length),
+    melodyA: algo.leadGenA(rng, scale.length, ctx),
+    melodyB: algo.leadGenB(rng, scale.length, ctx),
+  };
+  const form = algo.buildForm(rng, material, { modeName: mode, chordMap });
+  currentState = { seed, mode, bpm, material, form, algoName };
+  $('log').innerHTML = buildLog(currentState);
+  drawRoll(form, scale, algo, 0, muteState);
+  $('play').disabled = false; $('export-midi').disabled = false; $('export-wav').disabled = false;
+  setStatus('✓ generated · ' + algoName + ' · seed ' + seed);
+}
+
+$('generate').onclick = generate;
+$('randomize').onclick = () => { $('seed').value = Math.floor(Math.random() * 99999); generate(); };
+
+document.querySelectorAll('.algo-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.algo-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    card.querySelector('input[type="radio"]').checked = true;
+    const algoName = card.dataset.algo;
+    $('bpm').value = ALGORITHMS[algoName].defaultBpm;
+    $('mode').value = ALGORITHMS[algoName].defaultMode;
+    generate();
+  });
+});
+
+document.querySelectorAll('.track-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const track = btn.dataset.track;
+    muteState[track] = !muteState[track];
+    btn.classList.toggle('on', !muteState[track]);
+    btn.classList.toggle('off', muteState[track]);
+    applyAllToGraph(liveSynths);
+    if (currentState && Tone.Transport.state !== 'started') {
+      drawRoll(currentState.form, SCALES[currentState.mode], ALGORITHMS[currentState.algoName], 0, muteState);
+    }
+  });
+});
+
+$('harmonic-toggle').addEventListener('click', () => {
+  harmonicMode = harmonicMode === 'natural' ? 'strict' : 'natural';
+  const btn = $('harmonic-toggle');
+  btn.className = 'harmonic-toggle ' + harmonicMode;
+  btn.textContent = harmonicMode === 'natural' ? '♩ Natural' : '♩ Strict';
+  if (currentState) generate();
+});
+
+$('loop-toggle').addEventListener('click', () => {
+  loopMode = !loopMode;
+  $('loop-toggle').classList.toggle('on', loopMode);
+  if (liveSynths && liveSynths.parts) liveSynths.parts.forEach(p => { p.loop = loopMode; });
+  if (Tone.Transport.state === 'started' && currentState) {
+    const algo = ALGORITHMS[currentState.algoName];
+    const totalMusic = algo.totalBars * 4 * 60 / currentState.bpm;
+    if (loopMode) cancelAutoStop();
+    else {
+      const currentTransport = Tone.Transport.seconds;
+      const cyclesPast = Math.floor(currentTransport / totalMusic);
+      scheduleAutoStop((cyclesPast + 1) * totalMusic + 2.8);
+    }
+  }
+});
+
+$('play').onclick = async () => {
+  if (!currentState) return;
+  try { await Tone.start(); } catch (e) { setStatus('⚠ Audio context blocked', true); return; }
+  Tone.Transport.stop(); Tone.Transport.cancel(); Tone.Transport.position = 0;
+  cancelAutoStop();
+  disposeLive();
+  liveSynths = buildAudioGraph();
+  setTrackModel(liveSynths, 'bass', trackParams.bass.model, trackParams.bass);
+  setTrackModel(liveSynths, 'lead', trackParams.lead.model, trackParams.lead);
+  setTrackModel(liveSynths, 'pad',  trackParams.pad.model,  trackParams.pad);
+  applyAllToGraph(liveSynths);
+  const algo = ALGORITHMS[currentState.algoName];
+  const { totalTime } = scheduleAll(currentState.form, SCALES[currentState.mode], currentState.bpm, liveSynths, algo);
+  if (!loopMode) scheduleAutoStop(totalTime);
+  Tone.Transport.start('+0.15');
+  startPlayhead();
+  renderMeters();
+  setStatus((loopMode ? '↻ ' : '▶ ') + 'playing · ' + currentState.algoName + ' · seed ' + currentState.seed);
+  $('play').disabled = true; $('stop').disabled = false;
+};
+$('stop').onclick = () => {
+  Tone.Transport.stop(); Tone.Transport.cancel();
+  cancelAutoStop(); stopPlayhead(); stopMeters();
+  setStatus('■ stopped');
+  $('play').disabled = false; $('stop').disabled = true;
+};
+$('export-midi').onclick = exportMidi;
+$('export-wav').onclick = exportWav;
+
+/* User presets */
+const PRESET_STORAGE_KEY = 'synthwave_surfer_presets_v1';
+function captureFullState() {
+  return {
+    version: '1.0', timestamp: Date.now(),
+    seed: parseInt($('seed').value), mode: $('mode').value, bpm: parseInt($('bpm').value),
+    algoName: document.querySelector('input[name="algo"]:checked').value,
+    trackParams: JSON.parse(JSON.stringify(trackParams)),
+    masterState: { ...masterState }, muteState: { ...muteState }, loopMode,
+  };
+}
+function applyFullState(s) {
+  $('seed').value = s.seed; $('mode').value = s.mode; $('bpm').value = s.bpm;
+  document.querySelectorAll('input[name="algo"]').forEach(r => r.checked = (r.value === s.algoName));
+  document.querySelectorAll('.algo-card').forEach(c => c.classList.toggle('active', c.dataset.algo === s.algoName));
+  for (const k of ['bass','lead','pad']) Object.assign(trackParams[k], s.trackParams[k]);
+  Object.assign(masterState, s.masterState);
+  Object.assign(muteState, s.muteState);
+  loopMode = s.loopMode;
+  $('loop-toggle').classList.toggle('on', loopMode);
+  document.querySelectorAll('.track-toggle').forEach(btn => {
+    const t = btn.dataset.track;
+    btn.classList.toggle('on', !muteState[t]);
+    btn.classList.toggle('off', muteState[t]);
+  });
+  for (const k of ['bass','lead','pad']) syncTrackUI(k);
+  syncMasterUI();
+  generate();
+  if (liveSynths) {
+    setTrackModel(liveSynths, 'bass', trackParams.bass.model, trackParams.bass);
+    setTrackModel(liveSynths, 'lead', trackParams.lead.model, trackParams.lead);
+    setTrackModel(liveSynths, 'pad', trackParams.pad.model, trackParams.pad);
+    applyAllToGraph(liveSynths);
+  }
+}
+function loadPresets() {
+  try { return JSON.parse(localStorage.getItem(PRESET_STORAGE_KEY) || '{}'); } catch { return {}; }
+}
+function savePresets(p) {
+  try { localStorage.setItem(PRESET_STORAGE_KEY, JSON.stringify(p)); } catch(e) {}
+}
+function renderPresetList() {
+  const presets = loadPresets();
+  const list = $('preset-list');
+  list.innerHTML = '';
+  const keys = Object.keys(presets);
+  if (keys.length === 0) {
+    list.innerHTML = '<span class="preset-empty">No user presets saved yet.</span>';
+    return;
+  }
+  for (const name of keys) {
+    const chip = document.createElement('div');
+    chip.className = 'preset-chip';
+    chip.innerHTML = `<span class="load">${name}</span><span class="del" title="Delete">×</span>`;
+    chip.querySelector('.load').addEventListener('click', () => {
+      applyFullState(presets[name]);
+      setStatus('✓ Loaded: ' + name);
+    });
+    chip.querySelector('.del').addEventListener('click', e => {
+      e.stopPropagation();
+      if (confirm(`Delete preset "${name}"?`)) {
+        const p = loadPresets(); delete p[name]; savePresets(p); renderPresetList();
+      }
+    });
+    list.appendChild(chip);
+  }
+}
+$('preset-save').onclick = () => {
+  const name = ($('preset-name').value || '').trim();
+  if (!name) { setStatus('⚠ Name required', true); return; }
+  const p = loadPresets();
+  p[name] = captureFullState();
+  savePresets(p); renderPresetList();
+  $('preset-name').value = '';
+  setStatus('✓ Saved: ' + name);
+};
+$('preset-export').onclick = () => {
+  const p = loadPresets();
+  const blob = new Blob([JSON.stringify(p, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url;
+  a.download = `synthwave_presets_${Date.now()}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  setStatus('✓ Exported');
+};
+$('preset-import').onclick = () => $('preset-import-file').click();
+$('preset-import-file').addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      const current = loadPresets();
+      Object.assign(current, imported);
+      savePresets(current); renderPresetList();
+      setStatus('✓ Imported: ' + Object.keys(imported).length);
+    } catch (err) { setStatus('⚠ Import failed', true); }
+  };
+  reader.readAsText(file);
+});
+
+window.addEventListener('resize', () => {
+  if (currentState) drawRoll(currentState.form, SCALES[currentState.mode], ALGORITHMS[currentState.algoName], 0, muteState);
+});
+
+/* Boot — Miami Nights is the default opener */
+buildTrackPanels();
+renderFactoryRow();
+syncMasterUI();
+renderPresetList();
+// Load Miami Nights as the boot preset, but don't auto-play
+applyFactoryPreset('Miami Nights');
+</script>
+</body>
+</html>
