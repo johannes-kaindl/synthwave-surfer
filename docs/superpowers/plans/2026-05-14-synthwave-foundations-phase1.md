@@ -190,7 +190,7 @@ git commit -m "feat: add YAML frontmatter parser for .swmd codec"
 **Files:**
 - Modify: `synthwave_surfer.html` — append after `parseYamlFrontmatter`
 
-- [ ] **Step 3.1: Add failing test**
+- [x] **Step 3.1: Add failing test**
 
 Add to `tests` in `runCodecTests()`:
 
@@ -208,9 +208,9 @@ Add to `tests` in `runCodecTests()`:
 }],
 ```
 
-- [ ] **Step 3.2: Run tests, verify they fail (parseMarkdownTable undefined)**
+- [x] **Step 3.2: Run tests, verify they fail (parseMarkdownTable undefined)**
 
-- [ ] **Step 3.3: Implement `parseMarkdownTable`**
+- [x] **Step 3.3: Implement `parseMarkdownTable`**
 
 Append after `parseYamlFrontmatter`:
 
@@ -230,9 +230,9 @@ function parseMarkdownTable(text) {
 }
 ```
 
-- [ ] **Step 3.4: Run tests, verify they pass**
+- [x] **Step 3.4: Run tests, verify they pass**
 
-- [ ] **Step 3.5: Commit**
+- [x] **Step 3.5: Commit**
 
 ```bash
 git add synthwave_surfer.html

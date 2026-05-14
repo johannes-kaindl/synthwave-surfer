@@ -503,6 +503,20 @@ function parseYamlFrontmatter(text) {
   return result;
 }
 
+function parseMarkdownTable(text) {
+  const lines = text.split('\n').filter(l => l.trim().startsWith('|'));
+  if (lines.length < 2) return [];
+  const headers = lines[0].split('|').slice(1, -1).map(h => h.trim());
+  const rows = [];
+  for (let i = 2; i < lines.length; i++) {
+    const cells = lines[i].split('|').slice(1, -1).map(c => c.trim());
+    const row = {};
+    headers.forEach((h, j) => { row[h] = cells[j] ?? ''; });
+    rows.push(row);
+  }
+  return rows;
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    Form builders
    ═══════════════════════════════════════════════════════════════════ */
@@ -1955,6 +1969,17 @@ function runCodecTests() {
       const text = '---\nsynthwave-surfer: "1.0"\n---';
       const m = parseYamlFrontmatter(text);
       assert(m['synthwave-surfer'] === '1.0', 'quotes stripped');
+    }],
+    ['parseMarkdownTable — basic 2-row table', () => {
+      const text = '| Param | Value |\n|-------|-------|\n| volume | 0.7 |\n| model | stratos |';
+      const rows = parseMarkdownTable(text);
+      assert(rows.length === 2, 'two rows');
+      assert(rows[0].Param === 'volume', 'col 1 of row 0');
+      assert(rows[0].Value === '0.7', 'col 2 of row 0');
+      assert(rows[1].Param === 'model', 'col 1 of row 1');
+    }],
+    ['parseMarkdownTable — returns [] for no table', () => {
+      assert(parseMarkdownTable('just text').length === 0, 'empty array');
     }],
   ];
   for (const [name, fn] of tests) {
