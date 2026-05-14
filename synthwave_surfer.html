@@ -1784,6 +1784,11 @@ function scheduleAutoStop(t) {
    ═══════════════════════════════════════════════════════════════════ */
 const $ = id => document.getElementById(id);
 let currentState = null;
+
+let patternMode = 'generative';
+let currentSwmd = null;
+let currentPhaseIndex = 0;
+const phaseChangeListeners = [];
 let harmonicMode = 'natural';
 function setStatus(t, warn) { $('status').textContent = t; $('status').className = 'status' + (warn ? ' warn' : ''); }
 
@@ -2008,6 +2013,54 @@ const FACTORY_PRESETS = {
     master: { reverbSize: 0.7, reverbWet: 0.6, delayTime: 0.55, delayFB: 0.5, delayWet: 0.55, sidechain: 0.6, tapeSat: 0.55, masterGain: 0.76 }
   },
 };
+
+/* ═══════════════════════════════════════════════════════════════════
+   Phase Engine — multi-phase pattern playback state machine
+   ═══════════════════════════════════════════════════════════════════ */
+
+function getPhases() {
+  if (patternMode !== 'fixed' || !currentSwmd) return [];
+  return currentSwmd.phases.map(p => p.name);
+}
+
+function getCurrentPhase() {
+  if (patternMode !== 'fixed' || !currentSwmd) return null;
+  return currentSwmd.phases[currentPhaseIndex]?.name || null;
+}
+
+function getCurrentPhaseObj() {
+  if (patternMode !== 'fixed' || !currentSwmd) return null;
+  return currentSwmd.phases[currentPhaseIndex] || null;
+}
+
+function setPhase(name) {
+  if (patternMode !== 'fixed' || !currentSwmd) {
+    console.warn('[synthwaveSurfer] setPhase ignored: not in fixed mode');
+    return false;
+  }
+  const idx = currentSwmd.phases.findIndex(p => p.name === name);
+  if (idx === -1) {
+    console.warn('[synthwaveSurfer] setPhase ignored: unknown phase ' + name);
+    return false;
+  }
+  if (idx === currentPhaseIndex) return true;
+  currentPhaseIndex = idx;
+  // Re-generate the form with the new phase's pattern
+  if (currentState) generate();
+  // Notify listeners
+  for (const cb of phaseChangeListeners) {
+    try { cb(name); } catch (e) { console.error('[synthwaveSurfer] listener error', e); }
+  }
+  return true;
+}
+
+function onPhaseChange(cb) {
+  phaseChangeListeners.push(cb);
+  return () => {
+    const i = phaseChangeListeners.indexOf(cb);
+    if (i >= 0) phaseChangeListeners.splice(i, 1);
+  };
+}
 
 function applyFactoryPreset(name) {
   const p = FACTORY_PRESETS[name];
@@ -2585,6 +2638,35 @@ default-phase: calm
       assert(reparsed.phases[0].name === 'calm', 'phase 1 name');
       assert(reparsed.phases[1].name === 'rising', 'phase 2 name');
       assert(reparsed.phases[1].bassPattern.length === 4, 'rising bass count');
+    }],
+    ['Phase Engine — getPhases / getCurrentPhase with no swmd', () => {
+      currentSwmd = null;
+      patternMode = 'generative';
+      assert(getPhases().length === 0, 'no phases when no swmd');
+      assert(getCurrentPhase() === null, 'no current phase');
+      assert(setPhase('foo') === false, 'setPhase fails when generative');
+    }],
+    ['Phase Engine — setPhase switches index', () => {
+      currentSwmd = {
+        meta: {},
+        phases: [{ name: 'a' }, { name: 'b' }, { name: 'c' }],
+        fxSettings: {},
+      };
+      patternMode = 'fixed';
+      currentPhaseIndex = 0;
+      assert(getPhases().join(',') === 'a,b,c', 'phases listed');
+      assert(getCurrentPhase() === 'a', 'starts at a');
+      let notified = null;
+      const unsub = onPhaseChange(name => { notified = name; });
+      assert(setPhase('b') === true, 'setPhase succeeds');
+      assert(currentPhaseIndex === 1, 'index updated');
+      assert(getCurrentPhase() === 'b', 'current phase is b');
+      assert(notified === 'b', 'listener fired');
+      unsub();
+      assert(setPhase('nonexistent') === false, 'invalid phase rejected');
+      // cleanup
+      currentSwmd = null;
+      currentPhaseIndex = 0;
     }],
   ];
   for (const [name, fn] of tests) {

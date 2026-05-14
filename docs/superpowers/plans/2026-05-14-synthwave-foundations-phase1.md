@@ -1159,7 +1159,7 @@ git commit -m "feat: add SWMD serializer always emitting multi-phase form"
   - Add state vars near line 1774
   - Add Phase Engine functions after FACTORY_PRESETS (~line 1999)
 
-- [ ] **Step 12.1: Add failing tests**
+- [x] **Step 12.1: Add failing tests**
 
 ```javascript
 ['Phase Engine — getPhases / getCurrentPhase with no swmd', () => {
@@ -1193,9 +1193,9 @@ git commit -m "feat: add SWMD serializer always emitting multi-phase form"
 }],
 ```
 
-- [ ] **Step 12.2: Run tests, verify they fail (functions undefined)**
+- [x] **Step 12.2: Run tests, verify they fail (functions undefined)**
 
-- [ ] **Step 12.3: Add state variables near line 1774 (next to `let currentState = null;`)**
+- [x] **Step 12.3: Add state variables near line 1774 (next to `let currentState = null;`)**
 
 ```javascript
 let patternMode = 'generative';
@@ -1204,7 +1204,7 @@ let currentPhaseIndex = 0;
 const phaseChangeListeners = [];
 ```
 
-- [ ] **Step 12.4: Add Phase Engine functions right after `FACTORY_PRESETS` (~line 1999)**
+- [x] **Step 12.4: Add Phase Engine functions right after `FACTORY_PRESETS` (~line 1999)**
 
 ```javascript
 /* ═══════════════════════════════════════════════════════════════════
@@ -1256,11 +1256,11 @@ function onPhaseChange(cb) {
 }
 ```
 
-- [ ] **Step 12.5: Run tests, verify they pass**
+- [x] **Step 12.5: Run tests, verify they pass**
 
 The test uses `currentSwmd` and `patternMode` as global; the test sets them directly and resets after. This is intentional — these are file-level `let` declarations, accessible from anywhere in the script.
 
-- [ ] **Step 12.6: Commit**
+- [x] **Step 12.6: Commit**
 
 ```bash
 git add synthwave_surfer.html
