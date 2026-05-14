@@ -1819,13 +1819,13 @@ git commit -m "feat: add State JSON export button"
   - CSS: add `.phase-pill` styles (after Task 16's CSS additions)
   - JS: replace the `function syncPhaseSelector()` stub from Task 15
 
-- [ ] **Step 19.1: Add HTML** — find the line `<div class="pattern-toggle generative" id="pattern-toggle">⚙ Generativ</div>` (added in Task 16) and add immediately after:
+- [x] **Step 19.1: Add HTML** — find the line `<div class="pattern-toggle generative" id="pattern-toggle">⚙ Generativ</div>` (added in Task 16) and add immediately after:
 
 ```html
       <div class="phase-selector" id="phase-selector" style="display:none; gap: 6px;"></div>
 ```
 
-- [ ] **Step 19.2: Add CSS** (right after `.pattern-toggle.fixed` rule from Task 16):
+- [x] **Step 19.2: Add CSS** (right after `.pattern-toggle.fixed` rule from Task 16):
 
 ```css
 .phase-selector { display: flex; gap: 6px; align-items: center; padding-left: 12px; border-left: 1px solid var(--rule); margin-left: 6px; }
@@ -1834,7 +1834,7 @@ git commit -m "feat: add State JSON export button"
 .phase-pill.active { border-color: var(--purple); color: var(--purple); background: rgba(160,106,255,0.12); }
 ```
 
-- [ ] **Step 19.3: Replace the `syncPhaseSelector` stub from Task 15 with full implementation**
+- [x] **Step 19.3: Replace the `syncPhaseSelector` stub from Task 15 with full implementation**
 
 Find the line `function syncPhaseSelector() { /* implemented in Task 19 */ }` and replace with:
 
@@ -1861,7 +1861,7 @@ function syncPhaseSelector() {
 }
 ```
 
-- [ ] **Step 19.4: Verify in browser**
+- [x] **Step 19.4: Verify in browser**
 
 Right now we don't have a multi-phase preset to load (those come in Tasks 20-25). To verify, paste this in the console after generating:
 
@@ -1886,7 +1886,7 @@ generate();
 
 Pills "a" and "b" should appear. Clicking them switches phase (audio re-renders if playing).
 
-- [ ] **Step 19.5: Commit**
+- [x] **Step 19.5: Commit**
 
 ```bash
 git add synthwave_surfer.html

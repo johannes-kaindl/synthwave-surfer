@@ -106,6 +106,10 @@
   .pattern-toggle:hover { border-color: var(--purple); }
   .pattern-toggle.generative { border-color: var(--steel); color: var(--steel); }
   .pattern-toggle.fixed { border-color: var(--purple); color: var(--purple); background: rgba(160,106,255,0.08); }
+  .phase-selector { display: flex; gap: 6px; align-items: center; padding-left: 12px; border-left: 1px solid var(--rule); margin-left: 6px; }
+  .phase-pill { padding: 6px 12px; border: 1px solid var(--steel); border-radius: 12px; cursor: pointer; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--steel); user-select: none; transition: all 0.15s ease; }
+  .phase-pill:hover { border-color: var(--purple); }
+  .phase-pill.active { border-color: var(--purple); color: var(--purple); background: rgba(160,106,255,0.12); }
 
   .track-panel { border: 1px solid var(--rule); padding: 16px 20px; margin-bottom: 16px; background: rgba(10, 6, 18, 0.4); position: relative; }
   .track-panel-label { position: absolute; top: -8px; left: 16px; background: var(--bg-deep); padding: 0 10px; font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 700; }
@@ -239,6 +243,7 @@
       <div class="harmonic-toggle natural" id="harmonic-toggle">♩ Natural</div>
       <div class="track-divider"></div>
       <div class="pattern-toggle generative" id="pattern-toggle">⚙ Generativ</div>
+      <div class="phase-selector" id="phase-selector" style="display:none; gap: 6px;"></div>
     </div>
   </div>
 
@@ -2149,7 +2154,26 @@ function buildFormFromSwmd(swmd, phase, algo) {
 }
 
 /* Generate */
-function syncPhaseSelector() { /* implemented in Task 19 */ }
+function syncPhaseSelector() {
+  const container = $('phase-selector');
+  if (!container) return;
+  const phases = getPhases();
+  if (phases.length <= 1) {
+    container.style.display = 'none';
+    container.innerHTML = '';
+    return;
+  }
+  container.style.display = 'flex';
+  container.innerHTML = '';
+  const current = getCurrentPhase();
+  for (const name of phases) {
+    const pill = document.createElement('div');
+    pill.className = 'phase-pill' + (name === current ? ' active' : '');
+    pill.textContent = name;
+    pill.addEventListener('click', () => { setPhase(name); });
+    container.appendChild(pill);
+  }
+}
 
 function generate() {
   const seed = parseInt($('seed').value) || 1;
