@@ -1729,7 +1729,7 @@ async function exportWav() {
   const algo = ALGORITHMS[currentState.algoName];
   const totalSec = (algo.totalBars * 4 * 60 / bpm) + 3;
   try {
-    const buffer = await Tone.Offline(async () => {
+    const buffer = await Tone.Offline(({ transport }) => {
       const offGraph = buildAudioGraph();
       setTrackModel(offGraph, 'bass', trackParams.bass.model, trackParams.bass);
       setTrackModel(offGraph, 'lead', trackParams.lead.model, trackParams.lead);
@@ -1738,7 +1738,7 @@ async function exportWav() {
       const wasLoop = loopMode; loopMode = false;
       scheduleAll(currentState.form, SCALES[currentState.mode], bpm, offGraph, algo);
       loopMode = wasLoop;
-      Tone.Transport.start(0);
+      transport.start(0);
     }, totalSec);
     const audioBuf = buffer.get ? buffer.get() : buffer;
     const wavBytes = audioBufferToWav(audioBuf);
