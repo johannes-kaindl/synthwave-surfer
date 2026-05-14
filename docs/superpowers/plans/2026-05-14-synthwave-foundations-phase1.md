@@ -348,7 +348,7 @@ git commit -m "feat: add SWMD section splitter with multi-phase support"
 **Files:**
 - Modify: `synthwave_surfer.html` — append after `splitSwmdSections`
 
-- [ ] **Step 5.1: Add failing tests**
+- [x] **Step 5.1: Add failing tests**
 
 ```javascript
 ['parsePianoRoll — basic single note', () => {
@@ -378,9 +378,9 @@ git commit -m "feat: add SWMD section splitter with multi-phase support"
 }],
 ```
 
-- [ ] **Step 5.2: Run tests, verify they fail (parsePianoRoll undefined)**
+- [x] **Step 5.2: Run tests, verify they fail (parsePianoRoll undefined)**
 
-- [ ] **Step 5.3: Implement `parsePianoRoll`**
+- [x] **Step 5.3: Implement `parsePianoRoll`**
 
 Append after `splitSwmdSections`:
 
@@ -429,9 +429,9 @@ function parsePianoRoll(sectionText) {
 }
 ```
 
-- [ ] **Step 5.4: Run tests, verify they pass**
+- [x] **Step 5.4: Run tests, verify they pass**
 
-- [ ] **Step 5.5: Commit**
+- [x] **Step 5.5: Commit**
 
 ```bash
 git add synthwave_surfer.html

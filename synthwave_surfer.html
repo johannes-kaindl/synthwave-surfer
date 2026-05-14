@@ -570,6 +570,49 @@ function splitSwmdSections(text) {
   return { phases, fileSections };
 }
 
+function parsePianoRoll(sectionText) {
+  const patternMatch = sectionText.match(/### Pattern\n([\s\S]+?)(?=\n###|\n##|$)/);
+  if (!patternMatch) return [];
+  const tableText = patternMatch[1];
+  const lines = tableText.split('\n').filter(l => l.trim().startsWith('|'));
+  if (lines.length < 3) return [];
+
+  const headerCells = lines[0].split('|').slice(1, -1);
+  const stepCount = headerCells.length - 1; // first column is "Grad"
+  const stepGrid = new Array(stepCount).fill(null);
+
+  for (let r = 2; r < lines.length; r++) {
+    const cells = lines[r].split('|').slice(1, -1);
+    const degree = parseInt(cells[0].trim());
+    if (Number.isNaN(degree)) continue;
+    for (let s = 0; s < stepCount; s++) {
+      const cell = (cells[s + 1] || '').trim();
+      if (cell === '●') stepGrid[s] = { degree, starting: true };
+      else if (cell === '─' && stepGrid[s] === null) stepGrid[s] = { degree, starting: false };
+    }
+  }
+
+  const notes = [];
+  let i = 0;
+  while (i < stepGrid.length) {
+    if (!stepGrid[i]) {
+      let dur = 1;
+      while (i + dur < stepGrid.length && !stepGrid[i + dur]) dur++;
+      notes.push({ rest: true, duration: dur });
+      i += dur; continue;
+    }
+    const degree = stepGrid[i].degree;
+    let dur = 1;
+    while (i + dur < stepGrid.length
+        && stepGrid[i + dur]
+        && !stepGrid[i + dur].starting
+        && stepGrid[i + dur].degree === degree) dur++;
+    notes.push({ degree, duration: dur });
+    i += dur;
+  }
+  return notes;
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    Form builders
    ═══════════════════════════════════════════════════════════════════ */
@@ -2051,6 +2094,31 @@ function runCodecTests() {
       assert(sections.phases[0].name === 'calm', 'first phase named');
       assert(sections.phases[1].name === 'intense', 'second phase named');
       assert('FX Bus' in sections.fileSections, 'FX Bus is file-level');
+    }],
+    ['parsePianoRoll — basic single note', () => {
+      const text = '### Pattern\n| Grad |  1 |  2 |  3 |  4 |\n|------|----|----|----|----|\n|  0   |  ● |  ─ |    |    |';
+      const notes = parsePianoRoll(text);
+      assert(notes.length === 2, 'two segments (note + rest)');
+      assert(notes[0].degree === 0, 'degree 0');
+      assert(notes[0].duration === 2, 'duration 2 (● + ─)');
+      assert(notes[1].rest === true, 'rest segment');
+      assert(notes[1].duration === 2, 'rest duration 2');
+    }],
+    ['parsePianoRoll — multiple degrees in 16 steps', () => {
+      const text = '### Pattern\n' +
+        '| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |\n' +
+        '|------|----|----|----|----|----|----|----|----|\n' +
+        '|  4   |    |    |    |    |  ● |  ─ |    |    |\n' +
+        '|  0   |  ● |  ─ |    |    |    |    |  ● |  ─ |';
+      const notes = parsePianoRoll(text);
+      assert(notes.length === 4, 'four segments: note rest note note');
+      assert(notes[0].degree === 0 && notes[0].duration === 2, 'note 1: deg 0 dur 2');
+      assert(notes[1].rest === true && notes[1].duration === 2, 'rest of dur 2');
+      assert(notes[2].degree === 4 && notes[2].duration === 2, 'note 2: deg 4 dur 2');
+      assert(notes[3].degree === 0 && notes[3].duration === 2, 'note 3: deg 0 dur 2');
+    }],
+    ['parsePianoRoll — empty when no Pattern subsection', () => {
+      assert(parsePianoRoll('### Settings\n| x | y |').length === 0, 'empty');
     }],
   ];
   for (const [name, fn] of tests) {
