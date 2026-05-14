@@ -2582,7 +2582,7 @@ function assert(cond, msg) {
 
 function runCodecTests() {
   console.log('━━━ Synthwave Surfer Codec Tests ━━━');
-  let passed = 0, failed = 0;
+  let passed = 0, failed = 0, probePassed = 0, probeFailed = 0;
   const tests = [
     // Tests are added by subsequent tasks
     ['parseYamlFrontmatter — extracts flat fields', () => {
@@ -2957,12 +2957,41 @@ default-phase: calm
       assert(Array.isArray(form.padProg), 'padProg is array');
       assert(Array.isArray(form.drumGrid && form.drumGrid.kick), 'drumGrid.kick array');
     }],
+    ['[PROBE] parseMarkdownTable — escaped pipe in cell (known limitation)', () => {
+      // Escaped \| in a cell value should be ONE cell with `|` inside.
+      // Actual: split('|') sees it as TWO cells. Probe will FAIL — that's expected.
+      const text = '| Header1 | Header2 |\n|---|---|\n| col1 | col\\|2 |';
+      const rows = parseMarkdownTable(text);
+      assert(rows.length === 1, 'one row');
+      assert(rows[0].Header2 === 'col\\|2', 'escaped pipe preserves cell');
+    }],
+    ['[PROBE] parseYamlFrontmatter — multi-line array (known limitation)', () => {
+      // YAML array like `phases:\n  - calm\n  - intense` should preserve the array.
+      // Actual: parser reads `phases` as empty string and drops the items. Probe will FAIL.
+      const text = '---\nphases:\n  - calm\n  - intense\n---';
+      const m = parseYamlFrontmatter(text);
+      assert(Array.isArray(m.phases), 'phases is an array');
+      assert(m.phases.length === 2 && m.phases[0] === 'calm', 'first item preserved');
+    }],
+    ['[PROBE] splitSwmdSections — ## inside code-fence (low real-world risk)', () => {
+      // A `## ` inside a swdrum code-fence should NOT trigger a section split.
+      // Actual: splitter naively matches \n## anywhere. Probe may FAIL (depending on whether the test
+      // input triggers the heuristic).
+      const text = '---\nx: y\n---\n\n## Phase: default\n\n### Drums\n\n```swdrum\nkick: x . . . . . . . . . . . . . . .\n```\n\n## NOT-A-PHASE\nstuff';
+      const sections = splitSwmdSections(text);
+      // The "## NOT-A-PHASE" outside the fence IS a legit section header. So:
+      // We expect 1 phase ("default") + 1 fileSection ("NOT-A-PHASE").
+      // But if the splitter mishandles ## inside the fence, we'd see something else.
+      assert(sections.phases.length === 1, 'one phase');
+      assert(sections.phases[0].name === 'default', 'phase is default');
+    }],
   ];
   for (const [name, fn] of tests) {
-    console.log('▸ ' + name);
-    try { fn(); passed++; } catch (e) { failed++; console.error(e); }
+    const isProbe = name.startsWith('[PROBE]');
+    console.log((isProbe ? '◇ ' : '▸ ') + name);
+    try { fn(); isProbe ? probePassed++ : passed++; } catch (e) { isProbe ? probeFailed++ : failed++; console.error(e); }
   }
-  console.log(`━━━ Done: ${passed} passed, ${failed} failed ━━━`);
+  console.log(`━━━ Done: ${passed} passed, ${failed} failed | Probes: ${probePassed} pass, ${probeFailed} fail (probe failures are EXPECTED coverage markers) ━━━`);
 }
 
 if (new URLSearchParams(location.search).get('test') === '1') {
