@@ -2140,6 +2140,8 @@ function buildFormFromSwmd(swmd, phase, algo) {
 }
 
 /* Generate */
+function syncPhaseSelector() { /* implemented in Task 19 */ }
+
 function generate() {
   const seed = parseInt($('seed').value) || 1;
   const mode = $('mode').value;
@@ -2147,21 +2149,33 @@ function generate() {
   const algoName = document.querySelector('input[name="algo"]:checked').value;
   const algo = ALGORITHMS[algoName];
   $('bpm').value = bpm;
-  const rng = mulberry32(seed);
   const scale = SCALES[mode];
-  const chordMap = buildChordMap(algo.padProg, algo.totalBars);
-  const ctx = { chordMap, harmonicMode };
-  const material = {
-    riff:    algo.riffGen(rng, scale.length),
-    melodyA: algo.leadGenA(rng, scale.length, ctx),
-    melodyB: algo.leadGenB(rng, scale.length, ctx),
-  };
-  const form = algo.buildForm(rng, material, { modeName: mode, chordMap });
+
+  let form, material;
+  if (patternMode === 'fixed' && currentSwmd) {
+    const phase = getCurrentPhaseObj();
+    form = buildFormFromSwmd(currentSwmd, phase, algo);
+    material = form;
+  } else {
+    const rng = mulberry32(seed);
+    const chordMap = buildChordMap(algo.padProg, algo.totalBars);
+    const ctx = { chordMap, harmonicMode };
+    material = {
+      riff:    algo.riffGen(rng, scale.length),
+      melodyA: algo.leadGenA(rng, scale.length, ctx),
+      melodyB: algo.leadGenB(rng, scale.length, ctx),
+    };
+    form = algo.buildForm(rng, material, { modeName: mode, chordMap });
+  }
+
   currentState = { seed, mode, bpm, material, form, algoName };
   $('log').innerHTML = buildLog(currentState);
   drawRoll(form, scale, algo, 0, muteState);
   $('play').disabled = false; $('export-midi').disabled = false; $('export-wav').disabled = false;
-  setStatus('✓ generated · ' + algoName + ' · seed ' + seed);
+  const exSwmd = $('export-swmd'); if (exSwmd) exSwmd.disabled = false;
+  const stExp  = $('state-export'); if (stExp) stExp.disabled = false;
+  syncPhaseSelector();
+  setStatus('✓ generated · ' + algoName + ' · ' + (patternMode === 'fixed' ? 'fixed: ' + (getCurrentPhase() || 'default') : 'seed ' + seed));
 }
 
 $('generate').onclick = generate;

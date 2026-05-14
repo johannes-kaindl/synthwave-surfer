@@ -1411,11 +1411,11 @@ git commit -m "feat: add buildFormFromSwmd to convert parsed phase into form"
 **Files:**
 - Modify: `synthwave_surfer.html` — replace existing `generate()` body (lines 1695-1717)
 
-- [ ] **Step 15.1: Read current `generate()` body to confirm shape**
+- [x] **Step 15.1: Read current `generate()` body to confirm shape**
 
 Open `synthwave_surfer.html`, view lines 1695-1717 to confirm the current implementation matches the snippet below. Adjust the line numbers in Step 15.2 if it has changed.
 
-- [ ] **Step 15.2: Replace `generate()` body**
+- [x] **Step 15.2: Replace `generate()` body**
 
 Find:
 ```javascript
@@ -1542,15 +1542,15 @@ function generate() {
 }
 ```
 
-- [ ] **Step 15.3: Verify in browser**
+- [x] **Step 15.3: Verify in browser**
 
 Open `synthwave_surfer.html` (no `?test=1`). Click **Generate**. Audio should play normally. No console errors.
 
-- [ ] **Step 15.4: Verify with `?test=1`**
+- [x] **Step 15.4: Verify with `?test=1`**
 
 Open `synthwave_surfer.html?test=1`. Tests should still pass.
 
-- [ ] **Step 15.5: Commit**
+- [x] **Step 15.5: Commit**
 
 ```bash
 git add synthwave_surfer.html
