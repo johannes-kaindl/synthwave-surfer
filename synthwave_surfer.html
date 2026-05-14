@@ -2584,7 +2584,129 @@ open:  . . . . . . . . . . . . . . . .
     bass: { model: 'stratos', volume: 0.6, detune: 0, attack: 0.005, decay: 0.2, sustain: 0.5, release: 0.25, cutoff: 0.55, resonance: 0.3, fenvAmount: 0.5, fenvDecay: 0.3, character: 0.4, lfoTarget: 'off', lfoRate: 0.4, lfoDepth: 0.3, arp: 'off', send: false },
     lead: { model: 'crystal', volume: 0.45, detune: 0, attack: 0.015, decay: 0.4, sustain: 0.3, release: 1.2, cutoff: 0.65, resonance: 0.2, fenvAmount: 0.4, fenvDecay: 0.5, character: 0.65, lfoTarget: 'pitch', lfoRate: 0.5, lfoDepth: 0.06, arp: 'off', send: true },
     pad:  { model: 'vapor', volume: 0.45, detune: 0, attack: 1.0, decay: 0.5, sustain: 0.8, release: 2.5, cutoff: 0.5, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.95, lfoTarget: 'filter', lfoRate: 0.1, lfoDepth: 0.4, arp: 'off', send: true },
-    master: { reverbSize: 0.7, reverbWet: 0.6, delayTime: 0.6, delayFB: 0.5, delayWet: 0.5, sidechain: 0.55, tapeSat: 0.4, masterGain: 0.78 }
+    master: { reverbSize: 0.7, reverbWet: 0.6, delayTime: 0.6, delayFB: 0.5, delayWet: 0.5, sidechain: 0.55, tapeSat: 0.4, masterGain: 0.78 },
+    fixedSwmd: `---
+synthwave-surfer: "1.0"
+name: Mall Bliss
+algo: dreamwave
+bpm: 100
+mode: aeolian
+pattern-mode: fixed
+bass-root: 48
+lead-root: 60
+mood: dreamy
+energy: medium
+default-phase: floating
+---
+
+## Phase: floating
+
+### Bass · stratos
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.60 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  4   |    |    |    |  ● |    |    |    |  ● |    |    |    |  ● |    |    |    |  ● |
+|  2   |    |  ● |  ─ |    |    |  ● |  ─ |    |    |  ● |  ─ |    |    |  ● |  ─ |    |
+|  0   |  ● |    |    |    |  ● |    |    |    |  ● |    |    |    |  ● |    |    |    |
+
+### Lead · crystal
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.45 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  6   |    |    |    |  ● |  ─ |  ─ |  ─ |    |    |  ● |  ─ |    |    |    |    |    |
+|  4   |  ● |  ─ |  ─ |    |    |    |    |  ● |    |    |    |  ● |  ─ |  ─ |  ─ |    |
+|  2   |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |  ● |
+
+### Pad · vapor
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.45 |
+
+### Progression
+| Bar     |  1   |  2   |  3   |  4   |
+|---------|------|------|------|------|
+| Degrees | 0,2,4 | -3,0,2 | -2,2,5 | 0,4,5 |
+
+### Drums
+### Pattern
+\`\`\`swdrum
+kick:  x . . . . . . . x . . . . . . .
+snare: . . . . x . . . . . . . x . . .
+hihat: x . x . x . x . x . x . x . x .
+open:  . . . . . . . . . . . . . . . .
+\`\`\`
+
+## Phase: arrival
+
+### Bass · stratos
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.65 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  4   |    |    |    |  ● |    |    |    |  ● |    |    |    |  ● |    |    |    |  ● |
+|  2   |    |  ● |  ─ |    |    |  ● |  ─ |    |    |  ● |  ─ |    |    |  ● |  ─ |    |
+|  0   |  ● |    |    |    |  ● |    |    |    |  ● |    |    |    |  ● |    |    |    |
+
+### Lead · crystal
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.55 |
+
+### Pattern
+| Grad |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|  7   |    |    |    |    |    |    |    |    |  ● |  ─ |  ─ |  ─ |    |    |    |    |
+|  6   |    |    |    |  ● |  ─ |  ─ |  ─ |    |    |    |    |    |  ● |  ─ |  ─ |    |
+|  4   |  ● |  ─ |  ─ |    |    |    |    |    |    |    |    |    |    |    |    |  ● |
+
+### Pad · vapor
+### Settings
+| Param | Value |
+|-------|-------|
+| volume | 0.45 |
+
+### Progression
+| Bar     |  1   |  2   |  3   |  4   |
+|---------|------|------|------|------|
+| Degrees | 0,2,4 | -3,0,2 | -2,2,5 | 0,4,5 |
+
+### Drums
+### Pattern
+\`\`\`swdrum
+kick:  x . . . x . . . x . . . x . . .
+snare: . . . . x . . . . . . . x . . .
+hihat: x . x . x . x . x . x . x . x .
+open:  . . . . . . . x . . . . . . . x
+\`\`\`
+
+## FX Bus
+| Effect | Param | Value |
+|--------|-------|-------|
+| reverb | size | 0.70 |
+| reverb | wet | 0.60 |
+| delay | time | 0.60 |
+| delay | feedback | 0.50 |
+| delay | wet | 0.50 |
+| sidechain | depth | 0.55 |
+| tapeSat | drive | 0.40 |
+| master | gain | 0.78 |
+`
   },
   'VHS Sunset': {
     tag: 'Dreamwave · warm', algoName: 'dreamwave', bpm: 96, mode: 'pentatonic_minor', seed: 1989,
