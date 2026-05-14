@@ -1274,7 +1274,7 @@ git commit -m "feat: add Phase Engine state machine (setPhase, listeners)"
 **Files:**
 - Modify: `synthwave_surfer.html` — append after Phase Engine functions
 
-- [ ] **Step 13.1: Add test**
+- [x] **Step 13.1: Add test**
 
 ```javascript
 ['External API — exposed and frozen', () => {
@@ -1288,9 +1288,9 @@ git commit -m "feat: add Phase Engine state machine (setPhase, listeners)"
 }],
 ```
 
-- [ ] **Step 13.2: Run test, verify it fails**
+- [x] **Step 13.2: Run test, verify it fails**
 
-- [ ] **Step 13.3: Implement API surface**
+- [x] **Step 13.3: Implement API surface**
 
 Append right after the Phase Engine functions:
 
@@ -1304,9 +1304,9 @@ window.synthwaveSurfer = Object.freeze({
 });
 ```
 
-- [ ] **Step 13.4: Run test, verify it passes**
+- [x] **Step 13.4: Run test, verify it passes**
 
-- [ ] **Step 13.5: Commit**
+- [x] **Step 13.5: Commit**
 
 ```bash
 git add synthwave_surfer.html

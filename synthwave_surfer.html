@@ -2062,6 +2062,14 @@ function onPhaseChange(cb) {
   };
 }
 
+window.synthwaveSurfer = Object.freeze({
+  setPhase,
+  getPhases,
+  getCurrentPhase,
+  onPhaseChange,
+  getMeta: () => (patternMode === 'fixed' && currentSwmd) ? { ...currentSwmd.meta } : null,
+});
+
 function applyFactoryPreset(name) {
   const p = FACTORY_PRESETS[name];
   if (!p) return;
@@ -2667,6 +2675,15 @@ default-phase: calm
       // cleanup
       currentSwmd = null;
       currentPhaseIndex = 0;
+    }],
+    ['External API — exposed and frozen', () => {
+      assert(typeof window.synthwaveSurfer === 'object', 'API exposed');
+      assert(typeof window.synthwaveSurfer.setPhase === 'function', 'setPhase fn');
+      assert(typeof window.synthwaveSurfer.getPhases === 'function', 'getPhases fn');
+      assert(typeof window.synthwaveSurfer.getCurrentPhase === 'function', 'getCurrentPhase fn');
+      assert(typeof window.synthwaveSurfer.onPhaseChange === 'function', 'onPhaseChange fn');
+      assert(typeof window.synthwaveSurfer.getMeta === 'function', 'getMeta fn');
+      assert(Object.isFrozen(window.synthwaveSurfer), 'API is frozen');
     }],
   ];
   for (const [name, fn] of tests) {
