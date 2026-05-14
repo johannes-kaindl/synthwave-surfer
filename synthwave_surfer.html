@@ -643,6 +643,33 @@ function serializePianoRoll(notes) {
   return [header, sep, ...rows].join('\n');
 }
 
+function parseDrums(sectionText) {
+  const blockMatch = sectionText.match(/```swdrum\n([\s\S]+?)```/);
+  if (!blockMatch) return null;
+  const result = { kick: [], snare: [], hihat: [], open: [] };
+  for (const line of blockMatch[1].split('\n')) {
+    const m = line.match(/^(\w+):\s*(.+)$/);
+    if (!m) continue;
+    const key = m[1].toLowerCase();
+    if (!(key in result)) continue;
+    result[key] = m[2].trim().split(/\s+/).map(c => c === 'x');
+  }
+  for (const k of Object.keys(result)) {
+    while (result[k].length < 16) result[k].push(false);
+    result[k] = result[k].slice(0, 16);
+  }
+  return result;
+}
+
+function serializeDrums(grid) {
+  const fmt = a => a.slice(0, 16).map(b => b ? 'x' : '.').join(' ');
+  return '```swdrum\nkick:  ' + fmt(grid.kick || [])
+       + '\nsnare: ' + fmt(grid.snare || [])
+       + '\nhihat: ' + fmt(grid.hihat || [])
+       + '\nopen:  ' + fmt(grid.open || [])
+       + '\n```';
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    Form builders
    ═══════════════════════════════════════════════════════════════════ */
@@ -2174,6 +2201,32 @@ function runCodecTests() {
       assert(reparsed.length === 4, 'four segments preserved');
       assert(reparsed[0].degree === 0 && reparsed[2].degree === 0, 'low degree preserved');
       assert(reparsed[1].degree === 4, 'high degree preserved');
+    }],
+    ['parseDrums — basic 16-step', () => {
+      const text = '### Pattern\n```swdrum\nkick:  x . . . x . . . x . . . x . . .\nsnare: . . . . x . . . . . . . x . . .\nhihat: x . x . x . x . x . x . x . x .\nopen:  . . . . . . . x . . . . . . . x\n```';
+      const drums = parseDrums(text);
+      assert(drums !== null, 'drums parsed');
+      assert(drums.kick.length === 16, 'kick has 16 steps');
+      assert(drums.kick[0] === true && drums.kick[1] === false, 'kick step 0 on, 1 off');
+      assert(drums.snare[4] === true, 'snare on step 4');
+      assert(drums.open[15] === true, 'open hat on step 15');
+    }],
+    ['parseDrums — null for no swdrum block', () => {
+      assert(parseDrums('### Pattern\nno block here') === null, 'null when no swdrum');
+    }],
+    ['serializeDrums — round-trip', () => {
+      const grid = {
+        kick:  [true,false,false,false, true,false,false,false, true,false,false,false, true,false,false,false],
+        snare: [false,false,false,false, true,false,false,false, false,false,false,false, true,false,false,false],
+        hihat: [true,false,true,false, true,false,true,false, true,false,true,false, true,false,true,false],
+        open:  [false,false,false,false, false,false,false,true, false,false,false,false, false,false,false,true],
+      };
+      const text = serializeDrums(grid);
+      assert(text.startsWith('```swdrum'), 'starts with code fence');
+      const reparsed = parseDrums('### Pattern\n' + text);
+      assert(reparsed.kick[0] === true, 'kick preserved');
+      assert(reparsed.snare[4] === true, 'snare preserved');
+      assert(reparsed.open[15] === true, 'open preserved');
     }],
   ];
   for (const [name, fn] of tests) {

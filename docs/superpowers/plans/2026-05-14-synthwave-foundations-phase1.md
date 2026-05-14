@@ -529,7 +529,7 @@ git commit -m "feat: add piano-roll serializer with round-trip test coverage"
 **Files:**
 - Modify: `synthwave_surfer.html` — append after `serializePianoRoll`
 
-- [ ] **Step 7.1: Add failing tests**
+- [x] **Step 7.1: Add failing tests**
 
 ```javascript
 ['parseDrums — basic 16-step', () => {
@@ -560,9 +560,9 @@ git commit -m "feat: add piano-roll serializer with round-trip test coverage"
 }],
 ```
 
-- [ ] **Step 7.2: Run tests, verify they fail**
+- [x] **Step 7.2: Run tests, verify they fail**
 
-- [ ] **Step 7.3: Implement `parseDrums` and `serializeDrums`**
+- [x] **Step 7.3: Implement `parseDrums` and `serializeDrums`**
 
 Append after `serializePianoRoll`:
 
@@ -595,9 +595,9 @@ function serializeDrums(grid) {
 }
 ```
 
-- [ ] **Step 7.4: Run tests, verify they pass**
+- [x] **Step 7.4: Run tests, verify they pass**
 
-- [ ] **Step 7.5: Commit**
+- [x] **Step 7.5: Commit**
 
 ```bash
 git add synthwave_surfer.html
