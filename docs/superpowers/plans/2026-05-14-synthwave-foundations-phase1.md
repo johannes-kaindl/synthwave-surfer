@@ -4,7 +4,7 @@
 
 **Goal:** Implement the `.swmd` codec with multi-phase support, the Phase Engine state machine, the external `window.synthwaveSurfer.*` API, six curated multi-phase factory presets, and fix the WAV export. Stays within `synthwave_surfer.html` (single-file, no build step).
 
-**Architecture:** All code lives in `synthwave_surfer.html`. New JS code is inserted in clearly-defined regions (codec helpers after line 491, Phase Engine + API after FACTORY_PRESETS, UI hookups after existing event handlers). The codec is a set of pure functions (parsers + serializers) easy to unit-test with an inline test harness. The Phase Engine is a tiny state machine that hooks into the existing `generate()`. The external API is a frozen `window.synthwaveSurfer` object exposed at app init.
+**Architecture:** All code lives in `synthwave_surfer.html`. New JS code is inserted in clearly-defined regions (codec helpers after line 489 (before the line 491 Form Builders block), Phase Engine + API after FACTORY_PRESETS, UI hookups after existing event handlers). The codec is a set of pure functions (parsers + serializers) easy to unit-test with an inline test harness. The Phase Engine is a tiny state machine that hooks into the existing `generate()`. The external API is a frozen `window.synthwaveSurfer` object exposed at app init.
 
 **Tech Stack:** Vanilla JS (ES2020), Tone.js 14 (already loaded via CDN), no build step, single HTML file. Tests are inline JS functions executed via a dev-only `?test=1` URL parameter that prints to console.
 
@@ -20,7 +20,7 @@ New code is inserted in these regions (in order):
 
 | Region | Insertion point | What goes there |
 |---|---|---|
-| **Codec helpers** | after line 491 (after `snapDegree`) | Frontmatter parser, section splitter, table parser, piano-roll parser/serializer, drum parser/serializer, pad parser/serializer, FX parser, instrument-settings parser, full SWMD parser/serializer |
+| **Codec helpers** | after line 489 (after `snapDegree`, before line 491 Form Builders block) | Frontmatter parser, section splitter, table parser, piano-roll parser/serializer, drum parser/serializer, pad parser/serializer, FX parser, instrument-settings parser, full SWMD parser/serializer |
 | **Phase Engine** | after FACTORY_PRESETS (~line 1656) | State variables, `setPhase()`, `getCurrentPhaseObj()`, listener machinery |
 | **buildFormFromSwmd** | right after Phase Engine | Builds a `form` object from a parsed `.swmd` for the current phase |
 | **External API** | after Phase Engine | Frozen `window.synthwaveSurfer` object |
@@ -30,7 +30,7 @@ New code is inserted in these regions (in order):
 | **HTML — Tracks panel** | line 235 (after `harmonic-toggle`) | Pattern-mode toggle + Phase Selector container |
 | **HTML — Export panel** | line 302 (after `export-wav`) | SWMD ⬇/⬆ buttons + State JSON button |
 | **CSS** | line 104 (after `.harmonic-toggle.strict`) | `.pattern-toggle`, `.phase-pill` |
-| **Test harness** | end of `<script>` (~line 1799) | `runCodecTests()` + `?test=1` URL trigger |
+| **Test harness** | end of `<script>` (~line 1912) | `runCodecTests()` + `?test=1` URL trigger |
 
 State variables added (~line 1432, near `let currentState = null;`):
 ```javascript
@@ -55,7 +55,7 @@ This gives us TDD-style red/green/refactor for the **pure** functions (parsers, 
 ## Task 1: Test harness setup
 
 **Files:**
-- Modify: `synthwave_surfer.html` — append at end of `<script>` block (~line 1799)
+- Modify: `synthwave_surfer.html` — append at end of `<script>` block (~line 1912)
 
 - [ ] **Step 1.1: Add `assert()` helper and empty `runCodecTests()`**
 
@@ -111,7 +111,7 @@ git commit -m "feat: add inline codec test harness with ?test=1 trigger"
 ## Task 2: YAML frontmatter parser
 
 **Files:**
-- Modify: `synthwave_surfer.html` — insert after line 491 (after `snapDegree` function)
+- Modify: `synthwave_surfer.html` — insert after line 489 (after `snapDegree` function, before the line 491 Form Builders block)
 
 - [ ] **Step 2.1: Add failing test**
 
@@ -146,7 +146,7 @@ Open `synthwave_surfer.html?test=1` → console should show:
 
 - [ ] **Step 2.3: Implement `parseYamlFrontmatter`**
 
-Insert after line 491 (after `snapDegree`):
+Insert after line 489 (after `snapDegree`, before the line 491 Form Builders block):
 
 ```javascript
 /* ═══════════════════════════════════════════════════════════════════
