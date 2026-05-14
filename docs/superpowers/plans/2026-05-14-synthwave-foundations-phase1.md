@@ -57,7 +57,7 @@ This gives us TDD-style red/green/refactor for the **pure** functions (parsers, 
 **Files:**
 - Modify: `synthwave_surfer.html` — append at end of `<script>` block (~line 1912)
 
-- [ ] **Step 1.1: Add `assert()` helper and empty `runCodecTests()`**
+- [x] **Step 1.1: Add `assert()` helper and empty `runCodecTests()`**
 
 Append to the end of `<script>` (just before `</script>`):
 
@@ -89,7 +89,7 @@ if (new URLSearchParams(location.search).get('test') === '1') {
 }
 ```
 
-- [ ] **Step 1.2: Verify harness runs**
+- [x] **Step 1.2: Verify harness runs**
 
 Open `synthwave_surfer.html?test=1` in browser. Open DevTools console.
 
@@ -99,7 +99,7 @@ Expected output:
 ━━━ Done: 0 passed, 0 failed ━━━
 ```
 
-- [ ] **Step 1.3: Commit**
+- [x] **Step 1.3: Commit**
 
 ```bash
 git add synthwave_surfer.html

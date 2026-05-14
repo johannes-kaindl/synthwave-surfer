@@ -1910,6 +1910,32 @@ syncMasterUI();
 renderPresetList();
 // Load Miami Nights as the boot preset, but don't auto-play
 applyFactoryPreset('Miami Nights');
+
+/* ═══════════════════════════════════════════════════════════════════
+   Codec test harness (run with ?test=1)
+   ═══════════════════════════════════════════════════════════════════ */
+function assert(cond, msg) {
+  if (cond) { console.log('  ✓ ' + msg); return; }
+  console.error('  ✗ FAIL: ' + msg);
+  throw new Error('Test failed: ' + msg);
+}
+
+function runCodecTests() {
+  console.log('━━━ Synthwave Surfer Codec Tests ━━━');
+  let passed = 0, failed = 0;
+  const tests = [
+    // Tests are added by subsequent tasks
+  ];
+  for (const [name, fn] of tests) {
+    console.log('▸ ' + name);
+    try { fn(); passed++; } catch (e) { failed++; console.error(e); }
+  }
+  console.log(`━━━ Done: ${passed} passed, ${failed} failed ━━━`);
+}
+
+if (new URLSearchParams(location.search).get('test') === '1') {
+  window.addEventListener('load', () => setTimeout(runCodecTests, 100));
+}
 </script>
 </body>
 </html>
