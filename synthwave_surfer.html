@@ -613,6 +613,36 @@ function parsePianoRoll(sectionText) {
   return notes;
 }
 
+function serializePianoRoll(notes) {
+  // Expand notes back into a step grid
+  const steps = [];
+  for (const n of notes) {
+    if (n.rest) { for (let i = 0; i < n.duration; i++) steps.push(null); continue; }
+    steps.push({ degree: n.degree, start: true });
+    for (let i = 1; i < n.duration; i++) steps.push({ degree: n.degree, start: false });
+  }
+  const S = steps.length;
+  if (S === 0) return '';
+
+  // Find degrees to render (used degrees only; sort high → low)
+  const degreesUsed = [...new Set(steps.filter(Boolean).map(s => s.degree))].sort((a, b) => b - a);
+  if (degreesUsed.length === 0) return '';
+
+  const gradW = 6;
+  const header = `| ${'Grad'.padEnd(gradW)} |` +
+    Array.from({ length: S }, (_, i) => ` ${String(i + 1).padStart(2)} `).join('|') + '|';
+  const sep = `|${'-'.repeat(gradW + 2)}|` +
+    Array.from({ length: S }, () => '----').join('|') + '|';
+  const rows = degreesUsed.map(d => {
+    const cells = steps.map(s => {
+      if (!s || s.degree !== d) return '   ';
+      return s.start ? ' ● ' : ' ─ ';
+    });
+    return `| ${String(d).padStart(gradW)} |` + cells.join('|') + '|';
+  });
+  return [header, sep, ...rows].join('\n');
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    Form builders
    ═══════════════════════════════════════════════════════════════════ */
@@ -2119,6 +2149,31 @@ function runCodecTests() {
     }],
     ['parsePianoRoll — empty when no Pattern subsection', () => {
       assert(parsePianoRoll('### Settings\n| x | y |').length === 0, 'empty');
+    }],
+    ['serializePianoRoll — single note round-trip', () => {
+      const notes = [{ degree: 0, duration: 2 }, { rest: true, duration: 2 }];
+      const text = serializePianoRoll(notes);
+      assert(text.includes('|'), 'output is a markdown table');
+      assert(text.includes(' ● '), 'has note marker');
+      assert(text.includes(' ─ '), 'has hold marker');
+      // Round-trip via parser
+      const reparsed = parsePianoRoll('### Pattern\n' + text);
+      assert(reparsed.length === 2, 'round-trip preserves segment count');
+      assert(reparsed[0].degree === 0 && reparsed[0].duration === 2, 'note preserved');
+      assert(reparsed[1].rest === true && reparsed[1].duration === 2, 'rest preserved');
+    }],
+    ['serializePianoRoll — multi-degree round-trip', () => {
+      const notes = [
+        { degree: 0, duration: 2 },
+        { degree: 4, duration: 2 },
+        { degree: 0, duration: 2 },
+        { rest: true, duration: 2 },
+      ];
+      const text = serializePianoRoll(notes);
+      const reparsed = parsePianoRoll('### Pattern\n' + text);
+      assert(reparsed.length === 4, 'four segments preserved');
+      assert(reparsed[0].degree === 0 && reparsed[2].degree === 0, 'low degree preserved');
+      assert(reparsed[1].degree === 4, 'high degree preserved');
     }],
   ];
   for (const [name, fn] of tests) {

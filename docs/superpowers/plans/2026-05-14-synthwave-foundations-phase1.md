@@ -445,7 +445,7 @@ git commit -m "feat: add piano-roll parser for .swmd codec"
 **Files:**
 - Modify: `synthwave_surfer.html` — append after `parsePianoRoll`
 
-- [ ] **Step 6.1: Add failing tests, including a round-trip**
+- [x] **Step 6.1: Add failing tests, including a round-trip**
 
 ```javascript
 ['serializePianoRoll — single note round-trip', () => {
@@ -475,9 +475,9 @@ git commit -m "feat: add piano-roll parser for .swmd codec"
 }],
 ```
 
-- [ ] **Step 6.2: Run tests, verify they fail (serializePianoRoll undefined)**
+- [x] **Step 6.2: Run tests, verify they fail (serializePianoRoll undefined)**
 
-- [ ] **Step 6.3: Implement `serializePianoRoll`**
+- [x] **Step 6.3: Implement `serializePianoRoll`**
 
 Append after `parsePianoRoll`:
 
@@ -513,9 +513,9 @@ function serializePianoRoll(notes) {
 }
 ```
 
-- [ ] **Step 6.4: Run tests, verify they pass**
+- [x] **Step 6.4: Run tests, verify they pass**
 
-- [ ] **Step 6.5: Commit**
+- [x] **Step 6.5: Commit**
 
 ```bash
 git add synthwave_surfer.html
