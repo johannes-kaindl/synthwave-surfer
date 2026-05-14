@@ -282,6 +282,7 @@
       <input id="preset-name" type="text" placeholder="Preset name..." style="width: 100%;">
       <button id="preset-save" class="small">💾 Save</button>
       <button id="preset-export" class="small">⬇ Export</button>
+      <button id="state-export" class="small" disabled>⬇ State JSON</button>
     </div>
     <div class="preset-list" id="preset-list">
       <span class="preset-empty">No user presets saved yet.</span>
@@ -2471,6 +2472,29 @@ $('preset-export').onclick = () => {
   URL.revokeObjectURL(url);
   setStatus('✓ Exported');
 };
+    $('state-export').onclick = () => {
+      if (!currentState) { setStatus('⚠ Generate first', true); return; }
+      const state = {
+        timestamp: new Date().toISOString(),
+        seed: currentState.seed,
+        mode: currentState.mode,
+        bpm: currentState.bpm,
+        algoName: currentState.algoName,
+        patternMode,
+        currentPhase: getCurrentPhase(),
+        trackParams: { bass: { ...trackParams.bass }, lead: { ...trackParams.lead }, pad: { ...trackParams.pad } },
+        masterState: { ...masterState },
+        muteState: { ...muteState },
+        swmd: currentSwmd ? swmdSerialize(currentSwmd) : null,
+      };
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url;
+      a.download = `synthwave_state_${currentState.algoName}_${currentState.seed}.json`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setStatus('✓ State exported');
+    };
 $('preset-import').onclick = () => $('preset-import-file').click();
 $('preset-import-file').addEventListener('change', e => {
   const file = e.target.files[0]; if (!file) return;

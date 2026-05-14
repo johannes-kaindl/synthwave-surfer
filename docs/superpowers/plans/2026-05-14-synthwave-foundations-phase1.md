@@ -1762,13 +1762,13 @@ git commit -m "feat: add SWMD Export/Import buttons and handlers"
   - HTML: insert in User Presets panel near `preset-export` (~line 278)
   - JS: append handler after preset-export wiring
 
-- [ ] **Step 18.1: Add HTML** — find `<button id="preset-export" class="small">⬇ Export</button>` (line 278) and add immediately after:
+- [x] **Step 18.1: Add HTML** — find `<button id="preset-export" class="small">⬇ Export</button>` (line 278) and add immediately after:
 
 ```html
       <button id="state-export" class="small" disabled>⬇ State JSON</button>
 ```
 
-- [ ] **Step 18.2: Add handler**
+- [x] **Step 18.2: Add handler**
 
 Find the existing `preset-export` handler (or just append near other UI wiring) and add:
 
@@ -1798,11 +1798,11 @@ $('state-export').onclick = () => {
 };
 ```
 
-- [ ] **Step 18.3: Verify in browser**
+- [x] **Step 18.3: Verify in browser**
 
 Click **Generate** then **⬇ State JSON**. Open the downloaded file. It should be valid JSON with all keys above.
 
-- [ ] **Step 18.4: Commit**
+- [x] **Step 18.4: Commit**
 
 ```bash
 git add synthwave_surfer.html
