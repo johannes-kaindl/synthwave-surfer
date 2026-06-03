@@ -1214,9 +1214,11 @@ function buildSynthModel(modelName, polyphonic) {
   if (modelName === 'vapor') {
     // Juno-106 style: dual detuned saws + intense chorus
     const synth = polyphonic
-      ? new Tone.PolySynth(Tone.Synth, {
+      ? new Tone.PolySynth(Tone.MonoSynth, {
           oscillator: { type: 'fatsawtooth', count: 3, spread: 30 },
-          envelope: { attack: 0.8, decay: 0.5, sustain: 0.85, release: 2.4 }
+          envelope: { attack: 0.8, decay: 0.5, sustain: 0.85, release: 2.4 },
+          filter: { Q: 1, type: 'lowpass', rolloff: -12 },
+          filterEnvelope: { attack: 0.8, decay: 0.5, sustain: 0.9, release: 2.4, baseFrequency: 800, octaves: 2.5 }
         })
       : new Tone.MonoSynth({
           oscillator: { type: 'fatsawtooth', count: 3, spread: 30 },
@@ -1261,9 +1263,11 @@ function buildSynthModel(modelName, polyphonic) {
 
   if (modelName === 'ether') {
     const synth = polyphonic
-      ? new Tone.PolySynth(Tone.Synth, {
+      ? new Tone.PolySynth(Tone.MonoSynth, {
           oscillator: { type: 'fatsawtooth', count: 3, spread: 20 },
-          envelope: { attack: 0.5, decay: 0.4, sustain: 0.7, release: 1.5 }
+          envelope: { attack: 0.5, decay: 0.4, sustain: 0.7, release: 1.5 },
+          filter: { Q: 1, type: 'lowpass', rolloff: -12 },
+          filterEnvelope: { attack: 0.5, decay: 0.4, sustain: 0.9, release: 1.5, baseFrequency: 800, octaves: 2.5 }
         })
       : new Tone.MonoSynth({
           oscillator: { type: 'fatsawtooth', count: 3, spread: 20 },
@@ -1331,8 +1335,9 @@ function applyTrackParams(model, params, isPoly, lfoNodes) {
       lfoNodes.lfo.max = 100;
       if (model.synth.detune) try { lfoNodes.lfo.connect(model.synth.detune); } catch(e) {}
     } else if (params.lfoTarget === 'filter') {
-      lfoNodes.lfo.min = 200;
-      lfoNodes.lfo.max = 4000;
+      const fb = 50 + params.cutoff * 4500;   // sweep AROUND the cutoff slider, not a fixed 200–4000
+      lfoNodes.lfo.min = Math.max(40, fb * 0.4);
+      lfoNodes.lfo.max = fb * 1.6;
       if (model.synth.filter && model.synth.filter.frequency) {
         try { lfoNodes.lfo.connect(model.synth.filter.frequency); } catch(e) {}
       }
@@ -1478,7 +1483,7 @@ function defaultTrackParams(model, isPad) {
   };
 }
 const trackParams = {
-  bass: defaultTrackParams('stratos', false),
+  bass: defaultTrackParams('alkali', false),
   lead: defaultTrackParams('crystal', false),
   pad: defaultTrackParams('vapor', true),
 };
@@ -2204,7 +2209,7 @@ function syncMasterUI() {
 const FACTORY_PRESETS = {
   'Miami Nights': {
     tag: 'Outrun · classic', algoName: 'outrun', bpm: 120, mode: 'aeolian', seed: 1986,
-    bass: { model: 'stratos', volume: 0.7, detune: 0, attack: 0.005, decay: 0.25, sustain: 0.7, release: 0.3, cutoff: 0.5, resonance: 0.3, fenvAmount: 0.4, fenvDecay: 0.3, character: 0.5, lfoTarget: 'pwm', lfoRate: 0.15, lfoDepth: 0.4, arp: 'off', send: false },
+    bass: { model: 'alkali', volume: 0.7, detune: 0, attack: 0.005, decay: 0.25, sustain: 0.7, release: 0.3, cutoff: 0.5, resonance: 0.3, fenvAmount: 0.4, fenvDecay: 0.3, character: 0.5, lfoTarget: 'pwm', lfoRate: 0.15, lfoDepth: 0.4, arp: 'off', send: false },
     lead: { model: 'crystal', volume: 0.45, detune: 0, attack: 0.01, decay: 0.4, sustain: 0.25, release: 1.0, cutoff: 0.7, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.6, lfoTarget: 'off', lfoRate: 0.3, lfoDepth: 0.2, arp: 'off', send: true },
     pad:  { model: 'vapor', volume: 0.4, detune: 0, attack: 1.2, decay: 0.5, sustain: 0.85, release: 2.5, cutoff: 0.45, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.8, lfoTarget: 'filter', lfoRate: 0.08, lfoDepth: 0.3, arp: 'off', send: true },
     master: { reverbSize: 0.6, reverbWet: 0.5, delayTime: 0.55, delayFB: 0.45, delayWet: 0.45, sidechain: 0.75, tapeSat: 0.35, masterGain: 0.8 },
@@ -2332,7 +2337,7 @@ open:  . . . . . . . x . . . . . . . x
   },
   'Highway Cruise': {
     tag: 'Outrun · chilled', algoName: 'outrun', bpm: 108, mode: 'aeolian', seed: 1984,
-    bass: { model: 'stratos', volume: 0.65, detune: 0, attack: 0.008, decay: 0.3, sustain: 0.65, release: 0.4, cutoff: 0.4, resonance: 0.25, fenvAmount: 0.3, fenvDecay: 0.4, character: 0.3, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
+    bass: { model: 'alkali', volume: 0.65, detune: 0, attack: 0.008, decay: 0.3, sustain: 0.65, release: 0.4, cutoff: 0.4, resonance: 0.25, fenvAmount: 0.3, fenvDecay: 0.4, character: 0.3, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
     lead: { model: 'vapor', volume: 0.45, detune: 0, attack: 0.04, decay: 0.4, sustain: 0.5, release: 0.8, cutoff: 0.6, resonance: 0.25, fenvAmount: 0.4, fenvDecay: 0.5, character: 0.7, lfoTarget: 'pitch', lfoRate: 0.2, lfoDepth: 0.08, arp: 'off', send: true },
     pad:  { model: 'vapor', volume: 0.42, detune: 0, attack: 1.0, decay: 0.5, sustain: 0.8, release: 2.2, cutoff: 0.4, resonance: 0.1, fenvAmount: 0.2, fenvDecay: 0.7, character: 0.9, lfoTarget: 'filter', lfoRate: 0.06, lfoDepth: 0.35, arp: 'off', send: true },
     master: { reverbSize: 0.65, reverbWet: 0.55, delayTime: 0.5, delayFB: 0.4, delayWet: 0.5, sidechain: 0.5, tapeSat: 0.4, masterGain: 0.78 },
@@ -2507,7 +2512,7 @@ open:  . . . . . . . x . . . . . . . x
   },
   'Blade Runner Rain': {
     tag: 'Noir · cinematic', algoName: 'noir', bpm: 80, mode: 'aeolian', seed: 2019,
-    bass: { model: 'stratos', volume: 0.55, detune: 0, attack: 0.05, decay: 0.5, sustain: 0.7, release: 1.0, cutoff: 0.3, resonance: 0.2, fenvAmount: 0.2, fenvDecay: 0.5, character: 0.4, lfoTarget: 'pwm', lfoRate: 0.08, lfoDepth: 0.5, arp: 'off', send: false },
+    bass: { model: 'alkali', volume: 0.55, detune: 0, attack: 0.05, decay: 0.5, sustain: 0.7, release: 1.0, cutoff: 0.3, resonance: 0.2, fenvAmount: 0.2, fenvDecay: 0.5, character: 0.4, lfoTarget: 'pwm', lfoRate: 0.08, lfoDepth: 0.5, arp: 'off', send: false },
     lead: { model: 'crystal', volume: 0.4, detune: 0, attack: 0.02, decay: 0.6, sustain: 0.3, release: 2.0, cutoff: 0.5, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.7, character: 0.7, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.1, arp: 'off', send: true },
     pad:  { model: 'vapor', volume: 0.55, detune: 0, attack: 2.0, decay: 0.8, sustain: 0.9, release: 4.0, cutoff: 0.35, resonance: 0.1, fenvAmount: 0.2, fenvDecay: 0.8, character: 1.0, lfoTarget: 'filter', lfoRate: 0.04, lfoDepth: 0.4, arp: 'off', send: true },
     master: { reverbSize: 0.85, reverbWet: 0.75, delayTime: 0.7, delayFB: 0.55, delayWet: 0.5, sidechain: 0, tapeSat: 0.45, masterGain: 0.75 },
@@ -2799,7 +2804,7 @@ open:  . . . . . . . . . . . . . . . .
   },
   'Mall Bliss': {
     tag: 'Dreamwave · hazy', algoName: 'dreamwave', bpm: 100, mode: 'aeolian', seed: 1985,
-    bass: { model: 'stratos', volume: 0.6, detune: 0, attack: 0.005, decay: 0.2, sustain: 0.5, release: 0.25, cutoff: 0.55, resonance: 0.3, fenvAmount: 0.5, fenvDecay: 0.3, character: 0.4, lfoTarget: 'off', lfoRate: 0.4, lfoDepth: 0.3, arp: 'off', send: false },
+    bass: { model: 'alkali', volume: 0.6, detune: 0, attack: 0.005, decay: 0.2, sustain: 0.5, release: 0.25, cutoff: 0.55, resonance: 0.3, fenvAmount: 0.5, fenvDecay: 0.3, character: 0.4, lfoTarget: 'off', lfoRate: 0.4, lfoDepth: 0.3, arp: 'off', send: false },
     lead: { model: 'crystal', volume: 0.45, detune: 0, attack: 0.015, decay: 0.4, sustain: 0.3, release: 1.2, cutoff: 0.65, resonance: 0.2, fenvAmount: 0.4, fenvDecay: 0.5, character: 0.65, lfoTarget: 'pitch', lfoRate: 0.5, lfoDepth: 0.06, arp: 'off', send: true },
     pad:  { model: 'vapor', volume: 0.45, detune: 0, attack: 1.0, decay: 0.5, sustain: 0.8, release: 2.5, cutoff: 0.5, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.95, lfoTarget: 'filter', lfoRate: 0.1, lfoDepth: 0.4, arp: 'off', send: true },
     master: { reverbSize: 0.7, reverbWet: 0.6, delayTime: 0.6, delayFB: 0.5, delayWet: 0.5, sidechain: 0.55, tapeSat: 0.4, masterGain: 0.78 },
@@ -2928,7 +2933,7 @@ open:  . . . . . . . x . . . . . . . x
   },
   'VHS Sunset': {
     tag: 'Dreamwave · warm', algoName: 'dreamwave', bpm: 96, mode: 'aeolian', seed: 1989,
-    bass: { model: 'stratos', volume: 0.65, detune: -5, attack: 0.008, decay: 0.25, sustain: 0.6, release: 0.3, cutoff: 0.45, resonance: 0.35, fenvAmount: 0.45, fenvDecay: 0.35, character: 0.5, lfoTarget: 'pwm', lfoRate: 0.2, lfoDepth: 0.5, arp: 'off', send: false },
+    bass: { model: 'alkali', volume: 0.65, detune: -5, attack: 0.008, decay: 0.25, sustain: 0.6, release: 0.3, cutoff: 0.45, resonance: 0.35, fenvAmount: 0.45, fenvDecay: 0.35, character: 0.5, lfoTarget: 'pwm', lfoRate: 0.2, lfoDepth: 0.5, arp: 'off', send: false },
     lead: { model: 'vapor', volume: 0.5, detune: 6, attack: 0.04, decay: 0.5, sustain: 0.5, release: 1.0, cutoff: 0.55, resonance: 0.2, fenvAmount: 0.35, fenvDecay: 0.55, character: 0.85, lfoTarget: 'pitch', lfoRate: 0.3, lfoDepth: 0.05, arp: 'off', send: true },
     pad:  { model: 'vapor', volume: 0.45, detune: -8, attack: 1.2, decay: 0.55, sustain: 0.8, release: 2.8, cutoff: 0.42, resonance: 0.12, fenvAmount: 0.25, fenvDecay: 0.7, character: 1.0, lfoTarget: 'filter', lfoRate: 0.08, lfoDepth: 0.45, arp: 'off', send: true },
     master: { reverbSize: 0.7, reverbWet: 0.6, delayTime: 0.55, delayFB: 0.5, delayWet: 0.55, sidechain: 0.6, tapeSat: 0.55, masterGain: 0.76 },
@@ -3263,6 +3268,30 @@ function generate() {
 $('generate').onclick = generate;
 $('randomize').onclick = () => { $('seed').value = Math.floor(Math.random() * 99999); generate(); };
 
+/* Genre-Voicing — selecting a genre also loads its default instruments + FX.
+   Starting point per genre = one reference factory preset (tunable: just edit
+   GENRE_REF). Generative mode then SOUNDS like its genre, not only composes like it. */
+const GENRE_REF = { outrun: 'Miami Nights', noir: 'Carpenter Synth', dreamwave: 'VHS Sunset' };
+const GENRE_BASS = { outrun: 'alkali', noir: 'alkali', dreamwave: 'alkali' };  // Stratos PWM retired — per-genre tunable
+function applyGenreVoicing(algoName) {
+  const ref = FACTORY_PRESETS[GENRE_REF[algoName]];
+  if (!ref) return;
+  Object.assign(trackParams.bass, ref.bass);
+  trackParams.bass.model = GENRE_BASS[algoName] || trackParams.bass.model;
+  if (trackParams.bass.lfoTarget === 'pwm') trackParams.bass.lfoTarget = 'off';  // pwm only affects Stratos' pulse width
+  Object.assign(trackParams.lead, ref.lead);
+  Object.assign(trackParams.pad, ref.pad);
+  Object.assign(masterState, ref.master);
+  for (const k of ['bass', 'lead', 'pad']) syncTrackUI(k);
+  syncMasterUI();
+  if (liveSynths) {
+    setTrackModel(liveSynths, 'bass', trackParams.bass.model, trackParams.bass);
+    setTrackModel(liveSynths, 'lead', trackParams.lead.model, trackParams.lead);
+    setTrackModel(liveSynths, 'pad',  trackParams.pad.model,  trackParams.pad);
+    applyAllToGraph(liveSynths);
+  }
+}
+
 document.querySelectorAll('.algo-card').forEach(card => {
   card.addEventListener('click', () => {
     document.querySelectorAll('.algo-card').forEach(c => c.classList.remove('active'));
@@ -3271,6 +3300,7 @@ document.querySelectorAll('.algo-card').forEach(card => {
     const algoName = card.dataset.algo;
     $('bpm').value = ALGORITHMS[algoName].defaultBpm;
     $('mode').value = ALGORITHMS[algoName].defaultMode;
+    applyGenreVoicing(algoName);
     generate();
   });
 });
