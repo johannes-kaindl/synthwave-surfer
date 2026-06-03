@@ -222,6 +222,11 @@
         <div class="algo-name">Dreamwave</div>
         <div class="algo-desc">100 BPM · 16th arpeggio bass · chorused lead · washed pads · Am–C–F–G</div>
       </label>
+      <label class="algo-card" data-algo="carpenter">
+        <input type="radio" name="algo" value="carpenter">
+        <div class="algo-name">Carpenter</div>
+        <div class="algo-desc">92 BPM · phrygian · relentless 8th ostinato · sparse high motif · minimal drums · horror tension</div>
+      </label>
     </div>
   </div>
 
@@ -1661,6 +1666,10 @@ function scheduleAll(form, melodyScale, bpm, g, algo) {
         if (beat === 0 && bar % 2 === 0) drumEvents.push({ time: beatT, type: 'kick' });
         if (beat === 2) drumEvents.push({ time: beatT, type: 'snare', vel: 0.5 });
         for (let e = 0; e < 2; e++) drumEvents.push({ time: beatT + e * (secBeat / 2), type: 'hat', vel: 0.25 });
+      } else if (pattern === 'carpenter') {
+        if (beat === 0) drumEvents.push({ time: beatT, type: 'kick' });
+        if (beat === 2 && bar % 2 === 1) drumEvents.push({ time: beatT, type: 'snare', vel: 0.4 });
+        // no hats — tension from space
       } else if (pattern === 'shuffle') {
         if (isBreak) {
           if (beat === 2) drumEvents.push({ time: beatT, type: 'snare', vel: 0.6 });
@@ -1935,6 +1944,9 @@ function exportMidi() {
         if (beat === 0 && bar % 2 === 0) drumEvents.push({ start: tBeat, duration: TPQ/4, note: 36, vel: 90 });
         if (beat === 2) drumEvents.push({ start: tBeat, duration: TPQ/4, note: 38, vel: 60 });
         for (let e = 0; e < 2; e++) drumEvents.push({ start: tBeat + e * (TPQ/2), duration: 60, note: 42, vel: 30 });
+      } else if (algo.drumPattern === 'carpenter') {
+        if (beat === 0) drumEvents.push({ start: tBeat, duration: TPQ/4, note: 36, vel: 100 });
+        if (beat === 2 && bar % 2 === 1) drumEvents.push({ start: tBeat, duration: TPQ/4, note: 38, vel: 50 });
       } else if (algo.drumPattern === 'shuffle') {
         if (!isBreak && (beat === 0 || (intense && beat === 2))) drumEvents.push({ start: tBeat, duration: TPQ/4, note: 36, vel: 110 });
         if (beat === 2) drumEvents.push({ start: tBeat, duration: TPQ/4, note: 38, vel: intense ? 95 : 75 });
@@ -3470,6 +3482,10 @@ $('export-wav').onclick = exportWav;
         [0].forEach(i => { K[i] = true; });
         [8].forEach(i => { S[i] = true; });
         [0,4,8,12].forEach(i => { H[i] = true; });
+      } else if (algo.drumPattern === 'carpenter') {
+        [0].forEach(i => { K[i] = true; });
+        [8].forEach(i => { S[i] = true; });
+        // no hihat — tension from space
       } else { // shuffle / dreamy / other
         [0,8].forEach(i => { K[i] = true; });
         [8].forEach(i => { S[i] = true; });
