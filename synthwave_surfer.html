@@ -3123,6 +3123,7 @@ function applyFactoryPreset(name) {
   document.querySelectorAll('input[name="algo"]').forEach(r => r.checked = (r.value === p.algoName));
   document.querySelectorAll('.algo-card').forEach(c => c.classList.toggle('active', c.dataset.algo === p.algoName));
   Object.assign(trackParams.bass, p.bass);
+  if (trackParams.bass.lfoTarget === 'pwm' && trackParams.bass.model !== 'stratos') trackParams.bass.lfoTarget = 'off';  // pwm only modulates Stratos' pulse width — keep UI honest on retired-Stratos presets
   Object.assign(trackParams.lead, p.lead);
   Object.assign(trackParams.pad, p.pad);
   Object.assign(masterState, p.master);
