@@ -946,19 +946,19 @@ function buildSynthModel(modelName, polyphonic) {
     // Jupiter-8 PWM bass — pulse wave with LFO-modulated width, sub-osc, 24dB LP
     const synth = polyphonic
       ? new Tone.PolySynth(Tone.MonoSynth, {
-          oscillator: { type: 'pulse', width: 0.3 },
+          oscillator: { type: 'pulse', width: 0.5 },
           envelope: { attack: 0.005, decay: 0.3, sustain: 0.7, release: 0.4 },
           filter: { Q: 4, type: 'lowpass', rolloff: -24 },
           filterEnvelope: { attack: 0.005, decay: 0.3, sustain: 0.6, release: 0.4, baseFrequency: 200, octaves: 3 }
         })
       : new Tone.MonoSynth({
-          oscillator: { type: 'pulse', width: 0.3 },
+          oscillator: { type: 'pulse', width: 0.5 },
           envelope: { attack: 0.005, decay: 0.3, sustain: 0.7, release: 0.4 },
           filter: { Q: 4, type: 'lowpass', rolloff: -24 },
           filterEnvelope: { attack: 0.005, decay: 0.3, sustain: 0.6, release: 0.4, baseFrequency: 200, octaves: 3 }
         });
     // Pulse width modulation LFO — internal to Stratos, not the per-track LFO
-    const pwmLfo = new Tone.LFO(0.4, 0.2, 0.5);
+    const pwmLfo = new Tone.LFO(0.3, 0.42, 0.58);
     if (!polyphonic) {
       pwmLfo.connect(synth.oscillator.width);
     }
@@ -1119,8 +1119,8 @@ function applyTrackParams(model, params, isPoly, lfoNodes) {
         try { lfoNodes.lfo.connect(model.synth.filter.frequency); } catch(e) {}
       }
     } else if (params.lfoTarget === 'pwm') {
-      lfoNodes.lfo.min = 0.1;
-      lfoNodes.lfo.max = 0.9;
+      lfoNodes.lfo.min = 0.35;
+      lfoNodes.lfo.max = 0.65;
       // Only works for pulse-osc synths (Stratos)
       if (model.type === 'stratos' && model.synth.oscillator && model.synth.oscillator.width) {
         try { lfoNodes.lfo.connect(model.synth.oscillator.width); } catch(e) {}
