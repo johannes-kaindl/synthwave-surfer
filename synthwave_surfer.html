@@ -674,6 +674,47 @@ function generateMelody(rng, scaleLen, bars, ctx = {}) {
   if (chordMap) landOnHarmony(events, chordMap, scaleLen, startBar);
   return events;
 }
+/* Bass-riff engine — reuses the motif philosophy for 1-bar root-anchored ostinati.
+   A riff is one 16-step cell looped per bar (transposed to the chord root by the
+   form builders). bassFill produces a turnaround variation for phrase ends. */
+const BASS_PROFILES = {
+  outrun:    { grooves: [[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,4],[3,1,2,2,2,2,4],[2,2,4,2,2,4]], octaveProb: 0.6,  moveProb: 0.3  },
+  noir:      { grooves: [[8,8],[16],[8,4,4],[4,4,8]],                                       octaveProb: 0.15, moveProb: 0.1  },
+  dreamwave: { grooves: [[4,4,4,4],[2,2,2,2,2,2,2,2],[2,2,4,2,2,4]],                        octaveProb: 0.35, moveProb: 0.25 },
+};
+
+function generateRiff(rng, scaleLen, profile) {
+  const groove = profile.grooves[Math.floor(rng() * profile.grooves.length)];
+  const out = [];
+  let step = 0;
+  for (let i = 0; i < groove.length; i++) {
+    const dur = groove[i];
+    let degree;
+    if (step === 0) {
+      degree = 0;                                                              // downbeat → root
+    } else if (step % 4 === 0) {
+      degree = rng() < profile.octaveProb ? (rng() < 0.6 ? -scaleLen : scaleLen) : 0;  // strong beat → root/octave
+    } else {
+      degree = rng() < profile.moveProb ? (rng() < 0.5 ? -1 : 1) : 0;          // weak step → small move or root
+    }
+    out.push({ degree, duration: dur });
+    step += dur;
+  }
+  return out;
+}
+
+function bassFill(cell, rng) {
+  const out = cell.map(n => ({ degree: n.degree, duration: n.duration }));
+  const last = out[out.length - 1];
+  if (last.duration >= 4) {
+    out.pop();
+    const half = Math.floor(last.duration / 2);
+    const dir = rng() < 0.5 ? 1 : -1;
+    out.push({ degree: dir, duration: half });
+    out.push({ degree: 0, duration: last.duration - half });
+  }
+  return out;
+}
 // <<MELODY_ENGINE_END>>
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -4036,6 +4077,25 @@ default-phase: calm
       const clamp = d => Math.max(prof.register[0], Math.min(prof.register[1], d));
       assert(ev[0].degree === clamp(prof.startDegree + motif[0].deg), 'first note = motif root transposed');
       assert(ev[0].duration === motif[0].dur, 'first note duration from motif');
+    }],
+    ['bass: BASS_PROFILES grooves sum to one bar', () => {
+      for (const g of ['outrun', 'noir', 'dreamwave']) {
+        assert(BASS_PROFILES[g].grooves.every(gr => gr.reduce((s, d) => s + d, 0) === 16), g + ' grooves sum 16');
+      }
+    }],
+    ['bass: generateRiff — 16 steps, root downbeat, deterministic', () => {
+      const a = generateRiff(mulberry32(7), 7, BASS_PROFILES.outrun);
+      const b = generateRiff(mulberry32(7), 7, BASS_PROFILES.outrun);
+      assert(JSON.stringify(a) === JSON.stringify(b), 'deterministic');
+      assert(a.reduce((s, e) => s + e.duration, 0) === 16, 'sums to one bar');
+      assert(a[0].degree === 0, 'downbeat on root');
+      assert(a.every(e => typeof e.degree === 'number' && e.duration >= 1), 'valid format');
+    }],
+    ['bass: bassFill — preserves bar length & format', () => {
+      const cell = generateRiff(mulberry32(3), 7, BASS_PROFILES.noir);
+      const f = bassFill(cell, mulberry32(4));
+      assert(f.reduce((s, e) => s + e.duration, 0) === 16, 'still one bar');
+      assert(f.every(e => typeof e.degree === 'number' && e.duration >= 1), 'valid format');
     }],
   ];
   for (const [name, fn] of tests) {
