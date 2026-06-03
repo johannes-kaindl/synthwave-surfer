@@ -909,7 +909,7 @@ const ALGORITHMS = {
     padStartBar: 2, padEndBar: 16, padRoot: 60,
     drumStartBar: 2, drumEndBar: 16, drumIntenseFrom: 10, drumBreakFrom: 8, drumBreakTo: 10,
     drumPattern: 'driving',
-    swing: 0.08, sidechain: true,
+    swing: 0.15, sidechain: true,
     defaultBpm: 120, defaultMode: 'pentatonic_minor',
   },
   noir: {
@@ -933,7 +933,7 @@ const ALGORITHMS = {
     padStartBar: 1, padEndBar: 16, padRoot: 60,
     drumStartBar: 4, drumEndBar: 16, drumIntenseFrom: 10, drumBreakFrom: 8, drumBreakTo: 10,
     drumPattern: 'shuffle',
-    swing: 0.12, sidechain: true,
+    swing: 0.18, sidechain: true,
     defaultBpm: 100, defaultMode: 'aeolian',
   },
 };
@@ -1153,10 +1153,10 @@ function disposeLive() {
 
 function buildAudioGraph() {
   // Master chain — Compressor → Tape Sat → Limiter → Master Gain → Meter → Output
-  const compressor = new Tone.Compressor({ threshold: -16, ratio: 3.5, attack: 0.01, release: 0.18 });
+  const compressor = new Tone.Compressor({ threshold: -12, ratio: 2.5, attack: 0.01, release: 0.18 });
   const tapeSat = new Tone.Distortion({ distortion: 0.3, oversample: '2x' });
   tapeSat.wet.value = 0.3;
-  const limiter = new Tone.Limiter(-1);
+  const limiter = new Tone.Limiter(-3);
   const masterGain = new Tone.Gain(0.8);
   const meter = new Tone.Meter({ channels: 2, smoothing: 0.5 });
   const analyser = new Tone.FFT(512);
@@ -1191,8 +1191,8 @@ function buildAudioGraph() {
   const padBus = makeTrackBus();
 
   // Drums — kick direct, snare with gated reverb, hat direct
-  const kick = new Tone.MembraneSynth({ pitchDecay: 0.04, octaves: 6, envelope: { attack: 0.001, decay: 0.42, sustain: 0, release: 0.12 } });
-  const kickVol = new Tone.Volume(-3); kick.connect(kickVol); kickVol.connect(compressor);
+  const kick = new Tone.MembraneSynth({ pitchDecay: 0.08, octaves: 4, envelope: { attack: 0.001, decay: 0.42, sustain: 0, release: 0.12 } });
+  const kickVol = new Tone.Volume(-1); kick.connect(kickVol); kickVol.connect(compressor);
 
   // GATED REVERB — the 80s drum signature.
   // Snare → bandpass → vol → splits to (dry+compressor) and (gated reverb chain).
@@ -1209,7 +1209,7 @@ function buildAudioGraph() {
 
   const hat = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.001, decay: 0.045, sustain: 0 } });
   const hatFilter = new Tone.Filter(7500, 'highpass');
-  const hatVol = new Tone.Volume(-24); hat.chain(hatFilter, hatVol, compressor);
+  const hatVol = new Tone.Volume(-16); hat.chain(hatFilter, hatVol, compressor);
 
   return {
     compressor, tapeSat, limiter, masterGain, meter, analyser,
