@@ -3314,20 +3314,60 @@ function generate() {
 $('generate').onclick = generate;
 $('randomize').onclick = () => { $('seed').value = Math.floor(Math.random() * 99999); generate(); };
 
-/* Genre-Voicing — selecting a genre also loads its default instruments + FX.
-   Starting point per genre = one reference factory preset (tunable: just edit
-   GENRE_REF). Generative mode then SOUNDS like its genre, not only composes like it. */
-const GENRE_REF = { outrun: 'Miami Nights', noir: 'Carpenter Synth', dreamwave: 'VHS Sunset' };
-const GENRE_BASS = { outrun: 'alkali', noir: 'alkali', dreamwave: 'alkali' };  // Stratos PWM retired — per-genre tunable
+// <<VOICING_START>>
+/* Canonical per-engine default voicing (instruments + FX). Presets store SPARSE
+   deltas over these via mergeVoicing — so engine voicing improvements propagate to
+   every preset of that engine. Bass lfoTarget 'pwm' is baked to 'off' here (PWM only
+   modulates retired Stratos; on alkali it was inert anyway). */
+const ENGINE_VOICINGS = {
+  outrun: {
+    bass:   { model: 'alkali', volume: 0.7, detune: 0, attack: 0.005, decay: 0.25, sustain: 0.7, release: 0.3, cutoff: 0.5, resonance: 0.3, fenvAmount: 0.4, fenvDecay: 0.3, character: 0.5, lfoTarget: 'off', lfoRate: 0.15, lfoDepth: 0.4, arp: 'off', send: false },
+    lead:   { model: 'crystal', volume: 0.45, detune: 0, attack: 0.01, decay: 0.4, sustain: 0.25, release: 1.0, cutoff: 0.7, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.6, lfoTarget: 'off', lfoRate: 0.3, lfoDepth: 0.2, arp: 'off', send: true },
+    pad:    { model: 'vapor', volume: 0.4, detune: 0, attack: 1.2, decay: 0.5, sustain: 0.85, release: 2.5, cutoff: 0.45, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.8, lfoTarget: 'filter', lfoRate: 0.08, lfoDepth: 0.3, arp: 'off', send: true },
+    master: { reverbSize: 0.6, reverbWet: 0.5, delayTime: 0.55, delayFB: 0.45, delayWet: 0.45, sidechain: 0.75, tapeSat: 0.35, masterGain: 0.8 },
+  },
+  noir: {
+    bass:   { model: 'alkali', volume: 0.55, detune: 0, attack: 0.05, decay: 0.5, sustain: 0.7, release: 1.0, cutoff: 0.3, resonance: 0.2, fenvAmount: 0.2, fenvDecay: 0.5, character: 0.4, lfoTarget: 'off', lfoRate: 0.08, lfoDepth: 0.5, arp: 'off', send: false },
+    lead:   { model: 'crystal', volume: 0.4, detune: 0, attack: 0.02, decay: 0.6, sustain: 0.3, release: 2.0, cutoff: 0.5, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.7, character: 0.7, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.1, arp: 'off', send: true },
+    pad:    { model: 'vapor', volume: 0.55, detune: 0, attack: 2.0, decay: 0.8, sustain: 0.9, release: 4.0, cutoff: 0.35, resonance: 0.1, fenvAmount: 0.2, fenvDecay: 0.8, character: 1.0, lfoTarget: 'filter', lfoRate: 0.04, lfoDepth: 0.4, arp: 'off', send: true },
+    master: { reverbSize: 0.85, reverbWet: 0.75, delayTime: 0.7, delayFB: 0.55, delayWet: 0.5, sidechain: 0, tapeSat: 0.45, masterGain: 0.75 },
+  },
+  dreamwave: {
+    bass:   { model: 'alkali', volume: 0.65, detune: -5, attack: 0.008, decay: 0.25, sustain: 0.6, release: 0.3, cutoff: 0.45, resonance: 0.35, fenvAmount: 0.45, fenvDecay: 0.35, character: 0.5, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.5, arp: 'off', send: false },
+    lead:   { model: 'vapor', volume: 0.5, detune: 6, attack: 0.04, decay: 0.5, sustain: 0.5, release: 1.0, cutoff: 0.55, resonance: 0.2, fenvAmount: 0.35, fenvDecay: 0.55, character: 0.85, lfoTarget: 'pitch', lfoRate: 0.3, lfoDepth: 0.05, arp: 'off', send: true },
+    pad:    { model: 'vapor', volume: 0.45, detune: -8, attack: 1.2, decay: 0.55, sustain: 0.8, release: 2.8, cutoff: 0.42, resonance: 0.12, fenvAmount: 0.25, fenvDecay: 0.7, character: 1.0, lfoTarget: 'filter', lfoRate: 0.08, lfoDepth: 0.45, arp: 'off', send: true },
+    master: { reverbSize: 0.7, reverbWet: 0.6, delayTime: 0.55, delayFB: 0.5, delayWet: 0.55, sidechain: 0.6, tapeSat: 0.55, masterGain: 0.76 },
+  },
+  carpenter: {
+    bass:   { model: 'alkali', volume: 0.72, detune: 0, attack: 0.004, decay: 0.22, sustain: 0.85, release: 0.18, cutoff: 0.32, resonance: 0.4, fenvAmount: 0.25, fenvDecay: 0.2, character: 0.45, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
+    lead:   { model: 'crystal', volume: 0.4, detune: 0, attack: 0.005, decay: 0.5, sustain: 0.15, release: 0.8, cutoff: 0.75, resonance: 0.25, fenvAmount: 0.3, fenvDecay: 0.4, character: 0.4, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.15, arp: 'off', send: true },
+    pad:    { model: 'vapor', volume: 0.32, detune: 0, attack: 2.0, decay: 0.8, sustain: 0.9, release: 3.5, cutoff: 0.3, resonance: 0.2, fenvAmount: 0.2, fenvDecay: 0.7, character: 0.6, lfoTarget: 'filter', lfoRate: 0.05, lfoDepth: 0.25, arp: 'off', send: true },
+    master: { reverbSize: 0.7, reverbWet: 0.5, delayTime: 0.6, delayFB: 0.35, delayWet: 0.3, sidechain: 0.0, tapeSat: 0.4, masterGain: 0.8 },
+  },
+};
+function mergeVoicing(defaultVoicing, deltas) {
+  const d = deltas || {};
+  return {
+    trackParams: {
+      bass: { ...defaultVoicing.bass, ...(d.bass || {}) },
+      lead: { ...defaultVoicing.lead, ...(d.lead || {}) },
+      pad:  { ...defaultVoicing.pad,  ...(d.pad  || {}) },
+    },
+    masterState: { ...defaultVoicing.master, ...(d.master || {}) },
+  };
+}
+// <<VOICING_END>>
+
+/* Genre-Voicing — selecting a genre loads its canonical ENGINE_VOICINGS default
+   (instruments + FX) into the live params + graph. */
 function applyGenreVoicing(algoName) {
-  const ref = FACTORY_PRESETS[GENRE_REF[algoName]];
-  if (!ref) return;
-  Object.assign(trackParams.bass, ref.bass);
-  trackParams.bass.model = GENRE_BASS[algoName] || trackParams.bass.model;
-  if (trackParams.bass.lfoTarget === 'pwm') trackParams.bass.lfoTarget = 'off';  // pwm only affects Stratos' pulse width
-  Object.assign(trackParams.lead, ref.lead);
-  Object.assign(trackParams.pad, ref.pad);
-  Object.assign(masterState, ref.master);
+  const v = ENGINE_VOICINGS[algoName];
+  if (!v) return;
+  const merged = mergeVoicing(v, null);
+  Object.assign(trackParams.bass, merged.trackParams.bass);
+  Object.assign(trackParams.lead, merged.trackParams.lead);
+  Object.assign(trackParams.pad,  merged.trackParams.pad);
+  Object.assign(masterState,      merged.masterState);
   for (const k of ['bass', 'lead', 'pad']) syncTrackUI(k);
   syncMasterUI();
   if (liveSynths) {
@@ -4211,6 +4251,24 @@ default-phase: calm
       assert(a.buildForm === buildCarpenterForm, 'buildForm');
       assert(a.defaultMode === 'phrygian' && a.defaultBpm === 92, 'defaults');
       assert(a.drumPattern === 'carpenter' && a.swing === 0 && a.sidechain === false, 'drum/feel');
+    }],
+    ['voicing: ENGINE_VOICINGS complete for all 4 engines', () => {
+      for (const e of ['outrun','noir','dreamwave','carpenter']) {
+        const v = ENGINE_VOICINGS[e];
+        assert(v && v.bass && v.lead && v.pad && v.master, e + ' has all tracks');
+        for (const t of ['bass','lead','pad']) assert(typeof v[t].model === 'string' && 'cutoff' in v[t], e+'.'+t+' shape');
+        assert('reverbWet' in v.master && 'masterGain' in v.master, e + ' master shape');
+      }
+    }],
+    ['voicing: mergeVoicing applies deltas, does not mutate source', () => {
+      const base = ENGINE_VOICINGS.outrun;
+      const out = mergeVoicing(base, { bass: { cutoff: 0.99 }, master: { masterGain: 0.5 } });
+      assert(out.trackParams.bass.cutoff === 0.99, 'bass delta applied');
+      assert(out.trackParams.bass.model === base.bass.model, 'untouched field inherited');
+      assert(out.masterState.masterGain === 0.5, 'master delta applied');
+      assert(base.bass.cutoff !== 0.99, 'source not mutated');
+      const empty = mergeVoicing(base, undefined);
+      assert(empty.trackParams.lead.model === base.lead.model, 'no deltas = default');
     }],
   ];
   for (const [name, fn] of tests) {
