@@ -502,6 +502,180 @@ function snapDegree(degree, chordTones, scaleLen, mode, rng) {
   return rng() < 0.5 ? nearestChordDegree(degree, chordTones, scaleLen) : degree;
 }
 
+// <<MELODY_ENGINE_START>>
+/* ═══════════════════════════════════════════════════════════════════
+   Motif-development melody engine (Phase 1.5)
+   See docs/superpowers/specs/2026-06-03-motivic-melody-engine-design.md
+   ═══════════════════════════════════════════════════════════════════ */
+function weightedPick(rng, weights) {
+  const entries = Object.entries(weights);
+  const total = entries.reduce((s, [, w]) => s + w, 0);
+  let r = rng() * total;
+  for (const [k, w] of entries) { if ((r -= w) < 0) return k; }
+  return entries[entries.length - 1][0];
+}
+
+const MELODY_PROFILES = {
+  outrun: {
+    motifLen: [3, 5],
+    rhythmCells: [[4,4,4,4],[4,2,2,4],[2,2,4,8],[4,4,8],[2,2,2,2,8]],
+    stepBias: 0.7, leapSizes: [2, 3, 4], restDensity: 0.12,
+    opWeights: { repeat:0.25, sequence:0.30, invert:0.10, varyRhythm:0.20, fragment:0.10, ornament:0.05 },
+    contours: ['arch','wave','rise'], register: [0, 9],
+    grammar: ['A','A2','B','A3'], startDegree: 4,
+  },
+  noir: {
+    motifLen: [2, 3],
+    rhythmCells: [[8,8],[12,4],[8,4,4]],
+    stepBias: 0.85, leapSizes: [2, 4], restDensity: 0.30,
+    opWeights: { repeat:0.45, sequence:0.20, invert:0.05, varyRhythm:0.15, fragment:0.10, ornament:0.05 },
+    contours: ['fall','arch'], register: [0, 7],
+    grammar: ['A','A','A2','B'], startDegree: 2,
+  },
+  dreamwave: {
+    motifLen: [3, 5],
+    rhythmCells: [[2,2,4,2,6],[4,2,2,4,4],[2,2,2,2,8],[4,4,4,4]],
+    stepBias: 0.75, leapSizes: [2, 3], restDensity: 0.15,
+    opWeights: { repeat:0.20, sequence:0.25, invert:0.10, varyRhythm:0.25, fragment:0.10, ornament:0.10 },
+    contours: ['wave','arch','rise'], register: [0, 9],
+    grammar: ['A','A2','B','A2'], startDegree: 2,
+  },
+};
+
+function makeMotif(rng, profile) {
+  const cell = profile.rhythmCells[Math.floor(rng() * profile.rhythmCells.length)];
+  const motif = [];
+  let deg = 0;
+  for (let i = 0; i < cell.length; i++) {
+    motif.push({ deg, dur: cell[i] });
+    if (rng() < profile.stepBias) {
+      deg += rng() < 0.5 ? 1 : -1;
+    } else {
+      const leap = profile.leapSizes[Math.floor(rng() * profile.leapSizes.length)];
+      deg += rng() < 0.5 ? leap : -leap;
+    }
+  }
+  return motif;
+}
+
+function opRepeat(m) { return m.map(n => ({ deg: n.deg, dur: n.dur })); }
+function opSequence(m, iv) { return m.map(n => ({ deg: n.deg + iv, dur: n.dur })); }
+function opInvert(m, axis) { return m.map(n => ({ deg: axis - (n.deg - axis), dur: n.dur })); }
+function opVaryRhythm(m, rng, profile) {
+  const sameLen = profile.rhythmCells.filter(c => c.length === m.length);
+  if (sameLen.length) {
+    const cell = sameLen[Math.floor(rng() * sameLen.length)];
+    return m.map((n, i) => ({ deg: n.deg, dur: cell[i] }));
+  }
+  const factor = rng() < 0.5 ? 2 : 0.5;
+  return m.map(n => ({ deg: n.deg, dur: Math.max(1, Math.round(n.dur * factor)) }));
+}
+function opFragment(m, rng) {
+  if (m.length <= 2) return m.map(n => ({ deg: n.deg, dur: n.dur }));
+  const start = Math.floor(rng() * (m.length - 1));
+  const len = Math.max(2, Math.floor(rng() * (m.length - start)) + 1);
+  return m.slice(start, start + len).map(n => ({ deg: n.deg, dur: n.dur }));
+}
+function opOrnament(m, rng) {
+  const out = [];
+  for (let i = 0; i < m.length; i++) {
+    const n = m[i];
+    if (i < m.length - 1 && n.dur >= 4 && rng() < 0.4) {
+      const half = Math.floor(n.dur / 2);
+      const passing = m[i + 1].deg >= n.deg ? n.deg + 1 : n.deg - 1;
+      out.push({ deg: n.deg, dur: n.dur - half });
+      out.push({ deg: passing, dur: half });
+    } else {
+      out.push({ deg: n.deg, dur: n.dur });
+    }
+  }
+  return out;
+}
+function applyNamedOp(name, motif, rng, profile) {
+  switch (name) {
+    case 'repeat':    return opRepeat(motif);
+    case 'sequence':  return opSequence(motif, (rng() < 0.5 ? 1 : -1) * profile.leapSizes[Math.floor(rng() * profile.leapSizes.length)]);
+    case 'invert':    return opInvert(motif, motif[0].deg);
+    case 'varyRhythm':return opVaryRhythm(motif, rng, profile);
+    case 'fragment':  return opFragment(motif, rng);
+    case 'ornament':  return opOrnament(motif, rng);
+    default:          return opRepeat(motif);
+  }
+}
+
+function pickContour(rng, profile) {
+  const shape = profile.contours[Math.floor(rng() * profile.contours.length)];
+  const n = profile.grammar.length;
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const t = n > 1 ? i / (n - 1) : 0;
+    let v;
+    if (shape === 'arch') v = Math.round(3 * Math.sin(Math.PI * t));
+    else if (shape === 'rise') v = Math.round(3 * t);
+    else if (shape === 'fall') v = Math.round(3 * (1 - t));
+    else v = (i % 2) * 2;
+    out.push(v);
+  }
+  return out;
+}
+
+function landOnHarmony(events, chordMap, scaleLen, startBar) {
+  let pos = 0;
+  for (const e of events) {
+    if (!e.rest && pos % 8 === 0) {
+      const bar = Math.min(startBar + Math.floor(pos / 16), chordMap.length - 1);
+      const tones = chordMap[bar].tones;
+      const pc = ((e.degree % scaleLen) + scaleLen) % scaleLen;
+      const chordPcs = tones.map(ct => ((ct % scaleLen) + scaleLen) % scaleLen);
+      if (!chordPcs.includes(pc)) {
+        e.degree = nearestChordDegree(e.degree, tones, scaleLen);
+      }
+    }
+    pos += e.duration;
+  }
+  return events;
+}
+
+function generateMelody(rng, scaleLen, bars, ctx = {}) {
+  const { chordMap = null, profile, startBar = 0 } = ctx;
+  const total = bars * 16;
+  const motif = makeMotif(rng, profile);
+  const contour = pickContour(rng, profile);
+  const events = [];
+  let pos = 0;
+
+  for (let slot = 0; slot < profile.grammar.length && pos < total; slot++) {
+    const label = profile.grammar[slot];
+    let inst;
+    if (label === 'A') {
+      inst = opRepeat(motif);
+    } else if (label === 'B') {
+      inst = rng() < 0.5 ? opInvert(motif, motif[0].deg) : opSequence(motif, profile.leapSizes[0]);
+    } else {
+      inst = applyNamedOp(weightedPick(rng, profile.opWeights), motif, rng, profile);
+    }
+    const root = profile.startDegree + (contour[slot] || 0);
+    for (const n of inst) {
+      if (pos >= total) break;
+      let dur = n.dur;
+      if (pos + dur > total) dur = total - pos;
+      let degree = root + n.deg;
+      degree = Math.max(profile.register[0], Math.min(profile.register[1], degree));
+      events.push({ degree, duration: dur });
+      pos += dur;
+    }
+    if (pos < total && rng() < profile.restDensity * 2) {
+      const r = Math.min(2, total - pos);
+      events.push({ rest: true, duration: r });
+      pos += r;
+    }
+  }
+  if (pos < total) events.push({ rest: true, duration: total - pos });
+  if (chordMap) landOnHarmony(events, chordMap, scaleLen, startBar);
+  return events;
+}
+// <<MELODY_ENGINE_END>>
+
 /* ═══════════════════════════════════════════════════════════════════
    .swmd Codec — Markdown-based pattern format
    ═══════════════════════════════════════════════════════════════════ */
@@ -3791,6 +3965,77 @@ default-phase: calm
       // But if the splitter mishandles ## inside the fence, we'd see something else.
       assert(sections.phases.length === 1, 'one phase');
       assert(sections.phases[0].name === 'default', 'phase is default');
+    }],
+    ['melody: weightedPick — respects weights & deterministic', () => {
+      const rng = mulberry32(1);
+      const counts = { a: 0, b: 0 };
+      for (let i = 0; i < 1000; i++) counts[weightedPick(rng, { a: 0.9, b: 0.1 })]++;
+      assert(counts.a > counts.b * 3, 'a chosen far more than b');
+      assert(weightedPick(mulberry32(5), { x: 1, y: 1 }) === weightedPick(mulberry32(5), { x: 1, y: 1 }), 'same seed → same pick');
+    }],
+    ['melody: MELODY_PROFILES — valid shape per genre', () => {
+      for (const g of ['outrun', 'noir', 'dreamwave']) {
+        const p = MELODY_PROFILES[g];
+        assert(Array.isArray(p.grammar) && p.grammar.length >= 1, g + ' has grammar');
+        assert(p.rhythmCells.every(c => c.length >= p.motifLen[0] && c.length <= p.motifLen[1]), g + ' cells within motifLen');
+        assert(Math.abs(Object.values(p.opWeights).reduce((s, w) => s + w, 0) - 1) < 1e-6, g + ' opWeights sum to 1');
+      }
+    }],
+    ['melody: makeMotif — deterministic, correct length, relative format', () => {
+      const a = makeMotif(mulberry32(42), MELODY_PROFILES.outrun);
+      const b = makeMotif(mulberry32(42), MELODY_PROFILES.outrun);
+      assert(JSON.stringify(a) === JSON.stringify(b), 'same seed → same motif');
+      assert(a.length >= MELODY_PROFILES.outrun.motifLen[0] && a.length <= MELODY_PROFILES.outrun.motifLen[1], 'length within motifLen');
+      assert(a.every(n => typeof n.deg === 'number' && typeof n.dur === 'number'), 'each note has deg+dur');
+      assert(a[0].deg === 0, 'motif starts on relative root 0');
+    }],
+    ['melody: operators — transforms preserve format', () => {
+      const m = [{ deg: 0, dur: 4 }, { deg: 2, dur: 4 }, { deg: 1, dur: 4 }];
+      assert(JSON.stringify(opSequence(m, 2)) === JSON.stringify([{ deg: 2, dur: 4 }, { deg: 4, dur: 4 }, { deg: 3, dur: 4 }]), 'sequence +2');
+      assert(JSON.stringify(opInvert(m, 0)) === JSON.stringify([{ deg: 0, dur: 4 }, { deg: -2, dur: 4 }, { deg: -1, dur: 4 }]), 'invert around 0');
+      const frag = opFragment([{ deg: 0, dur: 4 }, { deg: 1, dur: 4 }, { deg: 2, dur: 4 }, { deg: 3, dur: 4 }], mulberry32(3));
+      assert(frag.length >= 2 && frag.length <= 4, 'fragment 2..len notes');
+      assert(opRepeat(m) !== m && JSON.stringify(opRepeat(m)) === JSON.stringify(m), 'repeat is a copy');
+      const vr = opVaryRhythm(m, mulberry32(9), MELODY_PROFILES.outrun);
+      assert(vr.every(n => typeof n.deg === 'number' && n.dur >= 1), 'varyRhythm valid');
+      const orn = opOrnament(m, mulberry32(9));
+      assert(orn.length >= m.length && orn.every(n => typeof n.deg === 'number' && n.dur >= 1), 'ornament valid');
+      assert(JSON.stringify(applyNamedOp('sequence', m, mulberry32(2), MELODY_PROFILES.outrun)) ===
+             JSON.stringify(applyNamedOp('sequence', m, mulberry32(2), MELODY_PROFILES.outrun)), 'applyNamedOp deterministic');
+    }],
+    ['melody: pickContour — one offset per slot, deterministic', () => {
+      const a = pickContour(mulberry32(11), MELODY_PROFILES.outrun);
+      const b = pickContour(mulberry32(11), MELODY_PROFILES.outrun);
+      assert(JSON.stringify(a) === JSON.stringify(b), 'same seed → same contour');
+      assert(a.length === MELODY_PROFILES.outrun.grammar.length, 'one offset per slot');
+      assert(a.every(v => Number.isInteger(v)), 'integer offsets');
+    }],
+    ['melody: landOnHarmony — snaps strong-beat notes to chord tones', () => {
+      const scaleLen = SCALES.aeolian.length;
+      const chordMap = [{ root: 0, tones: [0, 2, 4] }];
+      const events = [{ degree: 1, duration: 8 }, { degree: 3, duration: 8 }];
+      landOnHarmony(events, chordMap, scaleLen, 0);
+      assert([0, 2, 4].includes(((events[0].degree % scaleLen) + scaleLen) % scaleLen), 'pos-0 note is a chord tone');
+      assert([0, 2, 4].includes(((events[1].degree % scaleLen) + scaleLen) % scaleLen), 'pos-8 note also snapped to chord tone');
+    }],
+    ['melody: generateMelody — fills bars*16, valid, in register, deterministic', () => {
+      const sl = SCALES.aeolian.length;
+      const chordMap = buildChordMap([[0,2,4],[-2,0,2],[2,4,6],[-1,1,3]], 16);
+      const ctx = { chordMap, profile: MELODY_PROFILES.outrun, startBar: 4 };
+      const a = generateMelody(mulberry32(1986), sl, 4, ctx);
+      const b = generateMelody(mulberry32(1986), sl, 4, ctx);
+      assert(JSON.stringify(a) === JSON.stringify(b), 'same seed → same melody');
+      assert(a.reduce((s, e) => s + e.duration, 0) === 4 * 16, 'durations sum to bars*16');
+      assert(a.every(e => e.rest || (e.degree >= 0 && e.degree <= 9)), 'notes within outrun register');
+      assert(a.some(e => !e.rest), 'has at least one note');
+    }],
+    ['melody: generateMelody — single-slot grammar reproduces motif', () => {
+      const prof = { ...MELODY_PROFILES.outrun, grammar: ['A'], contours: ['rise'], restDensity: 0 };
+      const motif = makeMotif(mulberry32(7), prof);
+      const ev = generateMelody(mulberry32(7), SCALES.aeolian.length, 4, { profile: prof });
+      const clamp = d => Math.max(prof.register[0], Math.min(prof.register[1], d));
+      assert(ev[0].degree === clamp(prof.startDegree + motif[0].deg), 'first note = motif root transposed');
+      assert(ev[0].duration === motif[0].dur, 'first note duration from motif');
     }],
   ];
   for (const [name, fn] of tests) {
