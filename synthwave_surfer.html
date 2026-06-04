@@ -2516,7 +2516,7 @@ $('randomize').onclick = () => { $('seed').value = Math.floor(Math.random() * 99
    modulates retired Stratos; on alkali it was inert anyway). */
 const ENGINE_VOICINGS = {
   outrun: {
-    bass:   { model: 'alkali', volume: 0.7, detune: 0, attack: 0.005, decay: 0.25, sustain: 0.7, release: 0.3, cutoff: 0.02, resonance: 0.02, fenvAmount: 0.13, fenvDecay: 0.3, character: 0.5, lfoTarget: 'off', lfoRate: 0.15, lfoDepth: 0.4, arp: 'off', send: false },
+    bass:   { model: 'alkali', volume: 0.7, detune: 0, attack: 0.005, decay: 0.25, sustain: 0.7, release: 0.3, cutoff: 0.5, resonance: 0.3, fenvAmount: 0.4, fenvDecay: 0.3, character: 0.5, lfoTarget: 'off', lfoRate: 0.15, lfoDepth: 0.4, arp: 'off', send: false },
     lead:   { model: 'crystal', volume: 0.45, detune: 0, attack: 0.01, decay: 0.4, sustain: 0.25, release: 1.0, cutoff: 0.7, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.6, lfoTarget: 'off', lfoRate: 0.3, lfoDepth: 0.2, arp: 'off', send: true },
     pad:    { model: 'vapor', volume: 0.16, detune: 0, attack: 1.2, decay: 0.5, sustain: 0.85, release: 2.5, cutoff: 0.55, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.7, lfoTarget: 'filter', lfoRate: 0.08, lfoDepth: 0.3, arp: 'off', send: true },
     master: { reverbSize: 0.6, reverbWet: 0.5, delayTime: 0.55, delayFB: 0.45, delayWet: 0.45, sidechain: 0.75, tapeSat: 0.35, masterGain: 0.8 },
