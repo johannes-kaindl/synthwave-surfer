@@ -731,6 +731,23 @@ function bassFill(cell, rng) {
   }
   return out;
 }
+/* Arpeggiator (Layer A) — expands a chord (array of scale-degree offsets, e.g. a
+   padProg cell [0,2,4]) into a stepped note sequence. mode: up|down|updown|random.
+   steps = grid slots to fill, each stepDur long; octaves = span. Pure/deterministic
+   (except 'random', which consumes rng). Inert until a track's arp !== 'off'. */
+function arpExpand(chordTones, mode, steps, octaves, scaleLen, stepDur, rng) {
+  const pool = [];
+  for (let o = 0; o < Math.max(1, octaves); o++) for (const t of chordTones) pool.push(t + o * scaleLen);
+  let seq;
+  if (mode === 'down') seq = pool.slice().reverse();
+  else if (mode === 'updown') seq = pool.length > 2 ? pool.concat(pool.slice(1, -1).reverse()) : pool.slice();
+  else if (mode === 'random') { seq = []; for (let i = 0; i < steps; i++) seq.push(pool[Math.floor((rng ? rng() : 0) * pool.length)]); }
+  else seq = pool.slice(); // 'up'
+  const dur = stepDur || 1;
+  const out = [];
+  for (let i = 0; i < steps; i++) out.push({ degree: seq[i % seq.length], duration: dur });
+  return out;
+}
 // <<MELODY_ENGINE_END>>
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -3416,6 +3433,15 @@ default-phase: calm
       assert(base.bass.cutoff !== 0.99, 'source not mutated');
       const empty = mergeVoicing(base, undefined);
       assert(empty.trackParams.lead.model === base.lead.model, 'no deltas = default');
+    }],
+    ['arp: arpExpand up/down/updown span octaves and fill steps', () => {
+      const up = arpExpand([0,2,4], 'up', 16, 2, 7, 1);
+      assert(up.length === 16 && up.reduce((s,e)=>s+e.duration,0) === 16, 'up fills 16 slots');
+      assert(up[0].degree === 0 && up[3].degree === 7, 'pool spans 2 octaves');
+      const down = arpExpand([0,2,4], 'down', 6, 2, 7, 1);
+      assert(down[0].degree === 11, 'down starts at top');
+      const ud = arpExpand([0,2,4], 'updown', 12, 1, 7, 1);
+      assert(ud[0].degree === 0 && ud[3].degree === 2, 'updown reflects');
     }],
   ];
   for (const [name, fn] of tests) {
