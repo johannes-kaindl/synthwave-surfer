@@ -1,0 +1,1060 @@
+[
+  {
+    "genre": "Acid House",
+    "tempoBpm": {
+      "min": 118,
+      "max": 130,
+      "typical": 122
+    },
+    "meter": "4/4",
+    "feel": "straight four-on-the-floor; classic Chicago tracks are mostly straight 16ths, but a light MPC-style swing (~54-58%, shuffle-67 template) on closed hats/percussion is idiomatic for the groovier UK/909 variants. The hypnotic feel comes from a perfectly-locked grid against the continuously morphing 303 filter, not from swing.",
+    "harmony": {
+      "scalesModes": [
+        "Natural minor (Aeolian) - by far the default",
+        "Minor pentatonic - the safest note pool for 303 lines",
+        "Phrygian / Phrygian-dominant - for a darker, more 'Eastern' acid flavour",
+        "Harmonic minor - occasional, for the raised-7th tension"
+      ],
+      "chordTypes": [
+        "Often NO chords at all - acid house is frequently a single-note 303 line plus drums, 'exploration of texture preferred over melody'",
+        "Minor triads and minor7 'organ/piano stabs' when chords appear",
+        "Sus2/sus4 stabs",
+        "Detroit-style minor 7th and minor 9th stabs (string/brass machine)",
+        "Power-interval drones (root + octave, root + fifth)"
+      ],
+      "typicalProgressions": [
+        "i (static one-chord modal vamp - the most common 'progression' is no progression: a single tonic riff looped)",
+        "i - VI - VII (Aeolian rise)",
+        "i - VII - VI - VII",
+        "i - iv (minor plagal stab pattern)",
+        "i - VI - III - VII (when it borrows from deep/Detroit house)"
+      ],
+      "harmonicRhythm": "Very slow to none. Most tracks sit on a single tonic key for the whole track; when stabs are present they typically change every 1, 2 or 4 bars. Harmonic motion is deliberately minimal so the ear focuses on the filter-sweeping 303 and the drum groove."
+    },
+    "form": "Loop-based and arrangement-by-subtraction/addition rather than verse-chorus. Foundation is a 1- or 2-bar drum+303 loop. Canonical structure: (1) Intro - drums build up element by element (kick, then hats, then clap) over 8-16 bars; (2) drop the 303 in and let it run; (3) the 'arrangement' is performed live by tweaking 303 CUTOFF/RESONANCE/ENV-MOD/DECAY knobs over many bars - the filter opening up is the build; (4) breakdowns strip to drums or to the bare 303; (5) re-introduce full groove. Tracks are long (5-12 min; Phuture's 'Acid Tracks' ran ~12 min) and DJ-friendly with 16-32 bar intros/outros of just drums. A 303-line trick: make the sequence an odd number of steps (15 or 13) against the 16-step drum loop so the two slowly drift in and out of phase, generating evolving variation from static material.",
+    "bass": {
+      "character": "The defining 'squelch': a liquid, resonant, vocal-like single-oscillator bass that morphs continuously. Low-mid-forward, mono, often distorted/saturated so the resonant filter peak screams. Notes are tied together by glides and punched out by accents, producing the wiggling, talking quality.",
+      "signatureTechnique": "Per-step SLIDE and ACCENT programming. SLIDE = legato portamento that ties the current step to the next with a fixed-rate pitch glide and no re-trigger of the gate (this is THE 303 move); idiomatic slides are a downward octave, or an octave-plus-semitone leap, often with the accent on the first note. ACCENT = simultaneously boosts that step's volume AND opens the filter cutoff (via the accent envelope) so accented notes 'pop' brighter - it is not just velocity. Octave jumps (+12 on scattered steps) plus slides create the bounce.",
+      "synthesis": "Roland TB-303 (or clone/emulation): ONE oscillator, sawtooth (thin/aggressive, the acid default) or square (rounder); 18 dB/oct (3-pole) resonant lowpass filter; single decay envelope feeding both filter (ENV MOD amount) and a separate accent path. Recipe: pick saw, set RESONANCE high (~70-90%), start CUTOFF low and slowly open it, ENV MOD moderate-to-high so each note has a downward filter pluck, DECAY short-to-medium controls how fast the squelch closes, ACCENT knob ~50-80%. Run the output through overdrive/distortion or tube saturation - the distortion interacting with the resonant peak is essential to the canonical sound. Then real-time-automate CUTOFF and RESONANCE for the 'performance'."
+    },
+    "lead": {
+      "character": "Acid house usually has no distinct lead instrument - the 303 IS the lead, bass and hook simultaneously. When a secondary 'lead' appears it is a second 303 line, a filtered acid arp, a sparse Detroit-style synth-brass/string stab, or processed vocal drop-ins ('Acieeed', spoken phrases) used percussively rather than melodically.",
+      "synthesis": "If a real lead is wanted: a second monophonic TB-303-type voice an octave up with its own slides/accents, or a simple analog mono-synth (saw/square) through a heavily resonant lowpass with tempo-synced delay. Melodies stay short, modal (minor/pentatonic), and repetitive."
+    },
+    "pads": {
+      "character": "Sparse-to-absent. When present: cold, minimal sustained string/organ washes or 'synthetic strings and stabs, usually minimal' (Wikipedia). Used for atmosphere in breakdowns more than as a harmonic engine. Long reverb tails, low-passed, sitting behind the 303.",
+      "synthesis": "String-machine or analog-poly-style: stacked detuned saw oscillators (or a Juno-style chorused saw pad), slow attack, lowpass filtered, large hall/cathedral reverb with low-frequency roll-off above ~400 Hz so it doesn't clutter the sub. Kept quiet and atmospheric; in many classic tracks there is no pad at all."
+    },
+    "drums": {
+      "machine": "Roland TR-909 (the canonical house/acid machine: punchy analog kick with tunable attack/decay, analog noise snare with tone+snappy, analog clap, and 6-bit sampled hi-hats/ride/crash) and/or TR-808 (deeper boomy sine kick, tighter handclap, sizzly hats). TR-707/727 also appear. Original Phuture 'Acid Tracks' used an 808; the harder UK/909 sound dominates the broader genre. Sounds are typically distorted/compressed.",
+      "kick": "Four-on-the-floor: one kick on every quarter note. 909-style with shortish decay and punchy attack so it doesn't mask the 303 sub. Tuned low; sometimes a tiny pitch-blip on attack.",
+      "snare": "Backbeat clap and/or snare on beats 2 and 4. In 909 tracks the clap is the primary backbeat (often clap+snare layered for the phased noise effect, since the 909 clap and snare share a noise source). Light ghost/syncopated snare hits added in the 2nd bar of a 2-bar loop for variation.",
+      "hats": "Closed hi-hats drive the 8ths or 16ths; the signature gesture is an OPEN hi-hat on every off-beat (the '+' of each beat), especially a prominent open hat on the off-beat of 4 just before the loop wraps to lift energy. Closed-hat 16ths give the propulsive shimmer; occasional open-hat accents add motion.",
+      "canonicalPattern16": "16-step grid, steps numbered 1-16 (beats on 1,5,9,13). KICK: 1,5,9,13 (four-on-floor). CLAP/SNARE (backbeat): 5,13 (i.e. beats 2 and 4). CLOSED HAT: every step 1-16 for a busy 16th drive, OR offbeat-8ths on 3,7,11,15 for a sparser feel. OPEN HAT: 3,7,11,15 (every off-beat 8th) - or, for the classic minimal version, open hat only on 7 and 15 (the '+' of 2 and 4), with the open hat on 15 lifting into the loop. Optional ghost snare/perc: 8,16 in alternate bars; optional rim/shaker on 16ths for groove. Apply ~54-58% swing to closed hats/perc for the grooved variant; leave straight for the raw Chicago variant."
+    },
+    "signatureSounds": [
+      "TB-303 'acid squelch' bassline: sawtooth osc -> resonant 3-pole lowpass (high resonance, low-opening cutoff, env-mod pluck) with per-step slide+accent, run through distortion. This single sound IS the genre.",
+      "Filter-sweep performance: slowly opening/closing the 303 CUTOFF and riding RESONANCE over many bars as the main arrangement device",
+      "909 four-on-the-floor: punchy analog kick + clap-backbeat + open-hat-on-the-offbeat",
+      "808 boom kick + tight 808 handclap (the original Phuture flavour)",
+      "Octave-jump + downward-octave-slide 303 melodic figures",
+      "Sparse vocal/spoken drop-ins used percussively ('Acieeed', 'I've lost control')",
+      "Tempo-synced (dotted-1/8) delay on the 303 so notes 'chase each other', plus cavernous reverb in breakdowns"
+    ],
+    "identityMustHaves": [
+      "A resonant, slide-and-accent-driven TB-303 (or faithful clone/emulation) squelch bassline - non-negotiable; without it it is just house",
+      "Four-on-the-floor kick at ~118-130 BPM in 4/4 from an 808/909-type machine",
+      "Real-time filter movement (cutoff/resonance automation) as the primary source of evolution over a static, looping, single-key/modal foundation",
+      "Hypnotic repetition with minimal-to-no harmonic change - texture and groove prioritised over melody/chords"
+    ],
+    "engineRequirements": [
+      "Monosynth voice with TRUE 303 behaviour: per-step SLIDE (legato glide that suppresses gate re-trigger and portamentos at a fixed rate to the next step) and per-step ACCENT (boosts both amplitude AND filter cutoff via a separate accent envelope, not just velocity)",
+      "Resonant lowpass filter (ideally 18 dB/oct) with a dedicated decay envelope whose modulation depth (ENV MOD) and decay time are controllable, producing the per-note filter pluck",
+      "Automatable/sequence-able CUTOFF and RESONANCE that can be modulated over the course of the arrangement (LFO or recorded automation lanes) - the 'performance' filter sweep",
+      "Waveform select per-303 voice (saw vs square)",
+      "A distortion/overdrive/saturation stage AFTER the filter (interaction with the resonant peak is essential)",
+      "16-step step sequencer with per-step note, gate/rest, octave-up/down, slide flag and accent flag",
+      "Variable pattern length independent of the drum loop (support 13/15/16/odd step lengths) so the 303 can phase against the 4/4 drums",
+      "Drum step-sequencer with 808/909-style synthesized/sampled voices: tunable analog-style kick (attack/decay), analog snare (tone/snappy), clap, and closed/open hi-hats with proper open-hat choke by the next closed hat",
+      "Optional swing/shuffle amount on hats/perc (~54-58%)",
+      "Tempo-synced delay (dotted-1/8) and reverb sends, with low-cut on reverb returns"
+    ],
+    "feasibilityNote": "Highly feasible and arguably one of the EASIEST electronic genres to generate convincingly, because authenticity lives in a single well-modelled instrument (the TB-303) plus a rigid four-on-the-floor grid - not in complex harmony or arrangement. The hard part is not the notes (random modal/pentatonic notes with octave jumps genuinely work - sources stress 'don't overthink it') but faithfully modelling 303 mechanics: slide as gate-suppressing fixed-rate portamento, accent as a coupled volume+cutoff boost with its own envelope, an env-mod filter pluck, and post-filter distortion that screams at the resonant peak. Get those four behaviours right and even a near-random note sequence sounds authentically acid. The other 20%: a punchy 909/808 kit, the open-hat-on-offbeat, and crucially time-varying filter automation so a static loop evolves. Risk areas: a generic resonant filter without true accent-coupling or without post distortion sounds 'house but not acid'; over-busy harmony or audible chord progressions break the genre's minimalist identity.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Acid_house",
+      "https://en.wikipedia.org/wiki/Roland_TR-909",
+      "https://grokipedia.com/page/Acid_house",
+      "https://www.attackmagazine.com/technique/tutorials/how-to-make-an-acid-house-bassline/",
+      "https://www.attackmagazine.com/technique/beat-dissected/90s-house/",
+      "https://articles.roland.com/mastering-the-tb-303-sequencer-in-roland-cloud/",
+      "https://musictech.com/guides/essential-guide/how-to-create-a-chicago-style-acid-house-bassline/",
+      "https://medium.com/@wavheaven/how-to-make-acid-house-music-1c92767c9950",
+      "https://www.musicradar.com/news/everything-you-need-to-know-about-acid-house",
+      "https://www.musicradar.com/tuition/tech/how-to-make-a-303-style-acid-bassline-in-ableton-live-218788",
+      "https://noxudeep.com/the-legendary-roland-tr-909-drum-machine-that-shaped-house-music/"
+    ],
+    "aliases": [
+      "Acid",
+      "Acid Tracks",
+      "303 house",
+      "Chicago acid house"
+    ]
+  },
+  {
+    "genre": "Progressive House",
+    "tempoBpm": {
+      "min": 122,
+      "max": 128,
+      "typical": 126
+    },
+    "meter": "4/4",
+    "feel": "Straight (no swing). Four-on-the-floor pulse with motion coming from 16th-note rolling bass and 1/8-dotted delays rather than from drum-grid swing. Energy is managed by long additive layering, not by groove displacement.",
+    "harmony": {
+      "scalesModes": [
+        "Natural minor (Aeolian)",
+        "Dorian (for slightly brighter/uplifting prog)",
+        "Major (festival/uplifting prog-house drops)",
+        "Harmonic minor color (occasional V chord tension into breakdown returns)"
+      ],
+      "chordTypes": [
+        "Minor triads",
+        "Major triads",
+        "Minor 7th (m7)",
+        "Major 7th / add9 (sus-of-color for emotional pads)",
+        "sus2/sus4 (plucky open voicings)",
+        "9th extensions on pads"
+      ],
+      "typicalProgressions": [
+        "i-VI-III-VII (Aeolian, the canonical emotional prog-house loop, e.g. Am-F-C-G)",
+        "i-VII-VI-VII",
+        "vi-IV-I-V (festival/uplifting major-relative voicing: Am-F-C-G read as vi-IV-I-V)",
+        "i-III-VII-VI",
+        "I-V-vi-IV (major uplifting drops)"
+      ],
+      "harmonicRhythm": "Slow: one chord per bar (or per 2 bars) is canonical, giving 4-bar or 8-bar harmonic loops. Chords change roughly every 2 seconds at ~126 BPM. The same loop persists across whole sections; emotion comes from re-orchestration (pad -> pluck -> supersaw stab) over a static progression, not from frequent chord changes."
+    },
+    "form": "Extended DJ-friendly arrangement, 7-9+ minutes, phrased strictly in multiples of 8 bars (8/16/32). Canonical map: Intro/mixer beats (16-32 bars, kick + hats + perc, no melody) -> first groove with rolling bass (16-32) -> Breakdown 1 (16-32 bars: kick drops out, pads/plucks/chords swell, emotional core) -> Build-up (8-16 bars: snare roll accelerating from 1/8 to 1/16 to 1/32, white-noise upriser sweep, rising filter, often a beat-skip/silence on the last bar) -> Drop/Main (16-32 bars: full supersaw + rolling bass + four-on-floor + heavy sidechain pump) -> Breakdown 2 -> second Build -> second Drop -> Outro (16-32 bars, beat-only for mixing out). Energy via gradual additive layering and filter automation, NOT shock. Transitions use white-noise sweeps, HP-filter sweeps, pitch risers/downers, and reverse-cymbal pickups on the bar before a new 8-bar phrase.",
+    "bass": {
+      "character": "Deep, rounded, sub-heavy rolling bass that sits below the kick. Mid-bass body so it reads on small speakers, but the fundamental is a clean sine/triangle sub. The defining trait is the pumping: it ducks hard on every kick (sidechain) and swells back up between hits, creating the breathing 'rolling' motion.",
+      "signatureTechnique": "Rolling 16th-note bassline. The classic rhythmic cell is 3/16 + 3/16 + 2/16 (i.e. notes on steps 1,4,7 then re-anchor), and the productive default is 'offbeat 16ths that skip the on-beat step' (steps where the kick lands are left empty/ducked so the bass fills the gaps). Mostly root-note repetition with octave jumps and quick fills/rolls between sections. Heavy kick-triggered sidechain compression with a LONGER release so the level fully recovers to unity just before the next kick (must return to zero between hits, never stay crushed).",
+      "synthesis": "Layered: (1) pure sine/triangle SUB for the fundamental (mono, no sidechain or lighter sidechain), (2) a saw/square MID-BASS layer for presence run through saturation, EQ'd to clear room below ~40-50 Hz and above the low-mids, sidechained to the kick. Short-ish amp decay so notes are detached and 'roll'. Glide/slide optional between repeated roots."
+    },
+    "lead": {
+      "character": "Big, bright, euphoric supersaw lead/stab — the iconic festival-prog 'wall of saws'. Wide stereo, shimmering detune, lush reverb tail. Often played as rhythmic stabs locked to the chord loop in the drop, or as a sustained melodic line. Major-key drops feel anthemic; minor-key feels bittersweet.",
+      "synthesis": "Supersaw: 7 detuned saw oscillators (Roland JP-8000 'Super Saw' lineage), in Serum done as Saw wave with Unison 7-9 voices (odd number = smoother), detune spread ~12-30 cents (10-30c = tight/pro; more = washy), unison blend high, wide stereo (~80-100%). Stack a second osc set to '12 (1x)' octave for crisp top. For massive size, triple-stack three 9-voice unison oscillators (~27 voices) with osc2 detuned up / osc3 down. Lowpass filter (e.g. LP6/LP12) with slow filter-envelope opening on builds, cutoff near full-open in the drop, light resonance + drive. Processing chain: chorus -> EQ low-cut -> OTT/multiband upward comp (~100% then dialed back) -> plate/hall reverb. Sidechained to the kick to pump with the bass."
+    },
+    "pads": {
+      "character": "Warm, wide, evolving emotional pads that carry the breakdown. Slow-attack, long-release, drenched in big reverb and 1/8-dotted delay so chords bleed into a dreamy wash. Provide the harmonic/emotional bed under which plucks and vocal chops sit. Often the emotional 'core' of the whole track.",
+      "synthesis": "Detuned saw or warm analog-style pad (2-3 slightly detuned saw/triangle oscillators, mild unison), very slow amp attack (200-800 ms) and long release, lowpass with a gentle slowly-opening filter automation across the breakdown. EQ: cut lows below ~150 Hz so it doesn't clash with bass, gentle high-mid lift (~1.4 kHz) for presence. Heavy reverb (large/hall, e.g. Valhalla Supermassive for the washed-out tail) + ping-pong/dotted-eighth delay. Sidechained lightly to the kick when the beat is present so it breathes with the track."
+    },
+    "drums": {
+      "machine": "Hybrid: TR-909-derived kick (punchy, layered) + sampled claps and acoustic-ish hats/shakers/percussion. Kick is typically two layered samples — one for low-end body, one for transient click (low-end stripped from the click layer).",
+      "kick": "Four-on-the-floor: kick on every beat — steps 1, 5, 9, 13 of the 16-step bar (beats 1,2,3,4). Punchy, tuned to the track key, sidechain source for everything else.",
+      "snare": "No backbeat snare in the groove proper (this is house, not breaks). A CLAP carries the backbeat instead, on beats 2 and 4 (steps 5 and 13). HP-filtered ~140 Hz, often double/triple-layered with a few ms track-delay offsets so transients don't stack. A snare appears only in build-ups as an accelerating roll (1/8 -> 1/16 -> 1/32).",
+      "hats": "Closed hi-hat on the off-beats (the '+' of each beat): steps 3, 7, 11, 15, with subtle velocity variation (e.g. ~89/100/90/93) for groove. Open hi-hat shares the same off-beat placement to create the classic 'tss' lift. Shaker adds 16th-note motion (e.g. accents around steps 1,2,3,4 of beat one with varied velocity ~68/94/85/97).",
+      "canonicalPattern16": "16-step bar (1=downbeat of beat 1, 5=beat 2, 9=beat 3, 13=beat 4). KICK: 1,5,9,13 (four-on-floor). CLAP/snare-role: 5,13 (backbeat on 2 and 4), HP-filtered ~140 Hz. CLOSED HAT: 3,7,11,15 (all off-beats), velocity-varied. OPEN HAT: 3,7,11,15 (off-beat, gives the open 'tss'). SHAKER/PERC: rolling 16ths layered for movement. Rolling BASS fills the steps the kick leaves open (e.g. 16th cells of 3+3+2), ducked under each kick by sidechain.",
+      "other": "Off-beat open hats, shakers and 16th-note percussion loops added/removed gradually to manage energy (additive arrangement). Reverse cymbals / crash on the downbeat of each new 8-bar phrase. White-noise riser and snare-roll in build-ups. Ride/tambourine layers introduced in later/bigger sections."
+    },
+    "signatureSounds": [
+      "Supersaw lead/stab: 7 detuned saw oscillators (JP-8000 lineage), ~12-30 cent unison spread, wide stereo, slow filter-env open on builds, big plate/hall reverb — the 'festival prog' wall of sound",
+      "Heavy kick-triggered sidechain pump: bass and pads duck on every kick with a long release that fully recovers before the next hit, creating the genre-defining 'breathing/pumping' motion",
+      "Rolling 16th-note bassline (3+3+2 cell / offbeat-16ths that dodge the kick), sub + saturated mid layer, octave jumps and fills between sections",
+      "Plucky arp: short-decay pluck (often built from the chord triad), arp set Up/Down at 1/16, drenched in 1/8-dotted delay + reverb for a washed-out dreamy stack",
+      "Emotional breakdown pad: slow-attack detuned-saw pad over a static i-VI-III-VII loop, huge reverb tail, low-cut ~150 Hz",
+      "Build-up FX: white-noise upriser sweep, accelerating snare roll (1/8->1/16->1/32), HP-filter sweep, pitch riser, and a beat-skip/silence on the last bar before the drop",
+      "Four-on-floor 909 kick + off-beat open hats + backbeat clap (HP ~140 Hz, layered with track-delay offsets)"
+    ],
+    "identityMustHaves": [
+      "Four-on-the-floor kick at ~122-128 BPM with the classic backbeat clap and off-beat open hats",
+      "Audible kick-triggered sidechain PUMP on bass and pads (the breathing motion is non-negotiable)",
+      "Long additive arrangement: extended breakdown -> rising build (snare roll + noise sweep) -> drop, phrased in 8/16/32-bar multiples (gradual development, not shock-value)",
+      "Emotional minor/Dorian harmony on a slow 1-chord-per-bar loop (i-VI-III-VII type) carried by lush pads and a bright detuned supersaw lead/pluck"
+    ],
+    "engineRequirements": [
+      "Sidechain ducking with per-target depth and a tunable, longish release envelope keyed to the kick (the core pump) — bass and pads must duck and recover to unity before the next kick",
+      "Supersaw oscillator: unison voice count (7-9+), detune-in-cents spread, stereo width, and optional octave-stacked sub-oscillator",
+      "Per-voice lowpass filter with an envelope/automation that slowly OPENS over a build (cutoff sweep + resonance)",
+      "16th-note step sequencer fine enough to place rolling-bass cells (3+3+2) and offbeat-16th notes that dodge the kick steps",
+      "Arpeggiator: rate (1/16), Up/Down/order modes, gate length, and a groove/velocity control",
+      "Tempo-synced delay including 1/8-dotted, plus large reverb sends (hall/plate) for the washed-out pad/pluck/lead tails",
+      "Arrangement/automation timeline that can add and remove layers in 8/16/32-bar blocks and run filter/volume automation across long breakdowns and builds",
+      "Build-up FX generators: white-noise upriser sweep, accelerating snare-roll (1/8->1/16->1/32), pitch riser/downer, reverse cymbal",
+      "Velocity per step on hats/shakers/perc for human groove, and multi-layer hits with small per-layer time offsets (clap/kick layering)",
+      "Functional-harmony aware chord engine that holds a static minor loop while re-orchestrating it across pads/plucks/stabs"
+    ],
+    "feasibilityNote": "Highly feasible to generate convincingly — progressive house is one of the most formulaic, rule-driven EDM genres, which is exactly what suits algorithmic generation. The four-on-floor grid, off-beat hats, backbeat clap, slow 1-chord-per-bar minor loop, and 8/16/32-bar additive arrangement are deterministic templates. The two elements that make-or-break authenticity and need real engine support are (1) the kick-triggered sidechain PUMP with correct release recovery, and (2) the supersaw (proper unison/detune/width + slowly-opening filter + big reverb) — get those wrong and it sounds like generic house. The rolling 16th bass needs a fine step grid and the kick-dodging logic. The hardest-to-fake aspect is the long-form emotional pacing of the breakdown-to-drop journey (subtle multi-minute filter/layer automation); a loop-length generator nails the groove easily but the 'epic build' arc requires explicit multi-section automation, not just a repeating bar. All sound-design recipes here are grounded in production-community consensus; specifics like exact detune cents and clap HP frequency are tutorial-typical values, not universal constants.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Progressive_house",
+      "https://www.edmprod.com/how-to-make-progressive-house/",
+      "https://blog.native-instruments.com/progressive-house/",
+      "https://www.myloops.net/ultimate-guide-to-progressive-house-track-structure-and-flow",
+      "https://alecforshag.com/progressive-house/",
+      "https://alecforshag.com/what-bpm-is-progressive-house-tempo-guide-producer-perspective/",
+      "https://stealifysounds.com/blogs/news/step-by-step-how-to-make-a-killer-progressive-house-bass-line-in-depth-guide",
+      "https://screechhouse.com/rolling-bassline-tutorial-how-to-make-rolling-bass-fl-studio-rolling-bass-trance-techno-edm/",
+      "https://www.lemonade-loops.com/make-professional-supersaw-in-serum/",
+      "https://audiblegenius.com/blog/know-your-edm-progressive-house"
+    ],
+    "aliases": [
+      "Prog House",
+      "Festival Progressive House",
+      "Mainstage Progressive",
+      "Big Room Progressive",
+      "Anjuna-style progressive (deep/melodic)",
+      "Melodic Progressive House",
+      "EDM Progressive (Avicii/Swedish House Mafia era)"
+    ]
+  },
+  {
+    "genre": "Uplifting Trance",
+    "tempoBpm": {
+      "min": 136,
+      "max": 142,
+      "typical": 138
+    },
+    "meter": "4/4",
+    "feel": "straight (machine-quantized 16ths); driving four-on-the-floor with no swing. Rolling bass and 16th hats create forward propulsion. Optional tiny humanization (1-3 ticks) on percussion, never on the kick.",
+    "harmony": {
+      "scalesModes": [
+        "Natural minor (Aeolian) — default tonal center for the groove sections",
+        "Harmonic minor — the signature lead/melody scale; raised 7th gives the augmented-2nd (b6→7) 'trance interval' tension",
+        "Major (Ionian) — used for the most euphoric/uplifting anthem variants and breakdown lifts",
+        "Melodic minor — occasional, for ascending resolution lines"
+      ],
+      "chordTypes": [
+        "minor triads (i, iv, v)",
+        "major triads (III, VI, VII, and tonic-major lifts)",
+        "sus2 and sus4 (very common on pads for openness/suspension)",
+        "add9 (lush anthem pads)",
+        "maj7 / min7 (breakdown emotional color)",
+        "power-chord/octave voicings on the supersaw lead, doubled at octave + a 3rd harmony"
+      ],
+      "typicalProgressions": [
+        "i-VI-III-VII (Am-F-C-G in A minor — the classic emotive trance loop)",
+        "vi-IV-I-V (relative-minor start resolving up — euphoric/uplifting variant)",
+        "i-III-VII-iv",
+        "IV-I-V-vi (expansive, 'invigorating' uplifting feel)",
+        "i-VII-VI-VII (Andalusian-flavored descending tension)"
+      ],
+      "harmonicRhythm": "Slow: typically 1 chord per bar or 1 chord per 2 bars, over an 8-bar (sometimes 16-bar) repeating loop. Breakdown melodies often span an 8- or 16-bar phrase before a key/chord lift. Lead arps subdivide the slow harmony into 16th-note arpeggiated figures."
+    },
+    "form": "Long-form 7-9 min DJ arrangement. Canonical sections: Intro (~32 bars, kick + percussion + filtered rolling bass building). First groove/climax (32 bars, full beat + bass + background arps). Breakdown 1 (16-32 bars, beat & bass stripped away entirely, pads/strings + emerging lead melody, big reverb, often a key/emotional lift). Build-up (8-16 bars, rising white-noise sweep, snare/clap roll accelerating 8th→16th→32nd, filter opening, pitch riser, drum re-entry). Main drop / anthem (32 bars, full supersaw lead over rolling bass + four-on-floor — the euphoric peak). Second (shorter) breakdown + final climax, then Outro (~32 bars, beat-only for DJ mixing). Core loop length is 8 bars; phrases group in 8/16/32-bar multiples.",
+    "bass": {
+      "character": "Rolling, relentless, mid-forward sawtooth bass — the genre's rhythmic engine. Sits in low-mids (driving), with a separate sustained sub layer underneath for weight. Heavily sidechained to the kick.",
+      "signatureTechnique": "16th-note 'rolling/gallop' bass: a note on (almost) every 16th, but the 16th that lands ON the kick (downbeats) is OMITTED and the offbeat 16ths are played, with the note immediately before/after the beat often kicked UP AN OCTAVE — the classic trance offbeat-octave gallop. Sidechain compression to the kick is mandatory (not optional) so the bass ducks on each kick and breathes back in. Notes follow the chord-progression root; move both the low and the octave-up note to match the chord.",
+      "synthesis": "Multi-layer stack: (1) Sub layer — single sine or filtered saw, mono, plays sustained/legato root, lowpassed, fills the very low end. (2) Mid/'rolling' layer — 1-3 detuned saw oscillators, lowpass filter with resonance, short amp decay so each 16th is a punchy 'tick', plays the offbeat-octave pattern. (3) Optional hi/'reese' layer — slightly distorted/detuned saws, high-passed, for grit/presence. All bus-compressed and sidechained together to the kick; EQ-carved so layers don't mask each other and leave room for the kick fundamental (~50-60 Hz)."
+    },
+    "lead": {
+      "character": "Huge, wide, euphoric supersaw 'anthem' lead — bright, detuned, shimmering, the emotional focal point of the drop. Plays arpeggiated 16th-note figures and/or sustained melodic phrases from the harmonic-minor scale, frequently doubled at the octave and harmonized in 3rds/6ths for the lush anthemic stack.",
+      "synthesis": "Supersaw: 7 sawtooth oscillators detuned against each other (the Roland JP-8000 'Super Saw' model), ~detune spread where voices 'just start to sound out of tune' (roughly 12-25 cents effective spread); unison/stereo width maxed for a wide image. Pro recipe stacks 3 saw oscillators each with 9-voice unison (one tuned slightly up, one slightly down → effective ~27-voice) plus a high-passed pitched-up noise oscillator for air/sizzle. Lowpass filter with a slow filter-envelope sweep opening on the drop (and automated cutoff for build sweeps); high-pass to clear low-mud. Light clip/saturation for aggression and presence. Effects chain: stereo chorus (width), 1/8 or dotted-1/8 ping-pong delay (tempo-synced), and a big, wet, slightly damped reverb. Octave + 3rd-harmony layers summed for the 'wall' sound."
+    },
+    "pads": {
+      "character": "Lush, wide, sustained string/choir/synth-string pads — the harmonic 'wash' that carries the breakdown emotion and underpins the chords. Slow attack, long release, very reverberant; foreground in breakdowns, sidechain-pumped behind the beat in groove sections.",
+      "synthesis": "Layered detuned-saw 'string' ensemble (or sampled strings/choir) running the chord progression as sustained whole/half notes. Slow amp attack (~200-600 ms) and long release for smooth swells; lowpass with gentle resonance, often filter-automated to open during build-ups. Wide stereo (unison detune + chorus/ensemble), large hall reverb (long tail, high wet), optional shimmer/octave-up layer. In beat sections the pad is sidechained to the kick for the off-beat pulsing/ducking effect; in the breakdown the sidechain is removed so it sustains fully."
+    },
+    "drums": {
+      "machine": "Layered modern EDM kit (not a single classic box): punchy synthesized/sampled trance kick (deep, tuned to track key, tight) + layered clap/snare (two claps + a snare layered for body) + crisp 16th hi-hats (closed) + open hats on the offbeat + ride in peak sections + occasional toms/percussion fills. Spiritually descended from TR-909-style four-on-floor but heavily processed/layered.",
+      "kick": "Four-on-the-floor: a kick on every quarter note (steps 1, 5, 9, 13). Deep, punchy, tuned to the track's root key, with a tight tail so it leaves room for the sub. The downbeat kicks are what the rolling bass ducks under via sidechain.",
+      "snare": "Layered clap+snare on the backbeat — beats 2 and 4 (steps 5 and 13). Two claps plus a snare layered together for a fuller hit, drenched in reverb in breakdown/build sections. Build-ups add accelerating snare/clap rolls (8th→16th→32nd) leading into the drop.",
+      "hats": "Closed hi-hats run a continuous stream of 16th notes (all 16 steps) for the shimmering drive, with velocity accents on the offbeats; OPEN hi-hats sit on the offbeat 8ths — steps 3, 7, 11, 15 (the 'and' of each beat, between the kicks). In peak/drop sections a ride cymbal reinforces those same offbeats for extra lift.",
+      "canonicalPattern16": "16 steps = one bar of 16th notes (beats on 1,5,9,13). KICK: 1,5,9,13 (four-on-floor). CLAP/SNARE: 5,13 (backbeat, beats 2 & 4). CLOSED HAT: every step 1-16 (16th stream, offbeats accented). OPEN HAT: 3,7,11,15 (offbeat 8ths, between kicks). RIDE (peak only): 3,7,11,15 doubling the open hats. ROLLING BASS: plays the offbeat 16ths — i.e. NOT on 1,5,9,13 (those are omitted under the kick) but on most of 2,3,4,6,7,8,10,11,12,14,15,16, with the note just before each beat jumping up an octave (classic gallop). Toms/percussion fills added at bar/phrase ends (e.g. steps 14-16) for variation.",
+      "other": "Risers/white-noise sweeps and downlifters for transitions; reverse cymbals into downbeats; impacts/crashes on phrase starts (step 1 of an 8/16/32-bar boundary); snare/clap rolls for build-ups; subtle shaker/conga/tom syncopation for groove. Crash cymbal lands on the '1' of each major section change."
+    },
+    "signatureSounds": [
+      "Supersaw anthem lead — 7 detuned saws (JP-8000 Super Saw lineage), wide unison, harmonic-minor melody doubled at octave + 3rd, big reverb/delay, filter-env opening on the drop",
+      "Rolling 16th offbeat-octave bassline — note on every 16th except under the kick, offbeats octave-jumped, mandatory sidechain duck to the kick",
+      "Four-on-the-floor trance kick — deep, tuned to key, tight tail, with continuous 16th closed-hats and offbeat open-hats",
+      "Lush detuned-saw string/choir pad ensemble — sus2/sus4/add9 voicings, slow attack, huge reverb, carrying the breakdown emotion",
+      "Sidechain 'pump' — kick-triggered ducking of bass and pads creating the off-beat pulsing groove",
+      "Build-up FX kit — accelerating snare/clap roll, rising white-noise sweep, pitch riser, reverse cymbal into the drop",
+      "Optional Roland 'Hoover'/acid (TB-303-style) accent stabs and arpeggiated saw plucks as secondary hooks"
+    ],
+    "identityMustHaves": [
+      "Four-on-the-floor kick at ~138 BPM with a sidechained rolling 16th offbeat-octave bassline locked to it",
+      "A wide detuned supersaw anthem lead playing a harmonic-minor (or major-lift) melody as the euphoric peak",
+      "An extended beatless breakdown (pads/strings + lead melody, big reverb) followed by a build-up (riser + snare roll) into the drop",
+      "Slow harmonic rhythm (1 chord per 1-2 bars) over an 8/16-bar emotive minor/major progression, e.g. i-VI-III-VII or vi-IV-I-V"
+    ],
+    "engineRequirements": [
+      "Supersaw synth voice: 7+ detuned saw oscillators with adjustable unison count, detune-spread in cents, and stereo width",
+      "Per-voice filter envelope with slow attack/sweep (filter-env opening the lead on the drop) AND tempo-synced filter automation for build-ups",
+      "Sidechain/ducking engine: kick-triggered envelope (adjustable attack/release/depth) applied to bass and pad busses — core to the genre groove and an expressive parameter",
+      "Octave-jump bass sequencing: per-16th-step octave offset so the engine can place the offbeat note an octave up while omitting the on-kick step",
+      "Multi-layer bass with independent EQ/filter per layer (sub + rolling-mid + hi/reese) summed and sidechained together",
+      "Harmony/voice-leading helper: generate octave doubling + 3rd/6th harmony layers of the lead from a chosen scale (harmonic minor with raised 7th)",
+      "Arpeggiator that subdivides slow chords into 16th-note patterns following a scale/chord",
+      "16th-note hi-hat stream with per-step velocity accenting (offbeat emphasis) and separate open-hat offbeat lane",
+      "Arrangement/automation engine able to mute/unmute whole busses for breakdown (beat+bass out) and stage build-ups (rising noise sweep, accelerating snare roll 8th→16th→32nd, filter sweep, riser, crash on the '1')",
+      "Tempo-synced FX: ping-pong/dotted delay and large reverb on lead/pads, plus white-noise riser + reverse-cymbal transition generators",
+      "Pad voice with slow attack/long release, ensemble detune, and sus2/sus4/add9 voicing support for lush chords"
+    ],
+    "feasibilityNote": "Highly feasible and well-documented — uplifting trance is one of the most formulaic, recipe-driven EDM genres, which is ideal for algorithmic generation. The structural skeleton (138 BPM, four-on-floor on steps 1/5/9/13, offbeat open-hats on 3/7/11/15, 16th hat stream, offbeat-octave sidechained rolling bass, i-VI-III-VII over 1-chord-per-bar) is deterministic and easy to encode. The two genuinely hard parts for a convincing result are (1) the supersaw timbre — getting the 7-voice detune/unison/filter-env/reverb stack to sound 'big' rather than thin requires real unison and stereo-width DSP, and (2) the macro-arrangement believability — the beatless breakdown → riser/snare-roll build → drop dynamic is what makes it 'feel' like trance, and that demands a bus-level mute/automation engine, not just per-track step data. A simple step sequencer can nail the groove loop but will sound flat without sidechain ducking, filter-envelope sweeps on the lead, and the breakdown/build/drop staging. Sources are production-community consensus (FL/Sylenth/JP-8000 tutorials, KVR forums, Splice/EDMProd guides) plus Wikipedia and a music-theory reference; specifics like the exact open-hat steps and the 'omit-the-on-kick-16th, octave-up-the-offbeat' bass rule are corroborated across multiple independent tutorials.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Uplifting_trance",
+      "https://en.wikipedia.org/wiki/Trance_music",
+      "https://unison.audio/trance-chord-progressions/",
+      "https://www.theoryhelper.com/genres/trance/scales",
+      "https://www.numberanalytics.com/blog/uplifting-trance-production-essentials",
+      "https://www.dancemusicproduction.com/intro-uplifting-trance/",
+      "https://www.syntorial.com/tutorials/synth-quickie-supersaw-trance-lead/",
+      "https://www.perfectcircuit.com/signal/super-saw-history",
+      "https://producelikeapro.com/blog/supersaw-synth-explained/",
+      "https://screechhouse.com/rolling-bassline-tutorial-how-to-make-rolling-bass-fl-studio-rolling-bass-trance-techno-edm/",
+      "https://theproducerschool.com/blogs/featured-blogs/5-essential-bass-patterns-that-define-hard-house-and-trance-music",
+      "https://www.drumloopai.com/trance/common-patterns-used-in-trance-beats/",
+      "https://dsokolovskiy.com/blog/all/rhythm-structure/",
+      "https://www.edmprod.com/drums-guide/",
+      "https://splice.com/blog/what-is-trance-music/",
+      "https://lukebond.store/pages/uplifting-trance-masterclass"
+    ]
+  },
+  {
+    "genre": "Dubstep (classic / \"140\")",
+    "tempoBpm": {
+      "min": 132,
+      "max": 142,
+      "typical": 140
+    },
+    "meter": "4/4 half-time (140 BPM grid, felt as ~70 BPM)",
+    "feel": "Half-time, sparse, with syncopation/shuffle. Snare lands on beat 3 (not 2 and 4), so a 140 BPM track is internalized as ~70 BPM. Listeners \"fill in\" the implied double-time, creating tension. Optional ~50% swing on hats/shaker; tuplet/triplet fills allowed.",
+    "harmony": {
+      "scalesModes": [
+        "Natural minor (Aeolian)",
+        "Phrygian (the signature dark/exotic dubstep color)",
+        "Harmonic minor (for extra tension/tritone flavor)"
+      ],
+      "chordTypes": [
+        "root-position minor triads",
+        "power chords (root+5th, often the bassline itself, no 3rd)",
+        "minor add9 / madd9 (tension without resolution)",
+        "min7 and sus2/sus4 for melodic/'brostep'-adjacent leads",
+        "single drone/pedal root note (most of the tune sits on one root)"
+      ],
+      "typicalProgressions": [
+        "i (static drone — most classic dubstep loops on one minor/Phrygian root)",
+        "i - VI - III - VII (e.g. Am - F - C - G) for melodic/emotional dubstep",
+        "i - bII (Phrygian half-step move, e.g. Am - Bb) for menace",
+        "i - iv (e.g. Am - Dm)",
+        "tritone-built riffs: root against b5 within the bass riff for dissonance"
+      ],
+      "harmonicRhythm": "Very slow / mostly static. Classic dubstep drones on the tonic for whole 8-16 bar sections; harmony is harmonically simple with little modulation. Melodic/festival variants change chord every 1-2 bars."
+    },
+    "form": "2-bar drum loop is the building block (bar 2 = a variation/fill of bar 1). Track architecture: intro -> build/riser -> DROP 1 (main section, the bass-drop) -> midsection/breakdown -> build -> DROP 2 (second main section, similar to drop 1) -> outro. Drops conventionally land after the 16th or 32nd bar. Sections are 8/16/32 bars. The defining dynamic event is the DROP: a beat-and-build emptiness resolving into the sub+wobble bassline on the downbeat. Heavy use of silence/space; arrangements are minimal.",
+    "bass": {
+      "character": "TWO co-existing bass roles. (1) SUB: a clean sine fundamental in 20-80 Hz carrying the root note, mono, no modulation, this is the body you feel. (2) WOBBLE/'wub' mid-bass: a gritty, rhythmically pulsing growl from ~80 Hz up that sits on top of the sub. Often glued/sidechained so they don't clash. The wobble is THE identity of the genre.",
+      "signatureTechnique": "LFO-modulated filter cutoff (the 'wub'/'wobble'). Serum-style recipe: saw wavetable, OSC octave -1, unison 2-4 voices @ ~0.10-0.15 detune, MG Low 24 (24 dB/oct lowpass) cutoff ~20% baseline, LFO (sine or rise/fall shape) tempo-synced routed to cutoff so it sweeps from nearly closed to ~70% open. Rate is performed/automated between 1/4, 1/8, 1/2, 1/16 (and triplet/dotted) per bar for the rhythmic growl. Add Tube distortion (~30% drive) for grit; reverb 10-15% mix, short decay. Sub = separate sine layer one octave below, unmodulated. Pitch and note follow root of key (often a single droned root). Bass riff is rhythmically syncopated, leaving holes in the half-time grid.",
+      "synthesis": "Subtractive virtual-analog + heavy LFO modulation. OSC: saw/square wavetable for wobble layer; pure sine for sub layer. Filter: resonant 24 dB/oct lowpass as the modulation target. Modulation: tempo-synced LFO -> filter cutoff (primary), optionally LFO -> volume/distortion/wavetable-position for variety. FX chain: waveshaper/tube distortion -> EQ (split sub vs mids) -> light reverb. Reese variant = 2+ detuned saws beating against each other for a wider, growling neuro-flavored bass."
+    },
+    "lead": {
+      "character": "Sparse, dark, often dissonant. In classic dubstep the 'lead' is frequently just the bass riff itself or a detuned stab/pluck. In melodic dubstep, supersaw or pluck leads carry emotional minor melodies. Tritone and b2 (Phrygian) intervals used for menace.",
+      "synthesis": "Supersaw lead: 5-7 detuned saw oscillators, ~12-25 cent spread, lowpass with a slow filter-envelope opening, big hall reverb + 1/4 or 1/8-dotted delay. Pluck lead: single saw/square through a fast-decay amp/filter envelope (short attack, ~150-300 ms decay) for a stabby tone, often with unison detune and chorus. Detuned/atonal stabs run through bitcrush/distortion for grime-leaning tracks."
+    },
+    "pads": {
+      "character": "Dark, atmospheric, reverberant. Used in intros/breakdowns to set mood and hold the minor/Phrygian root; pulled out or filtered down during the drop so the bass owns the space. Often dissonant or droning.",
+      "synthesis": "Supersaw pad: 7 detuned saw oscillators (~12-25 cent spread) through a 24 dB lowpass with a slow filter-envelope open, drenched in large hall/plate reverb (long decay) and a slow chorus. Often a low-pass filter sweep automated during the build for tension into the drop. Alternative: detuned warm analog-style triangle/saw pad, heavy reverb, sidechained gently to the kick."
+    },
+    "drums": {
+      "machine": "Hybrid: punchy electronic kick + heavy electronic snare layered with a high-passed clap, plus syncopated electronic hats and shaker. Sample-based/909-adjacent rather than a single drum machine; often layered acoustic-snare/dub one-shots for character.",
+      "kick": "Tight, punchy, sub-reinforced kick on beat 1 (and a syncopated offbeat ghost/second kick before beat 3 for groove). Felt at the ~70 BPM half-time rate. EQ'd to leave room for the sub bass.",
+      "snare": "THE defining placement: heavy snare on beat 3 only (step 9 of 16), NOT on 2 and 4. Layered = weighty electronic snare emphasizing low-mids (~160-200 Hz) + reverb-treated, high-passed clap for the top. Big reverb tail. This single backbeat-displaced snare creates the half-time feel.",
+      "hats": "Closed hats / shaker drive the 140 BPM groove and syncopation, with subtle velocity shifts and ghost notes; they pause momentarily around beat 3 to give the snare space. Open hat used as an occasional offbeat accent. Occasional fast 1/32 stutters/rolls give the 'rushing' double-time feel.",
+      "canonicalPattern16": "16-step grid = one bar at 140 BPM (steps 1-16; beats land on 1,5,9,13). KICK: step 1 (downbeat), plus a syncopated ghost kick on step 7 or 8 (just before the snare) — classic minimal version is kick only on 1 and ~7. SNARE+CLAP: step 9 ONLY (beat 3, the half-time backbeat). CLOSED HATS: steps 3,5,7,11,13,15 (offbeat-leaning, with a deliberate gap around step 9) — or straight 1/8 on 3,7,11,15; add ghost hats on 'e/a' subdivisions with low velocity. OPEN HAT: occasional accent on step 15 (the 'and' of beat 4). EXTRA PERC/SHAKER: fills steps 2,6,10,14 lightly. In a 2-bar loop, bar 2 adds a fill (e.g. snare flam or 1/32 hat roll on steps 14-16) leading back to the downbeat.",
+      "other": "Reverberant dub one-shots, vinyl crackle/noise sweeps, impacts and risers into the drop, and a downlifter/sub-boom on the drop downbeat. Reverb tails and delay throws on snare are characteristic (the 'dub' heritage)."
+    },
+    "signatureSounds": [
+      "The wobble / 'wub' bass: tempo-synced LFO sweeping a resonant lowpass cutoff on a detuned saw, layered over a clean sine sub (THE sound of dubstep)",
+      "Clean sine sub-bass at 20-80 Hz carrying the root note",
+      "Half-time snare on beat 3 with big reverb tail + high-passed clap layer",
+      "The DROP: build-up tension (riser, filter sweep, silence) resolving onto the sub+wobble on a downbeat",
+      "Reese bass: detuned beating saws for a wide growling bass (neuro/brostep flavor)",
+      "Supersaw chords/pads (7 detuned saws, lowpass with slow filter-env open, huge reverb) in melodic-dubstep intros/breakdowns",
+      "Risers/downlifters, impacts, and reverb/delay 'dub' throws as transition FX",
+      "Tritone and Phrygian b2 dissonance baked into the bass riff"
+    ],
+    "identityMustHaves": [
+      "Half-time feel at ~140 BPM with the snare on beat 3 (felt as ~70 BPM)",
+      "LFO-modulated wobble bass ('the wub') layered over a clean sine sub-bass",
+      "A DROP: tension/space resolving onto the bassline, with sparse, minimal arrangement and lots of empty space",
+      "Dark minor/Phrygian tonality, mostly droning on one root with little harmonic movement"
+    ],
+    "engineRequirements": [
+      "Half-time drum grid: snare locked to beat 3 (step 9), not 2 and 4 — the sequencer must support this displaced backbeat as a first-class feel",
+      "Tempo-synced LFO routable to filter cutoff (and to volume/distortion/wavetable-position) with per-bar selectable rate (1/4, 1/8, 1/2, 1/16, plus triplet/dotted) — this IS the wobble and is non-negotiable",
+      "Per-step or per-bar automation of LFO rate so the wobble pattern changes across the bar (performative 'wub-wub-WUBWUBWUB')",
+      "Two-layer bass voice: an unmodulated sine sub + a modulated mid-bass growl, with a crossover/EQ split so they coexist (and ideally mono-summed lows)",
+      "Resonant 24 dB/oct lowpass filter as a modulation target (the cutoff is the thing that wobbles)",
+      "Waveshaper/tube distortion stage on the bass for grit",
+      "Unison/detune (2-7 voices, cents spread) for Reese bass and supersaw leads/pads",
+      "Arrangement/section engine that can produce a DROP: build (riser + automated filter sweep + silence) -> downbeat hit, with sparse step programming and empty bars",
+      "Sidechain/ducking or layer-gating so sub and wobble don't clash and so pads duck under the drop",
+      "Reverb + tempo-synced delay sends (for the snare 'dub' throw and the cavernous half-time space)",
+      "Velocity/ghost-note support and 1/32 hat rolls/stutters for the 'rushing' double-time fills",
+      "Drone/single-root harmony mode (long static tonic) as well as a slow i-VI-III-VII style progression mode"
+    ],
+    "feasibilityNote": "Moderately-to-fairly hard to nail convincingly. The drum/harmony skeleton is easy (half-time grid, snare on 3, static minor/Phrygian root). The genre identity lives almost entirely in the bass: a believable wobble needs a tempo-synced LFO modulating a resonant lowpass cutoff (plus distortion) on a detuned-saw layer summed with a clean sine sub — a step-sequencer with only per-track volume/pitch cannot produce it. The single highest-value engine feature is the synced-LFO-to-cutoff with per-bar rate automation; without it you get a sub bassline but not 'dubstep.' Second-hardest is the DROP dynamic (build/silence -> downbeat resolution) which needs arrangement-level automation, not just looped patterns. Everything else (sparse programming, reverb throws, Reese/supersaw via unison detune) is standard subtractive synthesis. Sources are strong and consensual on tempo, the beat-3 snare, sub+wobble layering, and Phrygian/minor tonality.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Dubstep",
+      "https://www.attackmagazine.com/technique/beat-dissected/mystik-dubstep/",
+      "https://www.presetdrive.com/dubstep-bass-serum/",
+      "https://www.studiobrootle.com/dubstep-drum-patterns/",
+      "https://www.musical-u.com/learn/rhythm-how-dubstep-works/",
+      "https://splice.com/blog/what-is-dubstep-music/",
+      "https://www.productlondon.com/what-is-dubstep/",
+      "https://dj.studio/blog/bpm-for-dubstep",
+      "https://www.chordoo.com/blog/edm-chord-progressions-that-work-every-time",
+      "https://www.dubstepforum.com/forum/viewtopic.php?t=280898"
+    ]
+  },
+  {
+    "genre": "Liquid Drum & Bass (Liquid Funk)",
+    "tempoBpm": {
+      "min": 165,
+      "max": 178,
+      "typical": 174
+    },
+    "meter": "4/4 (programmed on a 16th-note grid; drums perceived in double-time against a half-time harmonic/snare backbone)",
+    "feel": "Rolling breakbeat with light swing/shuffle on the 16ths (~8-15% swing) and prominent ghost-snare syncopation; main backbeat sits on beat 3 (half-time-feel snare) while fast hat/ghost activity keeps the double-time roll. Laid-back, behind-the-beat, \"liquid\" smoothness.",
+    "harmony": {
+      "scalesModes": [
+        "Natural minor (Aeolian)",
+        "Dorian",
+        "Lydian (for lift)",
+        "Major (for soulful/uplifting cuts)",
+        "occasional harmonic-minor color"
+      ],
+      "chordTypes": [
+        "maj7",
+        "min7",
+        "min9",
+        "maj9",
+        "min11",
+        "7sus4 (e.g. Cmaj7sus4/F)",
+        "added-9 (add9)",
+        "slash/inversion chords for moving bass",
+        "dominant 7 used as a brightening surprise (e.g. ending on E major in A-minor)"
+      ],
+      "typicalProgressions": [
+        "Am9 - Cmaj7 - Em7 - Am9 - Cmaj7sus4/F - E (MusicRadar A-minor liquid example)",
+        "i9 - III maj7 - v7 - VII maj7 (Aeolian rolling vamp)",
+        "ii7 - V7 - Imaj7 (jazz 2-5-1 borrowed for soulful liquid)",
+        "i - VI - III - VII (Aeolian pop/anthemic)",
+        "Fm: i9 - iv9 vamp (F-minor is the most common production key for sub translation)"
+      ],
+      "harmonicRhythm": "Slow and static for atmosphere: typically one chord per 1-2 bars over an 8-bar loop. Movement is created less by fast changes than by altering the top voice / adding incidental passing chords that nudge the upper notes while the bass holds."
+    },
+    "form": "Loop-based, 16-bar sections. Common arc: Intro/Breakdown (16) - Build (16, filter sweeps + reverse crash) - Drop 1 (16) - Drop 2 / variation (16) - Mid-breakdown (16) - Drop 3 (16) - Outro/Breakdown (16). Bass+drum phrases are 4 bars with a variation/fill every 8; a 2-beat silence (\"breath\") often punctuates phrase endings. The breakdown strips to chords/pads/vocal; the drop reintroduces the rolling break + sub. Builds use filter automation, reverse crashes, snare rolls and delay throws.",
+    "bass": {
+      "character": "Two-tier bass: (1) a deep, pure, warm SUB sine sitting at the fundamental (often F0/A0 range, key chosen so sub translates on club rigs); (2) a smoothed, slowly-evolving Reese providing mid-body and movement. In liquid the Reese is rounded/filtered rather than aggressive — growl tamed, sub emphasized. Bass is melodic, following the chord roots/3rds/5ths with a rolling 16th-note rhythm.",
+      "signatureTechnique": "Reese phasing: stack 2+ detuned saws (and/or unison 2 voices, mono, no stereo spread on the unison) so their phases beat against each other — the beating accelerates as pitch rises. Detune sweet spot ~0.10-0.20 (10-20 cents); beyond ~0.40 it splits into audible separate pitches. Separate the SUB onto its own clean sine layer (low-passed/mono, no detune) so the low end stays solid while the Reese carries movement. For liquid, low-pass the Reese to keep only some upper warmth, add slow filter/LFO motion and light saturation rather than heavy distortion.",
+      "synthesis": "Reese layer: 2x sawtooth oscillators, one fine-detuned up and one down (~±5-15 cents) for the core phase beat, OR unison count 2 with detune ~0.10-0.20, voicing MONO; low-pass filter (24dB) with cutoff kept fairly high then tamed to taste, slow filter-envelope/LFO for evolving movement, gentle drive/saturation. Sub layer: single sine (or triangle) one octave below, mono, low-passed, no detune, sidechained/ducked subtly under kick. Both layers note-locked to the chord harmony; glide/portamento optional between notes for the 'liquid' slide."
+    },
+    "lead": {
+      "character": "Soulful and restrained rather than dominant — often a plucky Rhodes/electric-piano melody, a soft sine/triangle lead, a vibe-y bell/mallet, or chopped/pitched vocal phrases. Sits in the upper-mid, drenched in reverb/delay, with delay throws on phrase-ending notes.",
+      "synthesis": "Rhodes/EP via FM or sample for jazzy melody; or sine/triangle lead with a slow vibrato and big plate/hall reverb + 1/4 or 1/8-dotted delay throws. Soft attack, gentle filter, no harsh harmonics. Vocal leads: chopped, pitched, reverb-soaked one-shots used as melodic/textural hooks."
+    },
+    "pads": {
+      "character": "Lush, warm, evolving and wide — the harmonic + emotional bed. Maj7/min9 voicings held under the break; the defining 'liquid' atmosphere. Often blended with soulful sampled piano/strings and ambient texture.",
+      "synthesis": "Supersaw/multi-saw stack (5-7 detuned saws, ~12-25 cent spread) and/or warm analog-style saw+triangle, low-pass with a slow filter-envelope opening, heavy hall/plate reverb (long tail), subtle chorus/ensemble for width, slow LFO on filter or amplitude for movement. Layer with sampled Rhodes/strings/choir and high-passed ambience. Sidechain lightly to the kick/snare so the break breathes through."
+    },
+    "drums": {
+      "machine": "Chopped & resequenced acoustic breakbeat (Amen break and funk breaks the foundation), pitched up to 170-175 BPM, typically high-pass filtered and layered with punchy one-shot kick/snare (909/sampled) and a 'top loop' of high-end percussion. Two-step skeleton resequenced from the break.",
+      "kick": "Punchy layered one-shot on beat 1 (step 1) anchoring the bar; frequent second kick around the 'and' before beat 3 (steps ~7-8) or syncopated 16th placements borrowed from the Amen's displaced kicks. Tight, not boomy — sub is left to the bass.",
+      "snare": "Big main snare on beat 3 (step 11) for the half-time-feel backbone; in busier two-step a second main snare on beat 2/4 (steps 5/13). Quieter GHOST snares scattered on off-16ths (e.g. ~2.4 and 3.2 beat positions, steps ~6 and 10) at -6 to -12 dB add swing/roll. Snare often slightly behind the beat for laid-back feel.",
+      "hats": "Closed hats roughly on every 8th/16th filling the gaps, with humanized velocities for a live feel; open hat on offbeats for lift; pedalled/ghost hats low in the mix in early bars getting more prominent toward bar 4. Light shuffle on the 16ths.",
+      "canonicalPattern16": "16 steps = one 4/4 bar (steps 1-16, beats on 1/5/9/13). LIQUID TWO-STEP: Kick on step 1 (and a syncopated second kick on step 8). Main snare (backbeat) on step 11 (beat 3, half-time feel); add main snare on step 5 for the busier variant. Ghost snares (quiet, -8 to -12 dB) on steps 6 and 10 for the rolling shuffle. Closed hats on most 8th positions (1,3,5,7,9,11,13,15) with humanized velocity; open hat on offbeats step 3 and step 15. Across a 4-bar Amen-derived loop, displace the kick/snare in bars 3-4 (kick pulled to the start of bar 2, snare held back ~half a beat) to recreate the Amen groove rather than repeating bar 1 verbatim.",
+      "other": "Top loop / shaker / ride layer for high-end motion; reverse crash + reverse snare into drops; crash falling between beats 3 and 4 (Amen marker); snare rolls/edits as fills every 8 bars; rim/click ghosts. Subtle room reverb on the break, separate reverb send for drums."
+    },
+    "signatureSounds": [
+      "Pitched-up, chopped & resequenced acoustic breakbeat (Amen/funk break) — the rolling double-time engine",
+      "Two-layer bass: clean pure SUB sine + smoothed phasing Reese (2 detuned saws, ~10-20 cent detune, beating that accelerates with pitch)",
+      "Lush maj7/min9 pads (supersaw stack, slow filter open, long hall reverb) — the 'liquid' atmosphere",
+      "Soulful sampled Rhodes/electric-piano and reverb-soaked chopped vocal hooks",
+      "Extended jazz/soul chords (Am9, Cmaj7, Em7, Cmaj7sus4/F) voiced statically over a moving bass",
+      "Reverse crash / reverse snare swells and delay-throw transitions into the drop"
+    ],
+    "identityMustHaves": [
+      "170-175 BPM rolling chopped breakbeat with ghost-snare shuffle and a half-time-feel main snare on beat 3",
+      "Deep clean sub-bass underpinning a smoothed/melodic (non-aggressive) Reese — warmth over distortion",
+      "Lush extended-jazz harmony (maj7/min7/min9 etc.) carried by pads + soulful piano/Rhodes, static harmonic rhythm",
+      "Musical, emotive, 'liquid' atmosphere (reverb-drenched, soulful, melodic) distinguishing it from neuro/jump-up DnB"
+    ],
+    "engineRequirements": [
+      "Breakbeat slicing & resequencing: load a break, slice to 16ths, re-trigger slices per step (not just one-shot triggers) with per-slice pitch/reverse/gate to recreate Amen-style displaced grooves",
+      "Per-step velocity + micro-timing/swing (8-15%) and per-track timing offset for behind-the-beat snares and humanized hats",
+      "Ghost-hit layer support: low-velocity ghost snares/hats as a distinct dynamic tier (-6 to -12 dB)",
+      "Reese monosynth: 2+ detuned saw oscillators OR unison with mono voicing and controllable detune (cents) producing phase-beating; plus glide/portamento",
+      "Independent dual-bass routing: a separate clean mono sub-sine layer locked an octave below the Reese, with its own low-pass and ducking",
+      "Tempo-synced filter LFO / filter-envelope automation for slow bass and pad movement (and build sweeps)",
+      "Supersaw/multi-oscillator pad stack (5-7 voices, adjustable detune spread) with slow amp/filter envelope",
+      "Polyphonic chord engine that voices extended jazz chords (7/9/11, sus, slash/inversions) and supports voice-leading / incidental top-note changes over a static bass",
+      "Send-effects architecture: separate reverb sends for drums / music / bass, plus tempo-synced delay 'throws' on lead and vocal",
+      "Sidechain/ducking of pads and sub to the kick & snare so the break breathes",
+      "Arrangement/automation lane for 16-bar section structure with reverse-crash risers and filter builds"
+    ],
+    "feasibilityNote": "Highly feasible to generate convincingly, with one hard dependency: the genre's identity lives in the CHOPPED breakbeat, so the engine needs real break-slicing/resequencing (or a very good multi-sample acoustic kit with ghost-hit dynamics and micro-timing) — a plain 4-on-the-floor step sequencer cannot fake the Amen roll. The dual-layer bass (clean sub sine + phasing Reese) and lush extended-jazz pads are straightforward subtractive-synth tasks. The trickiest musical element is the harmony: convincing liquid needs correct extended-chord voicings (maj7/min9/min11, slash chords) and tasteful static-yet-moving progressions — a random-note generator will sound wrong, so a key/scale-aware chord engine with curated progressions is required. Light swing, behind-the-beat snares, and reverb depth carry most of the 'liquid' smoothness. All numbers above are grounded in production-community sources (some detune figures are Serum/Vital-specific consensus values rather than universal constants).",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Liquid_funk",
+      "https://www.edmprod.com/how-to-make-liquid-drum-and-bass/",
+      "https://www.edmprod.com/liquid-dnb-tips/",
+      "https://www.musicradar.com/how-to/how-to-create-uplifting-liquid-dnb-chords",
+      "https://www.musicradar.com/tuition/tech/how-to-program-an-amen-style-break-637374",
+      "https://www.studiobrootle.com/drum-and-bass-drum-patterns/",
+      "https://futureproofmusicschool.com/blog/reese-bass-sound-design-everything-you-need-to-know",
+      "https://www.presetdrive.com/how-to-make-reese-bass-in-serum-step-by-step/",
+      "https://noisemasters.eu/blogs/dnb-guides/how-to-make-reese-basses-for-drum-and-bass-a-step-by-step-guide",
+      "https://www.dancemidisamples.com/how-to-write-a-drum-and-bass-chord-progression-tutorial/",
+      "https://melodycraft.app/insights/drum-and-bass-dnb-breakbeat-explained",
+      "https://blog.soundtrap.com/uk-halfstep-edm-guide/",
+      "https://www.elephantdrums.co.uk/blog/guides-and-resources/amen-break-drum-groove/"
+    ]
+  },
+  {
+    "genre": "Detroit / Minimal Techno",
+    "tempoBpm": {
+      "min": 122,
+      "max": 135,
+      "typical": 128
+    },
+    "meter": "4/4 (straight, four-on-the-floor)",
+    "feel": "Straight 16ths with light shuffle/swing applied to hats and stabs (~52-60% swing); kick stays dead-straight while hats/percussion/bass carry the groove. Overall hypnotic and machine-tight rather than humanized.",
+    "harmony": {
+      "scalesModes": [
+        "Natural minor (Aeolian)",
+        "Dorian (for the slightly brighter, funkier Detroit flavor)",
+        "Phrygian (for darker UR-style menace)",
+        "Harmonic minor (occasional, for tension)"
+      ],
+      "chordTypes": [
+        "minor triad (the core 'stab')",
+        "minor 7th (m7 = root, b3, 5, b7 — 'pure Detroit' with wide voicing)",
+        "minor 9th (m9, for lush Carl Craig-style pads)",
+        "minor 11th",
+        "suspended 2/sus4 (ambiguous, modal stabs)",
+        "augmented (color/tension)",
+        "parallel/fixed-interval voicings (whole chord shape transposed in parallel, no diatonic re-voicing — the classic 'chord memory' sound)"
+      ],
+      "typicalProgressions": [
+        "i (single tonic chord vamped for 8-16+ bars — the most common 'progression' is essentially none; harmony evolves via filter/automation not chord change)",
+        "i - VI - VII - v (Aeolian loop, e.g. Cm - Ab - Bb - Gm)",
+        "i - iv (e.g. Cm - Fm, two-chord hypnotic see-saw)",
+        "Cm - Gm - Fm - Gm - Abm - Bbm (fixed-interval parallel-minor stab line — all chords keep identical minor-triad shape, just transposed)",
+        "i - bVII - i - v (Dorian/Aeolian vamp)"
+      ],
+      "harmonicRhythm": "Extremely slow to static. Often ONE chord/mode held for an entire 8-32 bar phrase; when chords move, typically 1 chord per bar or per 2 bars. Harmonic interest comes from rhythmic stab placement and parameter automation (filter, resonance) rather than frequent chord changes. This is the defining 'hypnotic loop' trait."
+    },
+    "form": "Loop-and-evolve DJ-track structure, not verse/chorus. Loop length 4-8 bars; phrases grouped in 16/32-bar blocks. Long beat-mixable intro (16-32 bars of kick + hats + minimal perc for DJ blending), then layered additive arrangement: kick first, then hats/perc, then sub-bass, then stabs, then pad/lead. Breakdown(s) drop the kick to expose pads/stabs with rising filter/reverb tension, then a re-entry ('drop' = kick + bass return, often with sidechain pump). Outro mirrors intro (strip back to kick + hats) for mixing out. Total length typically 6-8 minutes. Evolution is gradual and subtle: every 8-16 bars introduce/remove one element or nudge a filter, rather than dramatic EDM-style drops.",
+    "bass": {
+      "character": "Deep, round, monophonic sub/analog bass locked tightly to the kick — repetitive and hypnotic. Two canonical modes: (1) a single-note or root-fifth offbeat 'pulse' sitting in the gaps between kicks, or (2) a rolling 16th-note line where offbeat notes drop an octave for syncopated drive. Often follows or implies the root of the held minor chord.",
+      "signatureTechnique": "Offbeat placement so bass never collides with the kick fundamental, plus sidechain compression keyed off the kick (bass ducks on each kick hit and swells back — the 'pump'). Slight glide/portamento between notes for the classic SH-101 slide. Accent on offbeats; root-with-octave-jumps for the rolling variant.",
+      "synthesis": "Monosynth, 1-2 oscillators, sawtooth or square (square/PWM for hollow Reese-ish weight, saw for fuller body), optional sub-oscillator one octave down. 24dB/oct lowpass filter with cutoff kept low (emphasize fundamental + low harmonics), modest resonance, short-to-medium amp decay so notes are punchy and gated. Add light glide. Model: Roland SH-101 / TB-303-adjacent / Juno bass. Heavy sidechain to kick."
+    },
+    "lead": {
+      "character": "Sparse, hypnotic motif rather than a vocal-style melody. Often an arpeggio or short repeating cell (3-6 notes) from the underlying minor scale, in a higher octave, with notes drawn from the held chord (9ths, 7ths, 11ths in a tight cluster on top). Delay/echo trails create the 'rolling' Detroit shimmer (e.g. dotted-8th delay). Frequently a single 'bleep' tone (Atkins/Mills 'bleep techno') or a slowly transposing fixed-interval cell.",
+      "synthesis": "Mono or paraphonic synth, saw or pulse oscillator, resonant 24dB lowpass with an envelope/LFO sweeping the cutoff for movement; short pluck-style amp envelope. Run through tempo-synced delay (dotted-8th or 1/8) with feedback and into reverb. Classic sources: Roland SH-101, Juno-106, Yamaha DX (FM bell/bleep), Korg MS-style. Pitch automation/transposition over the loop for evolution."
+    },
+    "pads": {
+      "character": "Lush, warm, wide minor 7th/9th sustained chords providing the emotional/'soulful' Detroit core — the 'strings' or 'space chords'. Wide voicing (spanning ~2 octaves, mostly 5ths and octaves in the body) with the 7th/9th color on top. Slow swelling, often filtered down and opening across the phrase. Sits behind/around the stabs; in breakdowns it becomes the lead emotional element.",
+      "synthesis": "Polyphonic analog-style synth, 2+ detuned sawtooth oscillators per voice (or PWM with LFO-modulated pulse width for the 'deep Juno strings'), lush analog chorus (Juno-106 chorus II is the archetype), slow filter attack so the chord blooms, long release, big plate/hall reverb. PWM + sub-osc + heavy chorus is the canonical Juno-string recipe. Models: Juno-106, Jupiter-8, SH-style. Slow LFO on filter/pitch for drift."
+    },
+    "drums": {
+      "machine": "Roland TR-909 is the defining kit (kick, clap, hats, ride). Often layered/dirtied via 12-bit sampling (MPC60/SP-1200) for grit. TR-808 sometimes layered for deeper sub-kick and cowbell/clave; TR-707 for extra claps. Kick frequently distorted/saturated.",
+      "kick": "Punchy 909 kick on every quarter note (four-on-the-floor), dead straight, no variation. Tuned deep/bass-heavy, with a tight click transient; often distorted/saturated and used as the sidechain trigger for bass.",
+      "snare": "Clap (909/707) is the backbeat element rather than a true snare, on beats 2 and 4 (steps 5 and 13). Optional layered rimshot/snare pitched down a couple semitones for darker accent, deliberately avoiding landing on a kick step. In sparser minimal passages the clap may drop out, leaving only kick + hats.",
+      "hats": "Closed 909 hats drive the groove: steady 8ths or 16ths, with the OPEN hat on every offbeat (the 'and' of each beat) for the signature pumping push-pull. Two layered closed-hat sounds common — one sharp/bright, one softer/longer — alternated for movement. Open hat is choked by the next closed hat. Light swing (52-60%) on hats; subtle velocity/accent variation for the 'rolling' Jeff Mills feel.",
+      "canonicalPattern16": "16-step grid (1 bar of 16th notes). KICK: steps 1,5,9,13 (four-on-floor, accented). CLAP/SNARE: steps 5,13 (backbeat on 2 and 4). CLOSED HAT: 8th-note version on steps 1,3,5,7,9,11,13,15 (or full 16ths on every step for busier rolling feel), with accents on steps 4,8,12,16. OPEN HAT: steps 3,7,11,15 (every offbeat, choked by following closed hat). RIDE (Jeff Mills rolling option): doubles the open-hat offbeats 3,7,11,15 at -6dB. RIM/PERC: syncopated, e.g. steps 4,12 or 7,15 — never on a kick step. Velocity/automation evolves across the loop rather than the step placement changing.",
+      "other": "Ride cymbal layered on offbeats for 'rolling' tracks (Jeff Mills); occasional 909 crash on the downbeat of a new 16/32-bar phrase. 808 cowbell/clave, shaker, or congas for minimal-techno syncopation. A single tom or rimshot fill marks phrase turnarounds. Subtle bursts of additional 16th-note hats/percussion ('rolls') signal builds. Heavy sidechain pump from kick into bass/pads is itself a rhythmic element."
+    },
+    "signatureSounds": [
+      "TR-909 kit — straight four-on-floor kick, offbeat open hats, clap on 2&4 — the rhythmic backbone (909 kick distorted/saturated)",
+      "Detroit 'space chord' STAB: short, punchy minor7/min9 chord stab, parallel/fixed-interval voicing, played on offbeats with a tight pluck envelope, soaked in tempo-synced delay + reverb — typically a detuned 2-3 oscillator saw synth (Juno/SH) into a resonant lowpass",
+      "Fixed-interval / 'chord-memory' parallel-minor motif: one chord shape transposed up/down the scale without re-voicing (e.g. Cm-Gm-Fm-Abm-Bbm), giving the un-diatonic, machine-like Detroit melody",
+      "Lush Juno-106 chorus strings/pad on a wide min7/min9 voicing (PWM + sub + chorus II) for the 'soulful' emotional layer",
+      "Rolling offbeat sub-bass locked to kick with glide + sidechain pump (SH-101/303-style mono)",
+      "FM/analog 'bleep' lead tone with dotted-8th delay (bleep-techno lineage)",
+      "Sidechain 'pump' — kick ducking the bass/pads — as an audible rhythmic signature",
+      "Subtle, continuous filter-cutoff and resonance automation creating motion within a static loop"
+    ],
+    "identityMustHaves": [
+      "Four-on-the-floor 909 kick at ~125-135 BPM with offbeat open hats — the non-negotiable rhythmic skeleton",
+      "Static/near-static minor harmony (one mode or a 2-chord vamp held for many bars) — the 'hypnotic loop': interest comes from repetition + subtle evolution, not chord changes",
+      "The Detroit chord STAB — short minor7/min9 stab, ideally parallel/fixed-interval, off-beat placement, with delay/reverb",
+      "Subtle continuous evolution via parameter automation (filter cutoff/resonance, send levels, additive layering) rather than dramatic arrangement events — 'loops that breathe'"
+    ],
+    "engineRequirements": [
+      "Step sequencer at 16th-note resolution with per-step velocity/accent AND adjustable swing/shuffle (~52-60%) applied selectively to hats/perc but NOT the kick",
+      "909-style drum voices with open-hat choke (closed hat cuts off open hat) and accent/total-accent control",
+      "Sidechain ducking: kick must be routable as a trigger to duck bass and pads (the 'pump') — core to the groove, not just mixing",
+      "Monosynth with portamento/glide + accent for the rolling bass and bleep lead (303/SH-101 behavior)",
+      "Per-note/per-loop parameter AUTOMATION lanes (filter cutoff, resonance, send/reverb, volume) that evolve over 8-32 bars — the single most important capability for 'subtle evolution'; without it the loop is static and lifeless",
+      "Tempo-synced delay (esp. dotted-8th and 1/8) and reverb sends on stabs/leads/pads",
+      "Parallel / fixed-interval chord voicing: ability to define a chord SHAPE and transpose it as a rigid block (no diatonic re-voicing) to reproduce the 'chord-memory' Detroit sound",
+      "Polyphonic pad voice with detuned-saw or PWM oscillators + chorus + slow filter-attack envelope (Juno-strings emulation)",
+      "Additive/subtractive arrangement engine: mute/unmute and introduce layers on 8/16/32-bar boundaries, with build/fill triggers (extra 16th hat rolls, crash on phrase downbeat) and breakdown logic (drop kick, raise filter/reverb, re-enter)",
+      "Arpeggiator (tempo-synced) for the higher-octave melodic cell"
+    ],
+    "feasibilityNote": "Highly feasible for a step-sequencer + subtractive-synth engine — this genre is arguably the easiest electronic style to generate convincingly because its identity lives in a rigid, well-documented drum grid (909 four-on-floor + offbeat open hats), near-static minor harmony, and a small set of synth recipes. The hard part is NOT the notes but the EVOLUTION: a literal static loop sounds like a demo, not a track. Convincing output requires (a) continuous, slow parameter automation (filter sweeps, send swells, subtle per-bar variation) and (b) additive 8/16/32-bar arrangement with breakdowns/builds — both of which are engine features beyond per-track params. Sidechain pump and open-hat choke are also load-bearing for the 'feel.' The fixed-interval/parallel chord stab is the one harmonic subtlety that gives away authenticity and is trivial to implement (transpose a chord block) once recognized. Get the 909 grid, the offbeat sub-bass + sidechain, one min7 parallel stab with delay, and slow filter automation, and the result reads unmistakably as Detroit/minimal techno. Tempo note: pure Detroit skews faster (128-140, typ. 135), pure minimal slightly slower (122-130, typ. 128-130); the combined target sits at ~125-132, so 128 is the safe typical.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Detroit_techno",
+      "https://en.wikipedia.org/wiki/The_Belleville_Three",
+      "https://www.attackmagazine.com/technique/beat-dissected/motor-city-detroit-techno/",
+      "https://www.musicradar.com/how-to/program-jeff-mills-style-909-drums-1",
+      "https://www.musicradar.com/how-to/how-to-create-detroit-techno-style-fixed-interval-chords",
+      "https://www.aulart.com/blog/create-a-detroit-techno-pattern-with-the-tr-909/",
+      "https://www.kvraudio.com/forum/viewtopic.php?t=158691",
+      "https://presetground.com/blogs/news/melodic-techno-chord-progressions",
+      "https://forum.vintagesynth.com/viewtopic.php?t=38601",
+      "https://www.attackmagazine.com/technique/tutorials/warehouse-rolling-techno-bass/",
+      "https://stealifysounds.com/blogs/news/8-best-tips-how-to-produce-minimal-techno",
+      "https://www.mind-flux.com/news-1/2025/11/8/using-serum-2s-lfo-path-mode-building-evolving-modulation-for-techno",
+      "https://vibesdj.io/dj-tools/techno-bpm-chart",
+      "https://www.zipdj.com/blog/techno-bpm"
+    ]
+  },
+  {
+    "genre": "Chillstep / Future Garage",
+    "tempoBpm": {
+      "min": 130,
+      "max": 145,
+      "typical": 140
+    },
+    "meter": "4/4 half-time (notated/sequenced at ~140 BPM but felt at ~70 BPM)",
+    "feel": "Half-time with 2-step garage shuffle/swing on the 16th-note grid (swing ~55-65%); hats and ghost percussion are humanized off-grid so the groove glides rather than marches. Underlying pulse is sparse and spacious, never four-on-the-floor driving.",
+    "harmony": {
+      "scalesModes": [
+        "Natural minor (Aeolian)",
+        "Dorian (for a less dark, soulful color)",
+        "Harmonic minor (occasional V chord tension)",
+        "Lydian flavoring over the IV/major chords via add9/#11 extensions"
+      ],
+      "chordTypes": [
+        "min7",
+        "maj7",
+        "maj7(sus2) / maj9",
+        "add9 (major add9)",
+        "min9",
+        "sus2 / sus4",
+        "maj7(#11) occasional",
+        "min11"
+      ],
+      "typicalProgressions": [
+        "i-VI-III-VII (e.g. Fm7 - Dbmaj7 - Abmaj7 - Ebmaj7 in F minor)",
+        "Fm7 - Ebmaj7(sus2) - Bbmaj(add9) - Dbmaj7 (NI chillstep tutorial progression)",
+        "i - iv - VI - v (all sevenths/ninths, e.g. Fm9 - Bbm7 - Dbmaj7 - Cm7)",
+        "vi - IV - I - V reharmonized with 7ths/9ths for the brighter/uplifting chillstep variant",
+        "i - VII - VI sustained drone-style loop for atmospheric sections"
+      ],
+      "harmonicRhythm": "Slow: typically 1 chord per bar or 1 chord per 2 bars; pads sustain and overlap (legato/voice-stealing) so changes feel like gentle swells rather than rhythmic stabs. 4-chord loops are the norm."
+    },
+    "form": "Intro/atmosphere (pads + field recording, no drums) -> first drop/body where half-time drums + sub enter -> breakdown (drums drop out, pads/vocal chop swell with reverb tail) -> second body, often fuller. Loops are typically 4 or 8 bars; full arrangement 8-16 bars repeating with additive layering. There is a 'drop' but it is an emotional swell / bass-and-drum entrance, NOT an aggressive bass design moment as in dubstep. Long reverb tails and risers bridge sections.",
+    "bass": {
+      "character": "Deep, warm, legible sub-bass that sits low and round; in Future Garage flavor often a Reese (two detuned saws beating against each other through a lowpass) for harmonic movement, while Chillstep leans toward a cleaner sine/triangle sub with subtle waveform-LFO motion. Throbbing legato lines that glide between root notes following the chord roots.",
+      "signatureTechnique": "Legato/portamento note transitions following chord roots, one note per chord or simple syncopated root figure; sidechain-ducked gently under the kick; sub fundamental kept mono and below ~120 Hz with a clean low-pass. Reese variant: detune beating + slow filter LFO for evolving timbre.",
+      "synthesis": "Chillstep sub: 1-2 sine/triangle oscillators transposed down ~-2 octaves, lowpass with resonance, slow custom LFO modulating the wavetable/waveform for movement (Serum-style), light saturation for audibility on small speakers. Reese (Future Garage): 2 saw oscillators detuned +0.30/-0.30 semitones (~30 cents each way), MONO voicing, lowpass cutoff ~650 Hz, resonance ~14%, optional sweeping notch/filter LFO + drive/overdrive; add a clean sub oscillator beneath the two detuned saws for solid low end."
+    },
+    "lead": {
+      "character": "Restrained and emotive rather than virtuosic: simple, vocal-like melodic phrases with lots of space. Often a pitched/chopped vocal fragment, an electric-piano lead, a soft plucked synth, or a sine/triangle counter-melody. Heavily reverbed and delayed so it blends into the atmosphere as texture more than a hook.",
+      "synthesis": "Electric piano (FM/Rhodes-style, e.g. 'Smoking Phoenix' with low preamp drive ~23%) for warm leads; OR pitched vocal one-shots ('helium' re-pitched, formant-shifted) run through quarter-note delay + large dark reverb; OR a soft sine/triangle synth lead kept low in the mix (~-20 dB relative) for subtle counter-melody. Always wide stereo, low velocity, soft attack."
+    },
+    "pads": {
+      "character": "Lush, warm, foggy and evolving — the emotional core of the genre. Wide stereo, slow attack and release, gently moving filter and chorus so the chord 'breathes'. Dark and nocturnal, sitting in a big hall/cathedral reverb. Often layered (one bright airy pad + one warm low pad).",
+      "synthesis": "Supersaw/multisaw pad: 5-7 detuned saw oscillators (~12-25 cent unison spread) into a lowpass filter with a slow filter-envelope/LFO that opens over 1-2 bars; wide unison stereo spread, chorus, and a large dark reverb (e.g. Raum 'Large > Dark Mod Hall', long decay). Layer with FM/granular or wavetable pads (Reaktor Prism, FM8, granular textures) filtered and spread wide. Add subtle pitch/filter LFO motion, high-cut to keep it warm, and send generously to reverb + a 1/2-note-synced delay (low feedback) so tails overlap into a wash."
+    },
+    "drums": {
+      "machine": "Hybrid: layered acoustic/electronic one-shots. Kick often a layered round 808/707/909-style sub-kick blended with a clicky transient; snare/clap layered with a reverbed rimshot; crisp short closed hats; tight open hats; plus organic percussion (shaker, tambourine, rimshot, vinyl crackle, field-recording FX). Not a single drum machine — sample-collage in the 2-step/garage tradition.",
+      "kick": "Half-time placement: strong kick on step 1, second kick syncopated around the '+ of 3' (step ~11), i.e. the classic 2-step 'first beat + 8th-note between beats 3 and 4'. Velocity-varied, one kick often nudged off-grid with manual swing. Layered for rounded low-end + slight high-end click.",
+      "snare": "Backbeat snare/clap on step 9 (the '3' = the half-time backbeat), often layered snare + reverbed rimshot. In busier 2-step bars an additional ghost/secondary snare can fall near step 13. Big, reverbed, sits back in the mix.",
+      "hats": "Swung 16th closed hats on offbeats with short decay; an 'in-between' open/half-open hat on the offbeats (steps 3,7,11,15) and ghost hats off-grid for the rolling skip. Hats are velocity-varied (e.g. accents ~68, ghosts ~30) and humanized late/early to create the garage shuffle. Swing 55-65%.",
+      "canonicalPattern16": "16-step grid, ONE bar at ~140 BPM felt half-time (backbeat on step 9): KICK on step 1 and step 11 (the syncopated '+ of 3', often nudged off-grid by manual swing). SNARE/CLAP+rimshot on step 9 (the half-time backbeat), optional ghost snare ~step 13. CLOSED HATS swung on offbeats 3,7,11,15 with extra ghost hats and short decay; OPEN/half-open HAT on 7 and 15. SHAKER/tambourine rolling across many 16ths at low velocity for the 2-step 'skip'. VINYL CRACKLE + atmospheric FX layer underneath throughout. Apply 55-65% 16th-note swing and humanize hats/perc off the grid.",
+      "other": "Vinyl crackle loop and field recordings (rain, street noise) run continuously as texture; reverbed 'big perc' hit to fill sparse beats; subtle rising/falling noise FX and reversed cymbals between sections. Gentle bus compression (attack ~10 ms) to glue without squashing; drum bus pulled back ~-6 dB for headroom under the pads."
+    },
+    "signatureSounds": [
+      "Lush evolving supersaw/wavetable pad (5-7 detuned saws, slow filter-open, huge dark reverb) — the emotional anchor",
+      "Warm legible sub-bass (sine/triangle, legato glide) OR detuned-saw Reese bass (~30c detune, lowpass ~650 Hz, beating) for the Future Garage flavor",
+      "Pitched/chopped vocal fragments ('helium' re-pitched, formant-shifted) used as texture/counter-melody, drenched in delay + reverb",
+      "Shuffled half-time 2-step drums: syncopated ghost kick, reverbed backbeat snare/rimshot, short swung skippy hats",
+      "Vinyl crackle + field recordings (rain, street, noise) for a nocturnal lo-fi atmosphere",
+      "Warm electric-piano / Rhodes-style chords and leads (FM, low drive)",
+      "Long 1/2-note-synced delays and large dark hall/cathedral reverbs that smear everything into an ambient wash"
+    ],
+    "identityMustHaves": [
+      "Half-time feel at ~130-145 BPM (drums felt at ~70 BPM) with a 2-step garage shuffle/swing — never four-on-the-floor",
+      "Deep, clean, present sub-bass as the harmonic floor",
+      "Lush, emotive, reverb-drenched evolving pads on slow minor-key 7th/9th progressions",
+      "Atmospheric depth: vinyl crackle / field recordings / big dark reverb tails creating a nocturnal, melancholic mood"
+    ],
+    "engineRequirements": [
+      "Half-time drum grid (backbeat on step 9 of 16) decoupled from the felt tempo",
+      "Per-step swing 55-65% on the 16th grid PLUS per-hit micro-timing humanization (late/early offsets) for the garage shuffle",
+      "Per-step velocity variation (accents vs ghost notes) on hats and percussion",
+      "Layered multi-sample drum voices (kick = sub layer + click; snare = body + reverbed rimshot)",
+      "Supersaw/unison engine: 5-7 detuned oscillators with adjustable cent-spread + stereo unison",
+      "Per-voice slow filter envelope/LFO to open pads over 1-2 bars (modulation routing beyond static cutoff)",
+      "Monophonic bass voice with portamento/legato glide between notes",
+      "Reese capability: two saws with fine cent detune + filter LFO/sweeping notch",
+      "Polyphonic pad voices with slow attack/release and voice-stealing/legato chord overlaps",
+      "Tempo-synced send effects: large reverb (long decay) + 1/2-note delay with feedback control as bus sends",
+      "Sidechain/ducking of bass and pads under the kick",
+      "Continuous texture layer (loop a vinyl-crackle/field-recording sample under the whole arrangement)",
+      "Pitch/formant-shifting of vocal one-shots for 'helium' chops",
+      "Chord/voice-leading engine that builds min7/maj7/add9/sus extensions and moves them slowly (1 chord per bar)"
+    ],
+    "feasibilityNote": "Moderately achievable and a good fit for a generative engine, because the genre is forgiving: sparse arrangements, slow harmonic rhythm, and atmosphere-over-precision mean small timing/voicing imperfections read as 'vibe' rather than errors. The hardest parts to nail convincingly are (1) the 2-step shuffle 'glide' — it needs real per-hit micro-timing + velocity humanization, not just a global swing knob; (2) lush evolving pads — requires a supersaw/unison stack with slow filter-envelope modulation and generous tempo-synced reverb/delay sends, otherwise pads sound static and thin; and (3) the emotive minor-key 7th/9th voice-leading, which benefits from a real chord engine rather than random notes. Pitched vocal chops add huge authenticity but depend on a sample/formant-shift source. Without filter modulation, send reverbs, and micro-timing the result will sound like generic minor-key half-time rather than true Chillstep/Future Garage. Sub-bass and the half-time drum grid are trivial to implement. Sources consulted live; one (MasterClass) returned HTTP 403 and was substituted with Wikipedia + production-community consensus.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Future_garage",
+      "https://en.wikipedia.org/wiki/2-step_garage",
+      "https://blog.native-instruments.com/chillstep/",
+      "https://www.soundbridge.io/chillstep-2",
+      "https://www.attackmagazine.com/technique/beat-dissected/up-front-future-garage/",
+      "https://www.attackmagazine.com/technique/beat-dissected/rolling-2-step-garage/",
+      "https://www.attackmagazine.com/technique/beat-dissected/garage-shuffle/",
+      "https://www.musicradar.com/how-to/uk-garage-tutorial",
+      "https://blog.native-instruments.com/reese-bass/",
+      "https://www.melodigging.com/genre/future-garage",
+      "https://www.melodigging.com/genre/chillstep"
+    ]
+  },
+  {
+    "genre": "Lo-fi Hip Hop (lofi hip-hop / chillhop / \"study beats\")",
+    "aliases": [
+      "lofi hip-hop",
+      "lo-fi hip-hop",
+      "chillhop",
+      "study beats",
+      "jazzhop",
+      "lo-fi beats",
+      "chill beats"
+    ],
+    "tempoBpm": {
+      "min": 60,
+      "max": 90,
+      "typical": 75
+    },
+    "meter": "4/4",
+    "feel": "Swung boom-bap with a loose, \"drunk\"/off-grid human feel. 8th-note swing of roughly 54-62% (the canonical \"Dilla swing\" sits ~53-56%); hats and percussion are swung while the kick/snare backbone stays near-grid but is deliberately NOT perfectly quantized — snares pushed slightly early, hats/kicks dragged slightly late so the groove \"lopes.\" Velocities humanized; ghost notes and micro-timing drift are essential. Often feels half-time relative to the BPM count.",
+    "harmony": {
+      "scalesModes": [
+        "Dorian (minor, jazzy, the lo-fi default)",
+        "Aeolian / natural minor",
+        "Major (Ionian) for warmer/nostalgic tracks",
+        "Mixolydian (for dominant-flavored vamps)",
+        "Lydian (occasional dreamy color)",
+        "Harmonic minor (for the raised-7th V7 cadence into i)"
+      ],
+      "chordTypes": [
+        "maj7",
+        "min7",
+        "dom7",
+        "min9",
+        "maj9",
+        "dom9",
+        "min11",
+        "6/9",
+        "add9",
+        "sus2/sus4",
+        "half-diminished (m7b5)",
+        "diminished7 (passing)",
+        "altered dominants (7#9, 7b9, 7b13) for jazz turnarounds"
+      ],
+      "typicalProgressions": [
+        "ii7 - V7 - Imaj7 (classic jazz 2-5-1, e.g. Dm7 - G7 - Cmaj7)",
+        "Imaj7 - vi7 - ii7 - V7 (jazz turnaround, e.g. Cmaj7 - Am7 - Dm7 - G7)",
+        "i7 - iv7 (modal two-chord vamp, e.g. Am7 - Dm7, looped)",
+        "VImaj7 - i - V7 (e.g. in A minor: Fmaj7 - Am - E7, the Native Instruments example)",
+        "imin9 - III maj7 (Dorian color vamp)",
+        "i7 - VI7 - VII7 (descending minor)",
+        "Imaj7 - IVmaj7 (lydian-ish lift, e.g. Cmaj7 - Fmaj7)"
+      ],
+      "harmonicRhythm": "Slow and loop-based: typically 1 chord per bar or 1 chord per 2 beats, over a short 2- or 4-bar loop that repeats for the whole track. Many tracks use just 2-4 chords. The loop's repetition is part of the aesthetic; harmonic motion is minimal and mood-driven, not developmental."
+    },
+    "form": "Loop-centric and minimal. A 2-, 4-, or 8-bar chord+drum loop is the entire song's foundation. Arrangement is additive/subtractive layering rather than verse/chorus: bring in one element at a time over 4- or 8-bar phrases (drums in, then keys, then bass, then texture), strip elements back when repetition fatigues, reintroduce them. Common skeleton: intro (vinyl crackle + keys, no drums) -> drop the drums -> full loop -> brief break (drop drums or filter-sweep down) -> return -> outro that filters/fades out. Tracks are short (often ~1.5-2.5 min, \"study beat\" length). Frequent spoken-word/movie/anime vocal samples or field recordings (rain, café, vinyl pops) bookend or punctuate sections.",
+    "bass": {
+      "character": "Warm, round, deep and uncomplicated — sits low and supports rather than leads. Often a soft sine/sub or a sampled/synth upright (double) bass with finger-noise and slight pitch drift. Plays mostly root notes (and occasional 5ths/octaves or walking passing tones in jazzier tracks), one note per chord, locked loosely to the kick. Low-passed heavily (filtered around/below ~150 Hz to concentrate low end) and frequently sidechained to the kick.",
+      "signatureTechnique": "Root-note-per-chord with a short, soft, slightly-late attack so it pumps under the kick; occasional walking bass (passing notes between chord roots) for jazz-hop feel; mono and centered; subtle wow/flutter pitch wobble and finger/fret noise for the 'upright sampled off a record' illusion.",
+      "synthesis": "Option A (sub): single sine oscillator, fundamental + very light saturation/2nd-harmonic for audibility on small speakers, fast-ish amp attack ~5-15 ms, gentle release, lowpass ~120-150 Hz. Option B (upright emulation): sampled/physical-model double bass or a triangle+sine layer with a noise-burst transient for the pluck, pitch-envelope dip, tape wobble LFO (~0.3-1 Hz, a few cents) on pitch, and a touch of room/plate reverb. Both: mono, sidechain-ducked by kick."
+    },
+    "lead": {
+      "character": "Sparse, wistful, jazzy — usually short melodic phrases or arpeggiated chord fragments rather than busy leads. Most often a muted/processed electric piano (Rhodes) figure, a soft jazz/nylon guitar lick, a filtered sample melody, or a mellow synth. Frequently the 'lead' is just the chord instrument's top voice or a sampled melodic loop, low-passed and drenched in vinyl noise. Phrases leave space; the genre prizes restraint.",
+      "synthesis": "Rhodes/electric-piano model (tine FM-ish bell + filtered triangle body) OR sampled instrument. Heavy lowpass (gentle slope, cutoff ~2-3.12 kHz to remove crispy highs), tape/vinyl coloration, slight detune/chorus, generous spring/plate reverb and tape delay (often 1/4 or dotted-1/8 synced), and bitcrush/downsample (SP-1200/SP-303-style ~12-bit, reduced sample rate) for grit. Pitch wow/flutter for the 'warped tape' feel."
+    },
+    "pads": {
+      "character": "Subtle background warmth and glue — soft, dark, slow-evolving. Provides harmonic bed and nostalgia, never foreground. Often a filtered Rhodes/string ensemble, a warm analog-style pad, mellotron-ish strings/flute, or a sustained sampled texture. Sits low in the mix under the keys, heavily low-passed and noisy.",
+      "synthesis": "2-3 detuned saw/triangle oscillators (small detune, a few cents) OR sampled string/mellotron, lowpass with slow filter-envelope open (cutoff ~1-3 kHz, slow attack 0.5-2 s), long release, big plate/hall reverb, chorus/ensemble, and tape saturation + vinyl hiss/crackle layered on top. Volume automation/swells to breathe under the loop."
+    },
+    "drums": {
+      "machine": "Boom-bap kit, typically sampled/processed acoustic hits run through (or emulated as) an Akai MPC (MPC60/3000/2000XL) or E-mu SP-1200/SP-303 — i.e. 12-bit, reduced-sample-rate 'dusty' drums. Often a chopped acoustic break layered with individual one-shots. Not 808/909 four-on-the-floor; the SP-1200/MPC crunch and swing engine are the identity.",
+      "kick": "Soft, round, 'thumpy' low kick (not a sharp EDM kick). Lands on beat 1 and around beat 3, often with an extra syncopated/ghost kick just before the snare for the classic 'boom-...-boom-bap'. Slightly behind the beat; lowpassed, saturated, sometimes sidechain source for bass.",
+      "snare": "Loose, dusty, often a layered acoustic snare or rimshot/clap with vinyl crackle baked in. Lands on beats 2 and 4 (the boom-BAP backbeat). Pushed marginally early in Dilla-style grooves; sometimes doubled with a soft clap and decorated with quiet ghost snares between backbeats.",
+      "hats": "Closed hi-hats mostly on straight 8th notes (8 per bar) but SWUNG (~54-62%), with humanized velocity and occasional 16th-note rolls/stutters; an open hi-hat frequently on the last offbeat of the bar (the 'and' of 4) as a turnaround. Hats often played freehand/unquantized for the loose feel and low-passed to take off harshness.",
+      "canonicalPattern16": "16-step bar (steps 1-16; backbeats on 5 and 13). KICK: steps 1, 4 (or 7) and 11 — i.e. 1 = 'boom', a syncopated ghost/extra kick on the 'a' before the 2nd backbeat (step 11 leading into 13), giving boom-(boom)-bap; minimal and varied per bar. SNARE: steps 5 and 13 (beats 2 and 4) — the backbone — with optional soft ghost snare around step 8/16. CLOSED HAT: steps 1,3,5,7,9,11,13,15 (every 8th) but with swing delaying the even-numbered offbeat hats (3,7,11,15) by ~54-62%, plus occasional extra 16th hats (e.g. a quick step 15+16 roll). OPEN HAT: step 15 (the last offbeat, the 'and of 4') as a recurring turnaround accent. PERC/extras: light shaker or rimclick ghosting offbeats; vinyl crackle runs continuously underneath. Crucially, NOT every hit is on-grid — kick dragged late, snare nudged early, hats freehand.",
+      "other": "Continuous vinyl crackle/pop loop and tape hiss as a 'percussion' layer; soft shaker or tambourine on offbeats; finger snaps/claps doubling the snare; occasional foley/field recording (rain, café, page turns). All bus-compressed and tape-saturated together; drum bus low-passed (~2 kHz) so transients are soft and 'pushed back'."
+    },
+    "signatureSounds": [
+      "Dusty boom-bap drums sampled/downsampled through an MPC or SP-1200 (12-bit, lowered sample rate) — soft thumpy kick + loose backbeat snare with baked-in grit",
+      "Rhodes / electric-piano chords voiced as maj7/min9 jazz chords, low-passed, chorused and drenched in vinyl noise — the harmonic signature of the genre",
+      "Continuous vinyl crackle + surface noise + pop (e.g. iZotope Vinyl-style) plus tape hiss — the 'lo-fi' in lo-fi",
+      "Tape wow & flutter / pitch wobble on keys, samples and bass for the warped-cassette warmth",
+      "Heavy gentle low-pass filtering (cutoff ~2-3 kHz on melodics/drums, ~150 Hz on bus highs) that removes crispy top and 'pushes everything back' into a hazy mix",
+      "Bitcrush / sample-rate reduction (SP-1200/SP-303 emulation) for crunchy aliased grit on drums and samples",
+      "Sidechain pump (kick ducking the chords/bass), embraced overtly as part of the aesthetic",
+      "Warm sub or sampled upright bass on chord roots, mono and filtered low",
+      "Jazzy spoken/movie/anime vocal samples and field recordings (rain, café ambience) as texture",
+      "Soft, dark background pad/string bed for warmth and glue"
+    ],
+    "identityMustHaves": [
+      "Swung, deliberately-imperfect (un-perfectly-quantized) boom-bap drum groove at ~60-90 BPM with the 'kick boom / snare bap' backbone — the loose human/Dilla feel is non-negotiable",
+      "Jazzy extended-chord harmony (maj7/min7/9ths/11ths) on Rhodes/electric-piano or sampled keys, in short repeating loops",
+      "Lo-fi 'dust': vinyl crackle + tape hiss/saturation + gentle low-pass filtering removing the highs (without these it's just clean jazz-hop/instrumental hip hop, not lo-fi)",
+      "Minimal, mood-over-complexity arrangement — sparse layers, lots of space, loop-based"
+    ],
+    "engineRequirements": [
+      "Per-step micro-timing offsets (push/pull individual hits off the grid by ms or ticks) — required for the snare-early / kick-late / freehand-hat 'Dilla swing' feel",
+      "Adjustable swing amount on 8th (and 16th) notes, continuously variable ~50-65%, applied per-track (swing hats but not snare)",
+      "Per-step velocity/humanization with random jitter (timing + velocity) to avoid machine-perfect repetition; ghost-note support (low-velocity in-between hits)",
+      "Tempo-synced effects: tape/analog delay (1/4, dotted-1/8) and reverb sends",
+      "Tape/vinyl emulation: wow & flutter (slow pitch-modulation LFO, few cents) + continuous crackle/hiss layer that can run independent of the sequencer",
+      "Bitcrusher / sample-rate reducer (12-bit, variable downsample) for SP-1200/MPC crunch",
+      "Gentle/musical low-pass filter per track with envelope and slow open/sweep automation (for filter-up intros and filter-down breaks)",
+      "Sidechain compression keyed off the kick to duck chords/bass (with an exaggerated/'brutal' option that's stylistically acceptable)",
+      "Sample playback + chopping/repitch (for chord/melody/break samples), ideally with per-chop pitch and warp — much lo-fi is sample-based, not purely synth",
+      "Jazz-chord voicing engine: build maj7/min7/9/11/6-9/sus and altered-dominant voicings (with extensions and optional rootless/shell voicings) and 2-5-1 / I-vi-ii-V turnarounds from a key/mode",
+      "Slow harmonic-rhythm loop sequencer (1 chord per bar over 2-4-8 bar loops) with additive/subtractive arrangement automation (mute/unmute layers per phrase)",
+      "Mono bass handling with heavy low-pass and option for walking-bassline passing tones",
+      "Bus tape saturation/soft-clip and overall low-pass 'glue' on the master"
+    ],
+    "feasibilityNote": "Highly feasible to generate convincingly — arguably one of the easier electronic genres for an algorithm, because it's loop-based, minimal, low-tempo, and TOLERATES (even rewards) imperfection. The two genuinely hard parts are (1) the groove: a perfectly-quantized grid sounds sterile and instantly 'wrong', so the engine MUST do per-step micro-timing/humanization (snare early, kick/hat late, freehand drift) plus swing — get this and 80% of the authenticity follows; and (2) the 'dust' character: vinyl crackle, tape wow/flutter, gentle low-pass and bitcrush are easy DSP but must be layered tastefully or it sounds like a cheap filter, not a worn record. Jazz harmony is the third lift: maj7/min9/11 voicings and 2-5-1/I-vi-ii-V turnarounds need a real voicing engine, but a small curated chord-loop library covers most tracks. Sample-based authenticity (chopped breaks, sampled Rhodes/upright off old records) is the hardest to fully synthesize from scratch — a sample-playback path is the pragmatic shortcut. Sources are production-community consensus (Native Instruments, EDMProd, ModeAudio, LoFiWeekly) rather than a single canonical spec, so exact swing % and grid placement vary by ±a few percent / a step; I used the consensus ranges.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Lofi_hip-hop",
+      "https://blog.native-instruments.com/lo-fi-hip-hop-beats/",
+      "https://blog.native-instruments.com/what-is-boom-bap/",
+      "https://www.edmprod.com/lofi-hip-hop/",
+      "https://modeaudio.com/magazine/lofi-hip-hop-5-production-essentials",
+      "https://lofiweekly.com/2026/02/02/what-is-lo-fi-hip-hop-in-2026-the-sound-the-drums-the-chords-and-the-rules-you-can-break/",
+      "https://lofiweekly.com/2021/05/04/7-jazz-piano-chords-lofi-hip-hop/",
+      "https://lofiweekly.com/2022/02/03/j-dilla-the-godfather-of-lofi-hip-hop/",
+      "https://create.routenote.com/blog/the-dilla-swing-how-one-producer-humanised-the-sound-of-hip-hop/",
+      "https://www.brltheory.com/analysis/dilla-part-ii-theory-quintuplet-swing-septuplet-swing-playing-off-the-grid/",
+      "https://richardpryn.com/13-lofi-chord-progressions/",
+      "https://blog.landr.com/lofi-chord-progressions/",
+      "https://create.routenote.com/blog/how-to-make-90s-hip-hop-boom-bap-drums/"
+    ]
+  },
+  {
+    "genre": "Baroque Fugue (J.S. Bach)",
+    "aliases": [
+      "Fugue",
+      "Bachian fugue",
+      "Baroque counterpoint",
+      "Well-Tempered Clavier style",
+      "imitative polyphony"
+    ],
+    "tempoBpm": {
+      "min": 40,
+      "max": 140,
+      "typical": 72
+    },
+    "meter": "4/4 most common; also 3/4, 3/8, 6/8, 2/2 (cut time / alla breve), 9/8, 12/16. Bach gives essentially no tempo marks in the WTC (only one Andante/Largo in all 48), so tempo is implied by note-values and meter, not notated BPM.",
+    "feel": "Straight, but with continuous-motion \"spinning-out\" (Fortspinnung): one steady pulse of running subdivisions (eighths or sixteenths) handed between voices so the texture never stops. NOT swung and NOT groove-quantized — micro-rubato and agogic stress, plus notes inegales optionally on stepwise eighth runs. There is no drum-driven feel; rhythmic interest comes from staggered voice entries and suspension/resolution.",
+    "harmony": {
+      "scalesModes": [
+        "Major (Ionian) for major-key fugues",
+        "Harmonic minor (raised leading tone for V and cadences)",
+        "Melodic minor (ascending lines)",
+        "Natural minor (Aeolian) fragments in descending lines",
+        "brief modal mixture / chromatic inflection in episodes",
+        "fully functional 24-key tonal system (the entire point of the Well-Tempered Clavier)"
+      ],
+      "chordTypes": [
+        "root-position and inverted major/minor triads",
+        "diminished triad (vii°, ii° in minor)",
+        "dominant 7th (V7) and its inversions",
+        "secondary dominants (V/V, V/iv, V7/relative)",
+        "diminished 7th (vii°7) for intensification, esp. before final cadence",
+        "suspensions over triads producing 4-3, 7-6, 9-8, 2-3 dissonance-resolution figures",
+        "Neapolitan (bII6) and augmented-6th colorations near climaxes"
+      ],
+      "typicalProgressions": [
+        "Exposition tonic answer relation: i – (answer in) v, harmonized i – V; tonal answer bends scale-degree 5→5 back to 1→5 so the head stays in tonic before pivoting to dominant",
+        "Episode descending circle-of-fifths sequence: i – iv – VII – III – VI – ii° – V – i (each chord a falling 5th / rising 4th, 2-bar or 1-bar harmonic units), the workhorse modulating engine",
+        "Cadential drive: ii°6 – V7 – i (or IV – V7 – I in major); approach climactic cadences via vii°7/V",
+        "Middle-entry key plan (minor-key fugue): i → III (relative major, usual first middle entry) → v → iv → i; (major-key fugue): I → V → vi (relative minor) → IV → I",
+        "Final: tonic (or dominant) pedal point under stretto, then Picardy-third I in minor-key fugues"
+      ],
+      "harmonicRhythm": "Moderate-to-fast and continuous: typically one functional chord per beat or per half-bar in subject statements, accelerating to chord-per-beat in episodic sequences and the final cadence. Harmony is implied by the moving lines (linear counterpoint) rather than blocked, so it changes wherever the voices form a new vertical sonority — often on every strong eighth."
+    },
+    "form": "Through-composed, NOT loop-based. Three large zones: (1) EXPOSITION — each voice enters in turn with Subject (tonic) then Answer (dominant), alternating S-A; 2-voice = S,A; 3-voice = S,A,S (with a bridge/codetta to re-anchor tonic before the 3rd entry); 4-voice = S,A,S,A. A recurring Countersubject accompanies entries in invertible counterpoint. Optional counter-exposition (re-entries in reverse, inverted, or with subject+answer swapped). (2) DEVELOPMENT / MIDDLE ENTRIES — alternation of episodes (no full subject; sequential fragmentation of subject-head + countersubject, modulating, usually by descending circle-of-fifths) with middle entries of the subject in related keys (first middle entry typically relative major/minor, then subdominant/dominant). Devices: stretto (overlapping entries, answer before subject finishes), inversion, augmentation, diminution. (3) FINAL SECTION — return to tonic, often the tightest stretto and/or a tonic or dominant PEDAL POINT in the bass under busy upper voices, then a strong perfect-authentic cadence; minor fugues usually end on a Picardy-third major tonic. Typical length 20-60 bars (WTC fugues run ~27-115 bars).",
+    "bass": {
+      "character": "The bass is simply the lowest of the independent contrapuntal voices, not a separate riff layer. It is fully melodic: it states the Subject/Answer when its turn comes, carries the Countersubject elsewhere, and anchors functional harmony at cadences (roots of V-i). At the close it frequently sustains the tonic or dominant PEDAL POINT while upper voices spin counterpoint above. Range typically C2-C4 on harpsichord/organ.",
+      "signatureTechnique": "Walking quarter/eighth bass in episodes outlining the circle-of-fifths sequence; leaps of a descending 5th / ascending 4th between sequence roots; sustained pedal point under final stretto; provides the harmonic 'floor' that turns linear counterpoint into clear functional cadences.",
+      "synthesis": "Harpsichord (plucked, fast-decaying, bright, no dynamic accent), pipe organ (sustained, foot-pedal division), clavichord, or strings/bassoon in ensemble fugues. For a synth recipe: short-attack plucked tone — sawtooth or pulse through a static or slowly-closing lowpass, fast decay (~150-400 ms) with a thin sustain tail to emulate harpsichord; OR fully sustained additive/organ tone (stacked sine/square partials, no filter envelope) for organ fugues. NO sub-bass synth-bass character, NO sidechain, NO slide — it is a contrapuntal voice."
+    },
+    "lead": {
+      "character": "There is no single 'lead' — the Subject is the protagonist and migrates through every voice, top to bottom, so leadership rotates. The Subject is a short, strongly-characterized melodic head (1-4 bars) with a memorable rhythmic-intervallic profile (e.g. a distinctive leap or a chromatic turn), followed by Fortspinnung running notes. All voices are timbrally identical (same instrument), so 'lead' = whichever voice currently carries the subject, made audible by register and rhythmic profile rather than by a different patch.",
+      "synthesis": "Same instrument/patch as every other voice (harpsichord or organ stop) — timbral uniformity is essential so the EAR tracks lines by pitch/contour, not by tone color. If using a synth: one fixed monophonic-capable patch instanced polyphonically across 2-4 voices (e.g. organ-like stacked square/sine, or plucked saw for harpsichord). Articulation: detache/legato per the line, light agogic emphasis on subject entries, no portamento."
+    },
+    "pads": {
+      "character": "No pads in the EDM sense. The 'pad' equivalent is the sustained harmonic bed created by held notes and PEDAL POINTS — e.g. a long tonic or dominant note in the bass under the final stretto, or an organ's sustained inner voices. The harmony is a by-product of independent moving lines, not a chord-pad layer.",
+      "synthesis": "Pipe-organ sustain (additive stacked partials with stops/registration, slow chiff attack, gentle tremulant) gives the closest 'pad' surface; reverberant church/hall acoustic provides the wash. For a synth emulation: long sustained organ-like tone (sine + odd harmonics) for pedal points, generous hall reverb (2-4 s) for cathedral space. Avoid filter-sweep supersaw pads entirely — they break the period idiom."
+    },
+    "drums": {
+      "machine": "NONE. The Baroque fugue is a purely melodic/contrapuntal genre with NO percussion or drum kit. 'Rhythm' is produced by the interlock of independent voices, staggered entries, suspensions, and continuous running subdivisions (Fortspinnung). Any drum machine (808/909/breakbeat) is stylistically wrong.",
+      "kick": "n/a — no kick. The functional analog of downbeat emphasis is the harmonic strong beat (chord change / cadence) and the metric accent implied by the meter.",
+      "snare": "n/a — no snare. Backbeat does not exist in this idiom.",
+      "hats": "n/a — no hats. The 'hi-hat' analog is the constant stream of running eighth/sixteenth notes passed between voices that keeps perpetual motion.",
+      "canonicalPattern16": "No percussion grid exists. If one must map the rhythmic FEEL to a 16-step bar (16 sixteenths, 4/4): continuous melodic motion fills the steps as a near-unbroken run of sixteenths (steps 1-16 all active in the moving voice), with the active step migrating between voices; metric/harmonic accents fall on steps 1 and 9 (beats 1 and 3) and secondarily 5 and 13 (beats 2 and 4); suspension dissonances are placed on strong steps (1,5,9,13) resolving down on the following weak step. There is NO kick/snare/hat layer to populate.",
+      "other": "Genuinely percussion-free. In rare orchestral/choral fugues a continuo or organ provides only harmonic/bass support, still no drums."
+    },
+    "signatureSounds": [
+      "Harpsichord (plucked, terraced dynamics, no expressive volume swell) — the WTC keyboard sound: pulse-wave/saw through a static bright lowpass, ~150-400 ms decay, no velocity-to-volume",
+      "Pipe organ with registration/stops — additive stacked partials (8'/4'/2' ranks = octave-stacked sines/squares), sustained, foot pedal-board for bass, optional tremulant, huge church reverb",
+      "Clavichord (intimate, faint Bebung vibrato) for smaller fugues",
+      "The Subject itself as a sonic signature — a 1-4 bar motif with a memorable head (often a leap of a 4th/5th or a chromatic descent) that the listener tracks through all voices",
+      "Suspension-and-resolution dissonance chains (4-3, 7-6, 9-8) as the characteristic harmonic 'tension' sound",
+      "Final tonic/dominant pedal point under a stretto pile-up = the climactic signature gesture",
+      "Picardy third — the unexpected major tonic ending a minor fugue"
+    ],
+    "identityMustHaves": [
+      "Imitative polyphony: a Subject stated alone, then imitated by 2-4 INDEPENDENT voices entering in turn (Subject in tonic, Answer in dominant)",
+      "Tonic–dominant subject/answer relationship with correct tonal-vs-real answer adjustment (bend scale-degree 5 when the subject opens on the dominant)",
+      "Episodes of sequential development (subject/countersubject fragments) that modulate by descending circle-of-fifths between middle entries in related keys",
+      "Strict functional-tonal voice-leading: no parallel 5ths/octaves, prepared-and-resolved suspensions, raised leading tone at cadences, contrary/oblique motion between voices"
+    ],
+    "engineRequirements": [
+      "TRUE POLYPHONIC MULTI-VOICE engine: 2-4 simultaneous independent melodic lines, each with its own note stream — NOT a single-scale monophonic step-sequencer per track",
+      "Subject/Answer transposition with tonal-answer logic: transpose subject by a 5th up / 4th down AND conditionally alter the head interval (scale-degree 5→1 mapping) when the subject begins on/emphasizes the dominant",
+      "Invertible counterpoint: ability to place the countersubject above OR below the subject (octave/double-octave inversion) and have it remain consonant",
+      "Functional-harmony voice-leading constraint solver: forbid parallel perfect 5ths/octaves, prefer contrary/oblique motion, prepare and resolve suspensions (dissonance on strong beat resolving down by step), raise the leading tone at cadences",
+      "Staggered/temporally-offset voice entries (each voice starts at a different bar) including STRETTO (overlapping entries at a controllable time offset before the prior entry finishes)",
+      "Motivic transformation operators: melodic inversion, augmentation (x2 durations), diminution (÷2 durations), fragmentation of the subject-head",
+      "Sequence/circle-of-fifths generator: take a motif and repeat it transposed down a 5th (or by a fixed scale interval) N times to drive modulation",
+      "Per-bar key/chord-context tracking so the same engine can render a voice correctly in tonic, relative major, subdominant and dominant key areas (multi-key, not single fixed scale)",
+      "Pedal-point support: one voice sustains/repeats a held tonic or dominant pitch while others continue",
+      "Through-composed arrangement (no loop): an exposition→development→final-section section planner, not bar-loop repetition",
+      "Cadence detection/placement to land perfect-authentic cadences and a Picardy third at the close"
+    ],
+    "feasibilityNote": "HARD — the most difficult genre to generate convincingly of any common style, and an extreme mismatch for a single-scale, monophonic, loop-based step-sequencer engine (as this project currently is per project_harmonic_architecture.md, where even chord/scale clashes between two independent tracks are an unsolved problem). A fugue requires (a) genuine multi-voice polyphony with independent simultaneous lines, (b) a real species-counterpoint/voice-leading constraint solver to avoid parallels and to prepare/resolve suspensions, (c) tonal-answer logic and motif transformation (inversion/augmentation/diminution/stretto), and (d) through-composed multi-key form rather than a looping single-scale grid. None of these are simple per-track parameter tweaks. A naive generator will produce parallel fifths, wrong answers, and aimless modulation that sounds 'wrong' to any listener familiar with the idiom. Realistic paths: hand-author a short fixed fugue as data (a curated preset, matching this project's 'fixed presets' strategy), OR template the structure (predefined subject + rule-based transposition for the exposition + canned circle-of-fifths episode + final pedal/stretto) and accept imperfect inner-voice counterpoint. Web sources were fully accessible; tempo, form, voice-entry order, answer logic, episode harmony and signature sounds are all directly grounded below.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Fugue",
+      "https://www.britannica.com/art/fugue/Elements-of-the-fugue",
+      "https://www.teoria.com/en/tutorials/forms/contrapuntal/04-fugue.php",
+      "https://viva.pressbooks.pub/openmusictheory/chapter/high-baroque-fugal-exposition/",
+      "https://musictheory.pugetsound.edu/mt21c/FugueAnalysis.html",
+      "https://www.teoria.com/en/articles/BWV847/",
+      "https://en.wikipedia.org/wiki/The_Well-Tempered_Clavier",
+      "https://www.cadencecorner.org/features-spreads/tempo-in-the-well-tempered-clavier-a-brief-statistical-analysis",
+      "https://composerfocus.com/how-to-write-a-fugue/",
+      "https://en.wikipedia.org/wiki/Stretto",
+      "http://www.martiandances.com/uploads/1/6/0/1/16019142/counterpoint_rules.pdf",
+      "https://music4beginner.com/what-is-a-fugue-subject-countersubject-and-episodes-explained/",
+      "https://www.masterclass.com/articles/fugue-musical-form-explained"
+    ]
+  },
+  {
+    "genre": "Synthwave / Outrun (a.k.a. Retrowave, Outrun, Futuresynth) — instrumental 1980s-nostalgia electronic music modelled on action/sci-fi/horror film soundtracks of the late '70s–'80s.",
+    "aliases": [
+      "Outrun",
+      "Retrowave",
+      "Futuresynth",
+      "Outrun electro",
+      "80s revival synth",
+      "Synthwave"
+    ],
+    "tempoBpm": {
+      "min": 80,
+      "max": 140,
+      "typical": 118
+    },
+    "meter": "4/4 (straight, no compound meter; almost always 16-step-per-bar grid)",
+    "feel": "Straight/quantized — robotic, near-zero velocity humanization. Slower \"groovy\" subset 80–118 BPM; driving \"Outrun\" subset 128–140 BPM with four-on-the-floor. Optional very light shuffle on hats only; the body is dead-straight machine timing.",
+    "harmony": {
+      "scalesModes": [
+        "Natural minor / Aeolian (default mood)",
+        "Harmonic minor (for a darker, more dramatic raise-7 cadence)",
+        "Dorian (lighter minor, raised 6)",
+        "Phrygian (darksynth/Carpenter tension)",
+        "Major / Ionian (the optimistic 'Retrowave' pop subset, e.g. A minor or B-flat major are the two most-cited home keys)"
+      ],
+      "chordTypes": [
+        "Minor and major triads (the backbone)",
+        "maj7 and min7 (the signature 'lush' extension — i-VI-VII often uses VImaj7)",
+        "add9 / sus2 / sus4 (drop or color the 3rd for that floaty 80s pad shimmer)",
+        "Dominant 7ths (bluesy variant, '7ths on every chord')",
+        "Occasional borrowed/chromatic chords: bII (Neapolitan), bVII, chromatic passing II"
+      ],
+      "typicalProgressions": [
+        "i - VI - III - VII (the quintessential minor-key synthwave loop, e.g. Am - F - C - G)",
+        "i - VI - VII (retro cascade, VI often maj7)",
+        "vi - IV - I - V and I - V - vi - IV (the pop/Retrowave major-key staples)",
+        "i - iv - VII - i (modal minor)",
+        "i - bVII - VI - bVII (descending darksynth)",
+        "i - bII - iv - V (noir / Neapolitan)"
+      ],
+      "harmonicRhythm": "Slow and hypnotic: most commonly 1 chord per bar (whole-note pads) across a repeating 4-bar loop, i.e. 4 chords per 4-bar phrase. Faster pop variants do 2 chords per bar. Pads hold sustained whole notes; harmony rarely changes mid-bar."
+    },
+    "form": "Loop-based, 4- and 8-bar building blocks. Canonical arrangement borrowed from 80s pop/film: 8-bar intro (often pad + arp only, or solo guitar), 16-bar verse, 8-bar pre-chorus/build, 16-bar chorus/'drop' (full kit + lead hook), 4-bar post-chorus, bridge/breakdown (drums drop out, pad swell + reverb wash), final chorus, outro fade. Key arranging device is SUBTRACTIVE: start sparse (kick+snare, no hats), add hi-hats, then arp, then lead as energy rises; strip back to pad-only for breakdowns. Drum builds use a snare/tom roll fill in the last bar of each 8-bar section to telegraph the section change.",
+    "bass": {
+      "character": "Plucky, chorused sawtooth (Korg Polysix / Juno / Jupiter-8 lineage) with a snappy filter-envelope. Two main modes: (1) driving root-note ostinato in straight 8ths or 16ths locked to the kick; (2) arpeggiated bass that walks chord tones with octave jumps (root - octave - fifth - octave) in 16ths. Resonant low-pass with a per-note filter-env 'pluck' is the defining timbre.",
+      "signatureTechnique": "16th-note arpeggiated octave-jump bass with a fast filter-envelope pluck (decay ~0.2-0.3s, high resonance) and the bass sidechain-pumped to the kick. PWM and chorus add the 'bite'. Bass follows chord roots with minor passing-tone variation.",
+      "synthesis": "Saw (or square for punch) single/dual-osc monosynth; optional 2nd osc one octave down for weight; subtle PWM (square width LFO) for movement; 24dB low-pass filter with cutoff ~200-600Hz base + filter envelope adding ~3 octaves of sweep on each note (attack ~3ms, decay 0.25s, low sustain ~0.1); resonance cranked (Q ~8-12) for the resonant pluck; Juno-style chorus and light saturation. In the existing Tone.js engine this is a sawtooth MonoSynth, filterEnvelope baseFrequency 200 / octaves 3-4, fast decay, sidechained to kick."
+    },
+    "lead": {
+      "character": "Bright, piercing, monophonic and 'whistleable' — a simple catchy hook of just a few notes, frequently with cheesy vibrato and portamento/glide between notes. Two flavours: a single fat detuned-saw lead, or a fast octave-jump arpeggio. Slap-back/eighth-note delay and big plate reverb place it in an 80s cinematic space.",
+      "synthesis": "Sawtooth (or square) — often two detuned saws (~10-20 cent spread, count 2-3) for thickness; alternatively the classic FM/DX7 bell or 'brass' tone. Low-pass filter mostly open with a quick filter-env. Add LFO vibrato (~5-6Hz, light depth) for the 'cheesy' wobble, portamento/glide ~50-100ms for slides, and tempo-synced slap-back delay (1/8 or 1/8-dotted) plus plate reverb. Double-track and hard-pan two takes (or two slightly detuned voices L/R) for width. Keep it monophonic and sparse — leads are mono note patterns, not chords."
+    },
+    "pads": {
+      "character": "Thick, warm, lush analog polyphonic pad — the harmonic bed. Slow swelling attack, long release, washed in chorus and big reverb. The 'Juno-106 / Jupiter-8 / Prophet-5 strings-and-pad' sound. Holds sustained whole-note chords; common-tone voice-leading (keep shared notes between chords) for that floating, evolving wash.",
+      "synthesis": "Supersaw-style stack: 3-7 detuned sawtooth oscillators (count 3-7, ~12-30 cent / spread ~20-30 detune) per voice, polyphonic; low-pass filter with a SLOW filter-envelope opening (attack ~0.5-0.8s, release 1.5-2.4s, sustain high ~0.9, ~2.5 octaves of env sweep) so the pad blooms; heavy analog-style chorus (Juno/Jupiter ensemble — frequency ~0.6-1.2Hz, deep delay/depth) which is THE defining pad effect; large hall/plate reverb (size ~0.5-0.7, wet ~0.4); sidechain-pumped to the kick. Use sus2/add9 voicings to soften. In the existing engine: fatsawtooth count 3 spread 20-30, slow filterEnvelope, Tone.Chorus, reverb send, sidechain."
+    },
+    "drums": {
+      "machine": "Classic 80s drum machines / samples: LinnDrum & Linn LM-1, Oberheim DMX, E-mu Drumulator, Simmons electronic toms, and Roland TR-808 (esp. its cowbell and toms) / TR-909. Sounds are sampled/electronic, not acoustic — punchy gated snare, big boomy toms, 808/909 kick.",
+      "kick": "Punchy electronic kick. In the driving Outrun variant: four-on-the-floor (every quarter). In the slower/groovy variant: kick on beats 1 and 3 (plus occasional 'and of 2' pickup). Tight, with short decay; sidechain source for the whole mix.",
+      "snare": "Big GATED-REVERB snare/clap on the backbeat — beats 2 and 4. This is the single most identifying drum element. Heavily compressed, often layered snare+clap, drenched in reverb whose tail is abruptly chopped by a noise gate (~hold 0.3-0.5s then hard release). Extra snare hits / rolls at bar-ends as fills.",
+      "hats": "Closed hi-hats fill the gaps between kick and snare in 8ths or 16ths (frequently on the offbeat 'ands'); open hi-hat accents on offbeats. Arrangement starts with NO hats (kick+snare only) and introduces hats as the track builds. Near-zero velocity variation — machine-flat.",
+      "canonicalPattern16": "16 steps = one 4/4 bar (steps 1..16, beats land on 1,5,9,13). OUTRUN/driving variant: KICK on 1,5,9,13 (four-on-the-floor); SNARE+CLAP (gated reverb) on 5,13 (beats 2 & 4); CLOSED HAT on every offbeat 8th = steps 3,7,11,15 (or all 16ths 1-16 once built up); OPEN HAT on the 'and' offbeats 3,7,11,15 accenting; optional clap doubling on 5,13. SLOWER/groovy variant: KICK on 1,9 (beats 1 & 3) plus pickup on 8 ('and of 2'); SNARE on 5,13; HATS on 3,7,11,15. Last bar of each 8-bar section: snare/tom fill on 13,14,15,16 (16th roll) into the downbeat.",
+      "other": "Toms (big boomy Simmons/808 toms) for bar-end fills and tom rolls; TR-808 cowbell as a percussive ostinato hook; occasional crash on section downbeats. Whole kit typically routed to a gated-reverb send and bus compression/saturation."
+    },
+    "signatureSounds": [
+      "Gated-reverb snare on beats 2 & 4 — large reverb tail hard-chopped by a noise gate (the Padgham/Collins SSL technique, AMS RMX16 NonLin algorithm). THE defining sound.",
+      "Analog poly pad: detuned multi-saw stack through Juno/Jupiter-style chorus + big reverb, slow filter bloom (Juno-106 / Jupiter-8 / Prophet-5 lush pads).",
+      "Plucky chorused sawtooth bass — resonant filter-env pluck, often 16th-note arpeggiated with octave jumps (Korg Polysix / Juno lineage).",
+      "Bright monophonic saw or FM lead hook with cheesy vibrato, portamento glide, and slap-back delay (DX7 bells/brass or detuned saw).",
+      "16th/8th-note arpeggios (Jupiter-8 style arp) running under the lead — the hypnotic motor of the track.",
+      "TR-808 cowbell and big boomy electronic toms for fills.",
+      "Pumping sidechain compression — pads, bass and arps ducking to the kick for the 'breathing' 80s pump.",
+      "Sawtooth = bright leads, square = punchy bass, triangle/sine = mellow sub/pad — the textbook waveform assignment."
+    ],
+    "identityMustHaves": [
+      "Gated-reverb backbeat snare/clap on 2 & 4 — without it, it doesn't read as synthwave.",
+      "Lush detuned analog-poly pad (chorused multi-saw stack) sustaining the chord bed.",
+      "Driving repetitive synth bass (root ostinato in 8ths/16ths or octave-jump arpeggio), locked to the kick.",
+      "Vintage 80s timbres throughout (Juno/Jupiter/Prophet/DX7 + LinnDrum/808) — sampled/analog character, dead-straight machine timing, minor-key (Aeolian) home with maj7/add9 color."
+    ],
+    "engineRequirements": [
+      "Supersaw / unison detune stack (3-7 saws, per-voice cent spread ~12-30) for pads and leads",
+      "Per-note filter envelope with high resonance for the bass 'pluck' (fast attack/decay, multi-octave env amount)",
+      "Slow filter-envelope bloom on polyphonic pads (long attack/release, sustained whole-note voices)",
+      "Analog-style chorus/ensemble (Juno/Jupiter emulation) as a first-class effect on pads/bass/leads",
+      "Gated-reverb chain: reverb send -> noise gate keyed by the snare trigger, hard hold-then-release (~0.3-0.5s) — needs an envelope/gain node slammed open on each snare hit",
+      "Tempo-synced arpeggiator with octave-jump and up/down modes for bass and arp tracks (8th and 16th rates)",
+      "Sidechain compression / ducking of pads+bass+arp to the kick (LFO-style pump)",
+      "Portamento/glide + vibrato LFO on the mono lead for slides and cheesy wobble",
+      "Tempo-synced slap-back/eighth delay + large plate/hall reverb sends",
+      "Chord-aware voice-leading: snap melody/arp degrees to current chord tones, keep common tones between pad chords (sus2/add9 voicings)",
+      "16-step-per-bar sequencer with subtractive arrangement automation (mute/unmute tracks per section), near-zero velocity humanization, and bar-end fill/roll insertion"
+    ],
+    "feasibilityNote": "Highly feasible and largely already implemented in this repo's Tone.js engine (synthwave_surfer.html): it has fatsawtooth pad/lead/bass models with Juno-style chorus, a snare gated-reverb chain (Gain node slammed open per hit -> Reverb wet 1.0 -> hard close ~280ms), sidechain depth, filter envelopes, chord-aware degree snapping, and outrun/noir/dreamwave/carpenter generative profiles with i-VI-III-VII style padProgs. The genre's strength for generation is that it is loop-based, dead-straight, harmonically simple (1 chord/bar, 4-bar loops, minor + maj7), and timbre-driven — so a convincing result depends more on sound design (the gated snare, the chorused detuned pad, the resonant pluck bass) than on complex composition. The two hardest things to nail convincingly are (a) the gated-reverb snare transient/tail shape and (b) the lush analog chorus character; both are present here but benefit from tuning. Web access succeeded; specifics are grounded in the sources below, with production-community consensus favored where guides differed on exact BPM bands (80-118 groovy / 128-140 Outrun) and drum placement (kick 1&3 groovy vs four-on-floor Outrun).",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Synthwave",
+      "https://en.wikipedia.org/wiki/Gated_reverb",
+      "https://www.edmprod.com/how-to-make-synthwave/",
+      "https://modeaudio.com/magazine/synthwave-5-production-essentials",
+      "https://emastered.com/blog/synthwave-chord-progressions",
+      "https://www.orpheusaudioacademy.com/how-to-make-synthwave/",
+      "https://www.synth-centric.com/articles/a-guide-to-synthwave",
+      "https://www.ujam.com/tutorials/how-to-synthwave-drum-patterns/",
+      "https://www.orpheusaudioacademy.com/synthwave-bass/",
+      "https://www.musicradar.com/how-to/how-to-create-a-jupiter-style-synth-arpeggio",
+      "https://www.sweetwater.com/insync/dissecting-the-phil-collins-drum-sound/",
+      "https://producelikeapro.com/blog/how-one-recording-mistake-created-a-musical-phenomenon-in-the-80s/"
+    ]
+  }
+]
