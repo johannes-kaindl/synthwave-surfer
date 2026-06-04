@@ -761,6 +761,22 @@ function generateArpLead(scaleLen, chordMap, opts) {
   }
   return events;
 }
+/* Sustained, sparse, expressive lead (Vangelis / Blade-Runner noir): a few long
+   notes per bar drawn from chord tones, with octave leaps and whole-bar rests —
+   slow and spacious, the antithesis of an arpeggio. Relative line over `bars`. */
+function generateSustainedLead(rng, scaleLen, chordMap, opts) {
+  const { startBar = 0, bars = 4 } = opts || {};
+  const events = [];
+  for (let i = 0; i < bars; i++) {
+    const tones = chordMap ? chordMap[Math.min(startBar + i, chordMap.length - 1)].tones : [0, 2, 4];
+    const pick = () => tones[Math.floor(rng() * tones.length)] + (rng() < 0.4 ? scaleLen : 0);
+    const r = rng();
+    if (r < 0.35) { events.push({ rest: true, duration: 16 }); }              // whole-bar space
+    else if (r < 0.75) { events.push({ degree: pick(), duration: 16 }); }     // one long held note
+    else { events.push({ degree: pick(), duration: 8 }); events.push({ degree: pick(), duration: 8 }); } // two half notes w/ leap
+  }
+  return events;
+}
 // <<MELODY_ENGINE_END>>
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -1190,8 +1206,8 @@ const ALGORITHMS = {
   noir: {
     totalBars: 16, buildForm: buildNoirForm,
     riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.noir),
-    leadGenA: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.noir, startBar: 4 }),
-    leadGenB: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.noir, startBar: 8 }),
+    leadGenA: (rng, sl, ctx) => generateSustainedLead(rng, sl, ctx.chordMap, { startBar: 4, bars: 4 }),
+    leadGenB: (rng, sl, ctx) => generateSustainedLead(rng, sl, ctx.chordMap, { startBar: 8, bars: 4 }),
     padProg: [[0,2,4], [-1,1,3], [-2,0,2], [-3,-1,1]],
     padStartBar: 0, padEndBar: 16, padRoot: 60,
     drumStartBar: 6, drumEndBar: 12, drumIntenseFrom: 999, drumBreakFrom: 999, drumBreakTo: 0,
@@ -1202,8 +1218,8 @@ const ALGORITHMS = {
   dreamwave: {
     totalBars: 16, buildForm: buildDreamwaveForm,
     riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.dreamwave),
-    leadGenA: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.dreamwave, startBar: 4 }),
-    leadGenB: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.dreamwave, startBar: 10 }),
+    leadGenA: (rng, sl, ctx) => generateArpLead(sl, ctx.chordMap, { startBar: 4, bars: 6, mode: 'up', octaves: 3, stepDur: 4, lift: 0 }),
+    leadGenB: (rng, sl, ctx) => generateArpLead(sl, ctx.chordMap, { startBar: 10, bars: 6, mode: 'up', octaves: 3, stepDur: 4, lift: 0 }),
     padProg: [[0,2,4], [2,4,6], [-2,0,2], [-1,1,3]],
     padStartBar: 1, padEndBar: 16, padRoot: 60, padStride: 2, padSustain: 0.6,
     drumStartBar: 4, drumEndBar: 16, drumIntenseFrom: 10, drumBreakFrom: 8, drumBreakTo: 10,
@@ -3431,6 +3447,14 @@ default-phase: calm
       const line = generateArpLead(sl, chordMap, { startBar: 0, bars: 4, mode: 'up', octaves: 2, stepDur: 2 });
       assert(line.reduce((s,e)=>s+e.duration,0) === 64, '4 bars filled (8th arp)');
       assert(line.every(e => typeof e.degree === 'number'), 'valid degrees');
+    }],
+    ['noir: generateSustainedLead is sparse long-note/rest line, fills bars', () => {
+      const sl = SCALES.aeolian.length;
+      const chordMap = buildChordMap([[0,2,4],[-1,1,3]], 16);
+      const line = generateSustainedLead(mulberry32(3), sl, chordMap, { startBar: 0, bars: 8 });
+      assert(line.reduce((s,e)=>s+e.duration,0) === 128, '8 bars filled');
+      assert(line.filter(e=>!e.rest).length <= 16, 'sparse: <= 2 notes/bar');
+      assert(line.every(e => e.rest || typeof e.degree === 'number'), 'valid events');
     }],
     ['carpenter: ALGORITHMS entry wired', () => {
       const a = ALGORITHMS.carpenter;
