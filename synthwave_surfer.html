@@ -1218,8 +1218,8 @@ const ALGORITHMS = {
   dreamwave: {
     totalBars: 16, buildForm: buildDreamwaveForm,
     riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.dreamwave),
-    leadGenA: (rng, sl, ctx) => generateArpLead(sl, ctx.chordMap, { startBar: 4, bars: 6, mode: 'up', octaves: 3, stepDur: 4, lift: 0 }),
-    leadGenB: (rng, sl, ctx) => generateArpLead(sl, ctx.chordMap, { startBar: 10, bars: 6, mode: 'up', octaves: 3, stepDur: 4, lift: 0 }),
+    leadGenA: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.dreamwave, startBar: 4 }),
+    leadGenB: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.dreamwave, startBar: 10 }),
     padProg: [[0,2,4], [2,4,6], [-2,0,2], [-1,1,3]],
     padStartBar: 1, padEndBar: 16, padRoot: 60, padStride: 2, padSustain: 0.6,
     drumStartBar: 4, drumEndBar: 16, drumIntenseFrom: 10, drumBreakFrom: 8, drumBreakTo: 10,
@@ -2304,11 +2304,11 @@ function syncMasterUI() {
 const FACTORY_PRESETS = {
   'Miami Nights':      { engine: 'outrun',    seed: 1986, bpm: 120, mode: 'aeolian',  tag: 'Outrun · classic' },
   'Highway Cruise':    { engine: 'outrun',    seed: 1984, bpm: 108, mode: 'aeolian',  tag: 'Outrun · chilled',
-    voicing: { bass: { volume: 0.65, attack: 0.008, decay: 0.3, sustain: 0.65, release: 0.4, cutoff: 0.4, resonance: 0.25, fenvAmount: 0.3, fenvDecay: 0.4, character: 0.3, lfoRate: 0.1, lfoDepth: 0.2 }, lead: { model: 'vapor', attack: 0.04, sustain: 0.5, release: 0.8, cutoff: 0.6, resonance: 0.25, fenvAmount: 0.4, character: 0.7, lfoTarget: 'pitch', lfoRate: 0.2, lfoDepth: 0.08 }, master: { reverbSize: 0.65, reverbWet: 0.55, delayTime: 0.5, delayFB: 0.4, delayWet: 0.5, sidechain: 0.5, tapeSat: 0.4, masterGain: 0.78 } } },
+    voicing: { bass: { volume: 0.65, attack: 0.008, decay: 0.3, sustain: 0.65, release: 0.4, cutoff: 0.4, resonance: 0.25, fenvAmount: 0.3, fenvDecay: 0.4, character: 0.3, lfoRate: 0.1, lfoDepth: 0.2 }, lead: { model: 'ether', attack: 0.6, release: 2.6, cutoff: 0.13, resonance: 0.08, fenvAmount: 0.1 }, master: { reverbSize: 0.65, reverbWet: 0.55, delayTime: 0.5, delayFB: 0.4, delayWet: 0.5, sidechain: 0.5, tapeSat: 0.4, masterGain: 0.78 } } },
   'Blade Runner Rain': { engine: 'noir',      seed: 2019, bpm: 80,  mode: 'aeolian',  tag: 'Noir · cinematic' },
   'Carpenter Synth':   { engine: 'carpenter', seed: 1978, bpm: 92,  mode: 'phrygian', tag: 'Carpenter · horror' },
   'Mall Bliss':        { engine: 'dreamwave', seed: 1985, bpm: 100, mode: 'aeolian',  tag: 'Dreamwave · hazy',
-    voicing: { bass: { volume: 0.6, detune: 0, attack: 0.005, decay: 0.2, sustain: 0.5, release: 0.25, cutoff: 0.55, resonance: 0.3, fenvAmount: 0.5, fenvDecay: 0.3, character: 0.4, lfoRate: 0.4, lfoDepth: 0.3 }, lead: { model: 'crystal', volume: 0.45, detune: 0, attack: 0.015, decay: 0.4, sustain: 0.3, release: 1.2, cutoff: 0.65, fenvAmount: 0.4, fenvDecay: 0.5, character: 0.65, lfoRate: 0.5, lfoDepth: 0.06 }, pad: { detune: 0, attack: 1, decay: 0.5, release: 2.5, cutoff: 0.5, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.95, lfoRate: 0.1, lfoDepth: 0.4 }, master: { delayTime: 0.6, delayWet: 0.5, sidechain: 0.55, tapeSat: 0.4, masterGain: 0.78 } } },
+    voicing: { bass: { volume: 0.6, detune: 0, attack: 0.005, decay: 0.2, sustain: 0.5, release: 0.25, cutoff: 0.55, resonance: 0.3, fenvAmount: 0.5, fenvDecay: 0.3, character: 0.4, lfoRate: 0.4, lfoDepth: 0.3 }, lead: { model: 'crystal', volume: 0.45, detune: 0, attack: 0.015, decay: 0.4, sustain: 0.3, release: 1.2, cutoff: 0.65, fenvAmount: 0.4, fenvDecay: 0.5, character: 0.65, lfoRate: 0.5, lfoDepth: 0.06 }, pad: { detune: 0, attack: 1, decay: 0.5, release: 2.5, cutoff: 0.06, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.95, lfoRate: 0.1, lfoDepth: 0.4 }, master: { delayTime: 0.6, delayWet: 0.5, sidechain: 0.55, tapeSat: 0.4, masterGain: 0.78 } } },
   'VHS Sunset':        { engine: 'dreamwave', seed: 1989, bpm: 96,  mode: 'aeolian',  tag: 'Dreamwave · warm' },
 };
 
@@ -2516,7 +2516,7 @@ $('randomize').onclick = () => { $('seed').value = Math.floor(Math.random() * 99
    modulates retired Stratos; on alkali it was inert anyway). */
 const ENGINE_VOICINGS = {
   outrun: {
-    bass:   { model: 'alkali', volume: 0.7, detune: 0, attack: 0.005, decay: 0.25, sustain: 0.7, release: 0.3, cutoff: 0.5, resonance: 0.3, fenvAmount: 0.4, fenvDecay: 0.3, character: 0.5, lfoTarget: 'off', lfoRate: 0.15, lfoDepth: 0.4, arp: 'off', send: false },
+    bass:   { model: 'alkali', volume: 0.7, detune: 0, attack: 0.005, decay: 0.25, sustain: 0.7, release: 0.3, cutoff: 0.02, resonance: 0.02, fenvAmount: 0.13, fenvDecay: 0.3, character: 0.5, lfoTarget: 'off', lfoRate: 0.15, lfoDepth: 0.4, arp: 'off', send: false },
     lead:   { model: 'crystal', volume: 0.45, detune: 0, attack: 0.01, decay: 0.4, sustain: 0.25, release: 1.0, cutoff: 0.7, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.6, lfoTarget: 'off', lfoRate: 0.3, lfoDepth: 0.2, arp: 'off', send: true },
     pad:    { model: 'vapor', volume: 0.16, detune: 0, attack: 1.2, decay: 0.5, sustain: 0.85, release: 2.5, cutoff: 0.55, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.7, lfoTarget: 'filter', lfoRate: 0.08, lfoDepth: 0.3, arp: 'off', send: true },
     master: { reverbSize: 0.6, reverbWet: 0.5, delayTime: 0.55, delayFB: 0.45, delayWet: 0.45, sidechain: 0.75, tapeSat: 0.35, masterGain: 0.8 },
@@ -2534,7 +2534,7 @@ const ENGINE_VOICINGS = {
     master: { reverbSize: 0.7, reverbWet: 0.6, delayTime: 0.55, delayFB: 0.5, delayWet: 0.55, sidechain: 0.6, tapeSat: 0.55, masterGain: 0.76 },
   },
   carpenter: {
-    bass:   { model: 'alkali', volume: 0.42, detune: 0, attack: 0.004, decay: 0.5, sustain: 0.6, release: 0.4, cutoff: 0.28, resonance: 0.35, fenvAmount: 0.2, fenvDecay: 0.3, character: 0.45, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
+    bass:   { model: 'alkali', volume: 0.42, detune: 0, attack: 0.004, decay: 0.5, sustain: 0.6, release: 0.4, cutoff: 0.28, resonance: 0, fenvAmount: 0.2, fenvDecay: 0.3, character: 0.45, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
     lead:   { model: 'crystal', volume: 0.52, detune: 0, attack: 0.004, decay: 0.35, sustain: 0.1, release: 0.5, cutoff: 0.8, resonance: 0.25, fenvAmount: 0.3, fenvDecay: 0.3, character: 0.4, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.15, arp: 'off', send: true },
     pad:    { model: 'vapor', volume: 0.32, detune: 0, attack: 2.0, decay: 0.8, sustain: 0.9, release: 3.5, cutoff: 0.3, resonance: 0.2, fenvAmount: 0.2, fenvDecay: 0.7, character: 0.6, lfoTarget: 'filter', lfoRate: 0.05, lfoDepth: 0.25, arp: 'off', send: true },
     master: { reverbSize: 0.7, reverbWet: 0.5, delayTime: 0.6, delayFB: 0.35, delayWet: 0.3, sidechain: 0.0, tapeSat: 0.4, masterGain: 0.8 },
