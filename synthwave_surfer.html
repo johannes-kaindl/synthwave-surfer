@@ -696,7 +696,7 @@ const BASS_PROFILES = {
   outrun:    { grooves: [[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,4],[3,1,2,2,2,2,4],[2,2,4,2,2,4]], octaveProb: 0.6,  moveProb: 0.3  },
   noir:      { grooves: [[8,8],[16],[8,4,4],[4,4,8]],                                       octaveProb: 0.15, moveProb: 0.1  },
   dreamwave: { grooves: [[4,4,4,4],[2,2,2,2,2,2,2,2],[2,2,4,2,2,4]],                        octaveProb: 0.35, moveProb: 0.25 },
-  carpenter: { grooves: [[2,2,2,2,2,2,2,2]],                                                 octaveProb: 0.0,  moveProb: 0.25 },
+  carpenter: { grooves: [[8,8]],                                                            octaveProb: 0.0,  moveProb: 0.0  },
 };
 
 function generateRiff(rng, scaleLen, profile) {
@@ -747,6 +747,19 @@ function arpExpand(chordTones, mode, steps, octaves, scaleLen, stepDur, rng) {
   const out = [];
   for (let i = 0; i < steps; i++) out.push({ degree: seq[i % seq.length], duration: dur });
   return out;
+}
+/* Continuous arpeggiated lead following a chordMap (Carpenter/Halloween ostinato):
+   for each bar, arpExpand its chord into a stepped figure. Returns a RELATIVE line
+   (durations) for `bars` bars, reading chords from chordMap[startBar + i]. */
+function generateArpLead(scaleLen, chordMap, opts) {
+  const { startBar = 0, bars = 8, mode = 'updown', octaves = 2, stepDur = 2, lift = 0 } = opts || {};
+  const events = [];
+  for (let i = 0; i < bars; i++) {
+    const tones = chordMap ? chordMap[Math.min(startBar + i, chordMap.length - 1)].tones : [0, 2, 4];
+    const cell = arpExpand(tones, mode, Math.max(1, Math.floor(16 / stepDur)), octaves, scaleLen, stepDur);
+    for (const e of cell) events.push({ degree: e.degree + lift, duration: e.duration });
+  }
+  return events;
 }
 // <<MELODY_ENGINE_END>>
 
@@ -1154,9 +1167,8 @@ function buildCarpenterForm(rng, material, opts) {
     const rootOffset = chordMap ? chordMap[b].root : 0;
     parts.push({ voice: 'bass', line: transpose(riff, rootOffset), startBar: b }); // relentless ostinato — NO bassFill
   }
-  parts.push({ voice: 'lead', line: melodyA, startBar: 6 });
-  parts.push({ voice: 'lead', line: melodyB, startBar: 12 });
-  return { parts, riff, melodyA, melodyB };
+  parts.push({ voice: 'lead', line: melodyA, startBar: 2 }); // continuous arpeggiated ostinato (Halloween figure)
+  return { parts, riff, melodyA, melodyB: material.melodyB };
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -1202,8 +1214,8 @@ const ALGORITHMS = {
   carpenter: {
     totalBars: 16, buildForm: buildCarpenterForm,
     riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.carpenter),
-    leadGenA: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.carpenter, startBar: 6 }),
-    leadGenB: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.carpenter, startBar: 12 }),
+    leadGenA: (rng, sl, ctx) => generateArpLead(sl, ctx.chordMap, { startBar: 2, bars: 14, mode: 'updown', octaves: 2, stepDur: 2, lift: 0 }),
+    leadGenB: (rng, sl, ctx) => [],
     padProg: [[0,2,4], [-1,1,3]],
     padStartBar: 0, padEndBar: 16, padRoot: 60,
     drumStartBar: 4, drumEndBar: 16, drumIntenseFrom: 999, drumBreakFrom: 999, drumBreakTo: 0,
@@ -2506,8 +2518,8 @@ const ENGINE_VOICINGS = {
     master: { reverbSize: 0.7, reverbWet: 0.6, delayTime: 0.55, delayFB: 0.5, delayWet: 0.55, sidechain: 0.6, tapeSat: 0.55, masterGain: 0.76 },
   },
   carpenter: {
-    bass:   { model: 'alkali', volume: 0.72, detune: 0, attack: 0.004, decay: 0.22, sustain: 0.85, release: 0.18, cutoff: 0.32, resonance: 0.4, fenvAmount: 0.25, fenvDecay: 0.2, character: 0.45, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
-    lead:   { model: 'crystal', volume: 0.4, detune: 0, attack: 0.005, decay: 0.5, sustain: 0.15, release: 0.8, cutoff: 0.75, resonance: 0.25, fenvAmount: 0.3, fenvDecay: 0.4, character: 0.4, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.15, arp: 'off', send: true },
+    bass:   { model: 'alkali', volume: 0.42, detune: 0, attack: 0.004, decay: 0.5, sustain: 0.6, release: 0.4, cutoff: 0.28, resonance: 0.35, fenvAmount: 0.2, fenvDecay: 0.3, character: 0.45, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
+    lead:   { model: 'crystal', volume: 0.52, detune: 0, attack: 0.004, decay: 0.35, sustain: 0.1, release: 0.5, cutoff: 0.8, resonance: 0.25, fenvAmount: 0.3, fenvDecay: 0.3, character: 0.4, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.15, arp: 'off', send: true },
     pad:    { model: 'vapor', volume: 0.32, detune: 0, attack: 2.0, decay: 0.8, sustain: 0.9, release: 3.5, cutoff: 0.3, resonance: 0.2, fenvAmount: 0.2, fenvDecay: 0.7, character: 0.6, lfoTarget: 'filter', lfoRate: 0.05, lfoDepth: 0.25, arp: 'off', send: true },
     master: { reverbSize: 0.7, reverbWet: 0.5, delayTime: 0.6, delayFB: 0.35, delayWet: 0.3, sidechain: 0.0, tapeSat: 0.4, masterGain: 0.8 },
   },
@@ -3401,17 +3413,24 @@ default-phase: calm
       const ev = generateMelody(mulberry32(7), SCALES.phrygian.length, 4, { profile: p, startBar: 0 });
       assert(ev.reduce((s,e)=>s+e.duration,0)===64, 'fills 4 bars');
     }],
-    ['carpenter: buildCarpenterForm — relentless bass (no fill), late lead', () => {
+    ['carpenter: sparse root-pedal bass + single continuous arp lead', () => {
       const rng = mulberry32(5), sl = SCALES.phrygian.length;
+      const chordMap = buildChordMap(ALGORITHMS.carpenter.padProg, 16);
       const mat = { riff: generateRiff(mulberry32(5), sl, BASS_PROFILES.carpenter),
-                    melodyA: generateMelody(mulberry32(6), sl, 4, { profile: MELODY_PROFILES.carpenter, startBar: 6 }),
-                    melodyB: generateMelody(mulberry32(7), sl, 4, { profile: MELODY_PROFILES.carpenter, startBar: 12 }) };
-      const form = buildCarpenterForm(rng, mat, { chordMap: null });
-      const bassParts = form.parts.filter(p => p.voice === 'bass');
-      assert(bassParts.length === 16, '16 bass bars');
-      assert(bassParts.every(p => JSON.stringify(p.line) === JSON.stringify(mat.riff)), 'every bar = unfilled riff');
-      const leadStarts = form.parts.filter(p => p.voice === 'lead').map(p => p.startBar);
-      assert(leadStarts.includes(6) && leadStarts.includes(12), 'lead enters late');
+                    melodyA: ALGORITHMS.carpenter.leadGenA(mulberry32(6), sl, { chordMap }),
+                    melodyB: [] };
+      const form = buildCarpenterForm(rng, mat, { chordMap });
+      assert(form.parts.filter(p => p.voice === 'bass').length === 16, '16 bass bars (root pedal)');
+      const leadParts = form.parts.filter(p => p.voice === 'lead');
+      assert(leadParts.length === 1 && leadParts[0].startBar === 2, 'single arp lead from bar 2');
+      assert(leadParts[0].line.length >= 14 * 8, 'arp lead is dense/continuous');
+    }],
+    ['carpenter: generateArpLead follows chordMap and fills bars', () => {
+      const sl = SCALES.phrygian.length;
+      const chordMap = buildChordMap([[0,2,4],[-1,1,3]], 16);
+      const line = generateArpLead(sl, chordMap, { startBar: 0, bars: 4, mode: 'up', octaves: 2, stepDur: 2 });
+      assert(line.reduce((s,e)=>s+e.duration,0) === 64, '4 bars filled (8th arp)');
+      assert(line.every(e => typeof e.degree === 'number'), 'valid degrees');
     }],
     ['carpenter: ALGORITHMS entry wired', () => {
       const a = ALGORITHMS.carpenter;
