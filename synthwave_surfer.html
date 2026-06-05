@@ -2309,7 +2309,6 @@ const FACTORY_PRESETS = {
   'Carpenter Synth':   { engine: 'carpenter', seed: 1978, bpm: 92,  mode: 'phrygian', tag: 'Carpenter · horror' },
   'Mall Bliss':        { engine: 'dreamwave', seed: 1985, bpm: 100, mode: 'aeolian',  tag: 'Dreamwave · hazy',
     voicing: { bass: { volume: 0.6, detune: 0, attack: 0.005, decay: 0.2, sustain: 0.5, release: 0.25, cutoff: 0.55, resonance: 0.3, fenvAmount: 0.5, fenvDecay: 0.3, character: 0.4, lfoRate: 0.4, lfoDepth: 0.3 }, lead: { model: 'crystal', volume: 0.45, detune: 0, attack: 0.015, decay: 0.4, sustain: 0.3, release: 1.2, cutoff: 0.65, fenvAmount: 0.4, fenvDecay: 0.5, character: 0.65, lfoRate: 0.5, lfoDepth: 0.06 }, pad: { detune: 0, attack: 1, decay: 0.5, release: 2.5, cutoff: 0.06, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.95, lfoRate: 0.1, lfoDepth: 0.4 }, master: { delayTime: 0.6, delayWet: 0.5, sidechain: 0.55, tapeSat: 0.4, masterGain: 0.78 } } },
-  'VHS Sunset':        { engine: 'dreamwave', seed: 1989, bpm: 96,  mode: 'aeolian',  tag: 'Dreamwave · warm' },
 };
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -2534,7 +2533,7 @@ const ENGINE_VOICINGS = {
     master: { reverbSize: 0.7, reverbWet: 0.6, delayTime: 0.55, delayFB: 0.5, delayWet: 0.55, sidechain: 0.6, tapeSat: 0.55, masterGain: 0.76 },
   },
   carpenter: {
-    bass:   { model: 'alkali', volume: 0.42, detune: 0, attack: 0.004, decay: 0.5, sustain: 0.6, release: 0.4, cutoff: 0.28, resonance: 0, fenvAmount: 0.2, fenvDecay: 0.3, character: 0.45, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
+    bass:   { model: 'alkali', volume: 0.42, detune: 0, attack: 0.004, decay: 0.5, sustain: 0.6, release: 0.4, cutoff: 0.04, resonance: 0.07, fenvAmount: 0.28, fenvDecay: 0.3, character: 0.45, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
     lead:   { model: 'crystal', volume: 0.52, detune: 0, attack: 0.004, decay: 0.35, sustain: 0.1, release: 0.5, cutoff: 0.8, resonance: 0.25, fenvAmount: 0.3, fenvDecay: 0.3, character: 0.4, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.15, arp: 'off', send: true },
     pad:    { model: 'vapor', volume: 0.32, detune: 0, attack: 2.0, decay: 0.8, sustain: 0.9, release: 3.5, cutoff: 0.3, resonance: 0.2, fenvAmount: 0.2, fenvDecay: 0.7, character: 0.6, lfoTarget: 'filter', lfoRate: 0.05, lfoDepth: 0.25, arp: 'off', send: true },
     master: { reverbSize: 0.7, reverbWet: 0.5, delayTime: 0.6, delayFB: 0.35, delayWet: 0.3, sidechain: 0.0, tapeSat: 0.4, masterGain: 0.8 },
