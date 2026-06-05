@@ -71,6 +71,10 @@
   .algo-card[data-algo="carpenter"].active .algo-name { color: #b16cff; }
   .algo-card[data-algo="techno"].active { border-color: #3ddc84; background: rgba(61, 220, 132, 0.08); }
   .algo-card[data-algo="techno"].active .algo-name { color: #3ddc84; }
+  .algo-card[data-algo="proghouse"].active { border-color: #ff8c42; background: rgba(255, 140, 66, 0.08); }
+  .algo-card[data-algo="proghouse"].active .algo-name { color: #ff8c42; }
+  .algo-card[data-algo="trance"].active { border-color: #4aa3ff; background: rgba(74, 163, 255, 0.08); }
+  .algo-card[data-algo="trance"].active .algo-name { color: #4aa3ff; }
   .algo-card input[type="radio"] { display: none; }
   .algo-name { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 22px; color: var(--amber); margin-bottom: 4px; }
   .algo-desc { font-size: 10px; color: var(--steel); letter-spacing: 0.05em; line-height: 1.4; }
@@ -235,6 +239,16 @@
         <input type="radio" name="algo" value="techno">
         <div class="algo-name">Techno</div>
         <div class="algo-desc">128 BPM · four-on-the-floor · offbeat open hats · hypnotic minor · rolling bass · sidechain pump</div>
+      </label>
+      <label class="algo-card" data-algo="proghouse">
+        <input type="radio" name="algo" value="proghouse">
+        <div class="algo-name">Prog House</div>
+        <div class="algo-desc">126 BPM · four-on-the-floor · pumping pads · emotive minor loop · plucky lead · long builds</div>
+      </label>
+      <label class="algo-card" data-algo="trance">
+        <input type="radio" name="algo" value="trance">
+        <div class="algo-name">Trance</div>
+        <div class="algo-desc">138 BPM · four-on-the-floor · euphoric supersaw lead · rolling bass · big breakdown</div>
       </label>
     </div>
   </div>
@@ -1257,6 +1271,30 @@ const ALGORITHMS = {
     drumPattern: 'fourfloor',
     swing: 0, sidechain: true,
     defaultBpm: 128, defaultMode: 'aeolian',
+  },
+  proghouse: {
+    totalBars: 16, buildForm: buildOutrunForm,
+    riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.outrun),
+    leadGenA: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.dreamwave, startBar: 4 }),
+    leadGenB: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.dreamwave, startBar: 10 }),
+    padProg: [[0,2,4], [-2,0,2], [3,5,7], [-1,1,3]],
+    padStartBar: 0, padEndBar: 16, padRoot: 60, padStride: 2, padSustain: 0.85,
+    drumStartBar: 0, drumEndBar: 16, drumIntenseFrom: 999, drumBreakFrom: 999, drumBreakTo: 0,
+    drumPattern: 'fourfloor',
+    swing: 0, sidechain: true,
+    defaultBpm: 126, defaultMode: 'aeolian',
+  },
+  trance: {
+    totalBars: 16, buildForm: buildOutrunForm,
+    riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.outrun),
+    leadGenA: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.outrun, startBar: 4 }),
+    leadGenB: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.outrun, startBar: 10 }),
+    padProg: [[0,2,4], [3,5,7], [-2,0,2], [-1,1,3]],
+    padStartBar: 0, padEndBar: 16, padRoot: 60, padStride: 2, padSustain: 0.9,
+    drumStartBar: 0, drumEndBar: 16, drumIntenseFrom: 999, drumBreakFrom: 999, drumBreakTo: 0,
+    drumPattern: 'fourfloor',
+    swing: 0, sidechain: true,
+    defaultBpm: 138, defaultMode: 'aeolian',
   },
 };
 
@@ -2575,6 +2613,18 @@ const ENGINE_VOICINGS = {
     lead:   { model: 'crystal', volume: 0.35, detune: 0, attack: 0.005, decay: 0.25, sustain: 0.2, release: 0.4, cutoff: 0.6, resonance: 0.3, fenvAmount: 0.4, fenvDecay: 0.3, character: 0.4, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.15, arp: 'off', send: true },
     pad:    { model: 'vapor', volume: 0.14, detune: 0, attack: 0.6, decay: 0.4, sustain: 0.6, release: 1.5, cutoff: 0.4, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.6, lfoTarget: 'filter', lfoRate: 0.1, lfoDepth: 0.3, arp: 'off', send: true },
     master: { reverbSize: 0.5, reverbWet: 0.35, delayTime: 0.5, delayFB: 0.4, delayWet: 0.3, sidechain: 0.8, tapeSat: 0.4, masterGain: 0.82 },
+  },
+  proghouse: {
+    bass:   { model: 'alkali', volume: 0.55, detune: 0, attack: 0.004, decay: 0.18, sustain: 0.4, release: 0.15, cutoff: 0.4, resonance: 0.25, fenvAmount: 0.4, fenvDecay: 0.2, character: 0.4, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
+    lead:   { model: 'crystal', volume: 0.4, detune: 0, attack: 0.01, decay: 0.3, sustain: 0.3, release: 0.6, cutoff: 0.7, resonance: 0.2, fenvAmount: 0.4, fenvDecay: 0.4, character: 0.6, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.15, arp: 'off', send: true },
+    pad:    { model: 'vapor', volume: 0.2, detune: 0, attack: 0.8, decay: 0.5, sustain: 0.8, release: 2.0, cutoff: 0.55, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.8, lfoTarget: 'filter', lfoRate: 0.1, lfoDepth: 0.3, arp: 'off', send: true },
+    master: { reverbSize: 0.6, reverbWet: 0.45, delayTime: 0.5, delayFB: 0.45, delayWet: 0.4, sidechain: 0.85, tapeSat: 0.35, masterGain: 0.82 },
+  },
+  trance: {
+    bass:   { model: 'alkali', volume: 0.55, detune: 0, attack: 0.003, decay: 0.15, sustain: 0.3, release: 0.12, cutoff: 0.4, resonance: 0.3, fenvAmount: 0.45, fenvDecay: 0.2, character: 0.4, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
+    lead:   { model: 'crystal', volume: 0.42, detune: 7, attack: 0.02, decay: 0.4, sustain: 0.5, release: 1.0, cutoff: 0.75, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.7, lfoTarget: 'off', lfoRate: 0.3, lfoDepth: 0.1, arp: 'off', send: true },
+    pad:    { model: 'vapor', volume: 0.22, detune: 8, attack: 1.0, decay: 0.5, sustain: 0.85, release: 2.5, cutoff: 0.6, resonance: 0.12, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.9, lfoTarget: 'filter', lfoRate: 0.08, lfoDepth: 0.35, arp: 'off', send: true },
+    master: { reverbSize: 0.7, reverbWet: 0.55, delayTime: 0.5, delayFB: 0.5, delayWet: 0.45, sidechain: 0.8, tapeSat: 0.35, masterGain: 0.82 },
   },
 };
 function mergeVoicing(defaultVoicing, deltas) {
