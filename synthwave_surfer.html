@@ -75,6 +75,8 @@
   .algo-card[data-algo="proghouse"].active .algo-name { color: #ff8c42; }
   .algo-card[data-algo="trance"].active { border-color: #4aa3ff; background: rgba(74, 163, 255, 0.08); }
   .algo-card[data-algo="trance"].active .algo-name { color: #4aa3ff; }
+  .algo-card[data-algo="dubstep"].active { border-color: #ff3b6b; background: rgba(255, 59, 107, 0.08); }
+  .algo-card[data-algo="dubstep"].active .algo-name { color: #ff3b6b; }
   .algo-card input[type="radio"] { display: none; }
   .algo-name { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 22px; color: var(--amber); margin-bottom: 4px; }
   .algo-desc { font-size: 10px; color: var(--steel); letter-spacing: 0.05em; line-height: 1.4; }
@@ -249,6 +251,11 @@
         <input type="radio" name="algo" value="trance">
         <div class="algo-name">Trance</div>
         <div class="algo-desc">138 BPM · four-on-the-floor · euphoric supersaw lead · rolling bass · big breakdown</div>
+      </label>
+      <label class="algo-card" data-algo="dubstep">
+        <input type="radio" name="algo" value="dubstep">
+        <div class="algo-name">Dubstep</div>
+        <div class="algo-desc">140 BPM half-time · snare on 3 · LFO wobble bass · dark phrygian drone · sub-heavy</div>
       </label>
     </div>
   </div>
@@ -718,6 +725,7 @@ const BASS_PROFILES = {
   noir:      { grooves: [[8,8],[16],[8,4,4],[4,4,8]],                                       octaveProb: 0.15, moveProb: 0.1  },
   dreamwave: { grooves: [[4,4,4,4],[2,2,2,2,2,2,2,2],[2,2,4,2,2,4]],                        octaveProb: 0.35, moveProb: 0.25 },
   carpenter: { grooves: [[8,8]],                                                            octaveProb: 0.0,  moveProb: 0.0  },
+  dubstep:   { grooves: [[16]],                                                              octaveProb: 0.0,  moveProb: 0.0  },
 };
 
 function generateRiff(rng, scaleLen, profile) {
@@ -1296,6 +1304,19 @@ const ALGORITHMS = {
     swing: 0, sidechain: true,
     defaultBpm: 138, defaultMode: 'aeolian',
   },
+  dubstep: {
+    totalBars: 16, buildForm: buildOutrunForm,
+    riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.dubstep),
+    leadGenA: (rng, sl, ctx) => generateSustainedLead(rng, sl, ctx.chordMap, { startBar: 4, bars: 4 }),
+    leadGenB: (rng, sl, ctx) => generateSustainedLead(rng, sl, ctx.chordMap, { startBar: 10, bars: 4 }),
+    padProg: [[0,2,4], [0,2,4], [-1,1,3], [-1,1,3]],
+    padStartBar: 0, padEndBar: 16, padRoot: 60, padStride: 4, padSustain: 0.8,
+    drumStartBar: 0, drumEndBar: 16, drumIntenseFrom: 999, drumBreakFrom: 999, drumBreakTo: 0,
+    drumPattern: 'halftime',
+    swing: 0, sidechain: false,
+    defaultBpm: 140, defaultMode: 'phrygian',
+    wobble: true, wobbleRate: 2,
+  },
 };
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -1709,6 +1730,11 @@ function scheduleAll(form, melodyScale, bpm, g, algo) {
   const secBar = secBeat * 4;
   const loopLength = algo.totalBars * secBar;
 
+  // Tempo-synced wobble: lock the bass filter-LFO rate to the beat (the dubstep "wub")
+  if (algo.wobble && g.bassBus && g.bassBus.lfo) {
+    g.bassBus.lfo.frequency.value = (bpm / 60) * (algo.wobbleRate || 1);
+  }
+
   const parts = [];
   const makePart = (events, callback) => {
     const p = new Tone.Part(callback, events);
@@ -1799,6 +1825,10 @@ function scheduleAll(form, melodyScale, bpm, g, algo) {
         if (beat === 1 || beat === 3) drumEvents.push({ time: beatT, type: 'snare', vel: 0.7 }); // clap backbeat (2 & 4)
         drumEvents.push({ time: beatT, type: 'hat', vel: 0.28 });                              // closed hat on the beat
         drumEvents.push({ time: beatT + secBeat / 2, type: 'openhat', vel: 0.5 });             // OPEN hat on the offbeat (house/techno signature)
+      } else if (pattern === 'halftime') {
+        if (beat === 0) drumEvents.push({ time: beatT, type: 'kick' });                        // kick on 1
+        if (beat === 2) drumEvents.push({ time: beatT, type: 'snare', vel: 0.85 });            // snare on beat 3 (half-time backbeat)
+        drumEvents.push({ time: beatT + secBeat / 2, type: 'hat', vel: 0.18 });                // sparse offbeat hat
       }
     }
   }
@@ -2625,6 +2655,12 @@ const ENGINE_VOICINGS = {
     lead:   { model: 'crystal', volume: 0.42, detune: 7, attack: 0.02, decay: 0.4, sustain: 0.5, release: 1.0, cutoff: 0.75, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.7, lfoTarget: 'off', lfoRate: 0.3, lfoDepth: 0.1, arp: 'off', send: true },
     pad:    { model: 'vapor', volume: 0.22, detune: 8, attack: 1.0, decay: 0.5, sustain: 0.85, release: 2.5, cutoff: 0.6, resonance: 0.12, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.9, lfoTarget: 'filter', lfoRate: 0.08, lfoDepth: 0.35, arp: 'off', send: true },
     master: { reverbSize: 0.7, reverbWet: 0.55, delayTime: 0.5, delayFB: 0.5, delayWet: 0.45, sidechain: 0.8, tapeSat: 0.35, masterGain: 0.82 },
+  },
+  dubstep: {
+    bass:   { model: 'alkali', volume: 0.65, detune: 0, attack: 0.005, decay: 0.4, sustain: 0.9, release: 0.2, cutoff: 0.3, resonance: 0.4, fenvAmount: 0.1, fenvDecay: 0.3, character: 0.8, lfoTarget: 'filter', lfoRate: 0.5, lfoDepth: 0.85, arp: 'off', send: false },
+    lead:   { model: 'crystal', volume: 0.3, detune: 0, attack: 0.05, decay: 0.5, sustain: 0.4, release: 1.2, cutoff: 0.6, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.5, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.1, arp: 'off', send: true },
+    pad:    { model: 'vapor', volume: 0.16, detune: 0, attack: 1.5, decay: 0.6, sustain: 0.8, release: 3.0, cutoff: 0.3, resonance: 0.1, fenvAmount: 0.2, fenvDecay: 0.7, character: 0.7, lfoTarget: 'filter', lfoRate: 0.05, lfoDepth: 0.3, arp: 'off', send: true },
+    master: { reverbSize: 0.7, reverbWet: 0.4, delayTime: 0.5, delayFB: 0.4, delayWet: 0.3, sidechain: 0, tapeSat: 0.5, masterGain: 0.82 },
   },
 };
 function mergeVoicing(defaultVoicing, deltas) {
