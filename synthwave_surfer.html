@@ -267,10 +267,6 @@
     </div>
   </div>
 
-  <div class="panel">
-    <span class="panel-label">Factory Presets</span>
-    <div class="factory-row" id="factory-row"></div>
-  </div>
 
   <div class="panel">
     <span class="panel-label">Tracks &amp; Loop</span>
@@ -732,7 +728,7 @@ const BASS_PROFILES = {
   noir:      { grooves: [[8,8],[16],[8,4,4],[4,4,8]],                                       octaveProb: 0.15, moveProb: 0.1  },
   dreamwave: { grooves: [[4,4,4,4],[2,2,2,2,2,2,2,2],[2,2,4,2,2,4]],                        octaveProb: 0.35, moveProb: 0.25 },
   carpenter: { grooves: [[8,8]],                                                            octaveProb: 0.0,  moveProb: 0.0  },
-  dubstep:   { grooves: [[16]],                                                              octaveProb: 0.0,  moveProb: 0.0  },
+  dubstep:   { grooves: [[4,4,4,4]],                                                         octaveProb: 0.0,  moveProb: 0.0  },
 };
 
 function generateRiff(rng, scaleLen, profile) {
@@ -1353,7 +1349,7 @@ const ALGORITHMS = {
     drumPattern: 'halftime',
     swing: 0, sidechain: false,
     defaultBpm: 140, defaultMode: 'phrygian',
-    wobble: true, wobbleRate: 2,
+    wobble: true, wobbleRate: 1,
   },
   acid: {
     totalBars: 16, buildForm: buildAcidForm,
@@ -2714,7 +2710,7 @@ const ENGINE_VOICINGS = {
     master: { reverbSize: 0.7, reverbWet: 0.55, delayTime: 0.5, delayFB: 0.5, delayWet: 0.45, sidechain: 0.8, tapeSat: 0.35, masterGain: 0.82 },
   },
   dubstep: {
-    bass:   { model: 'alkali', volume: 0.65, detune: 0, attack: 0.005, decay: 0.4, sustain: 0.9, release: 0.2, cutoff: 0.3, resonance: 0.4, fenvAmount: 0.1, fenvDecay: 0.3, character: 0.8, lfoTarget: 'filter', lfoRate: 0.5, lfoDepth: 0.85, arp: 'off', send: false },
+    bass:   { model: 'alkali', volume: 0.65, detune: 0, attack: 0.005, decay: 0.4, sustain: 0.9, release: 0.2, cutoff: 0.3, resonance: 0.35, fenvAmount: 0.1, fenvDecay: 0.3, character: 0.5, lfoTarget: 'filter', lfoRate: 0.5, lfoDepth: 0.85, arp: 'off', send: false },
     lead:   { model: 'crystal', volume: 0.3, detune: 0, attack: 0.05, decay: 0.5, sustain: 0.4, release: 1.2, cutoff: 0.6, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.5, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.1, arp: 'off', send: true },
     pad:    { model: 'vapor', volume: 0.16, detune: 0, attack: 1.5, decay: 0.6, sustain: 0.8, release: 3.0, cutoff: 0.3, resonance: 0.1, fenvAmount: 0.2, fenvDecay: 0.7, character: 0.7, lfoTarget: 'filter', lfoRate: 0.05, lfoDepth: 0.3, arp: 'off', send: true },
     master: { reverbSize: 0.7, reverbWet: 0.4, delayTime: 0.5, delayFB: 0.4, delayWet: 0.3, sidechain: 0, tapeSat: 0.5, masterGain: 0.82 },
@@ -2759,12 +2755,15 @@ function applyGenreVoicing(algoName) {
   }
 }
 
+// Each genre carries a curated default seed → clicking a genre card IS loading "its preset".
+const GENRE_SEED = { outrun: 1986, noir: 2019, dreamwave: 1985, carpenter: 1978, techno: 808, proghouse: 909, trance: 138, dubstep: 70, acid: 303 };
 document.querySelectorAll('.algo-card').forEach(card => {
   card.addEventListener('click', () => {
     document.querySelectorAll('.algo-card').forEach(c => c.classList.remove('active'));
     card.classList.add('active');
     card.querySelector('input[type="radio"]').checked = true;
     const algoName = card.dataset.algo;
+    $('seed').value = GENRE_SEED[algoName] || $('seed').value;
     $('bpm').value = ALGORITHMS[algoName].defaultBpm;
     $('mode').value = ALGORITHMS[algoName].defaultMode;
     applyGenreVoicing(algoName);
@@ -3089,13 +3088,20 @@ window.addEventListener('resize', () => {
   if (currentState) drawRoll(currentState.form, SCALES[currentState.mode], ALGORITHMS[currentState.algoName], 0, muteState);
 });
 
-/* Boot — Miami Nights is the default opener */
+/* Boot — load the default genre (Outrun) like a card click, no auto-play */
 buildTrackPanels();
-renderFactoryRow();
 syncMasterUI();
 renderPresetList();
-// Load Miami Nights as the boot preset, but don't auto-play
-applyPreset('Miami Nights');
+(function bootGenre() {
+  const name = 'outrun';
+  document.querySelectorAll('.algo-card').forEach(c => c.classList.toggle('active', c.dataset.algo === name));
+  document.querySelectorAll('input[name="algo"]').forEach(r => r.checked = (r.value === name));
+  $('seed').value = GENRE_SEED[name];
+  $('bpm').value = ALGORITHMS[name].defaultBpm;
+  $('mode').value = ALGORITHMS[name].defaultMode;
+  applyGenreVoicing(name);
+  generate();
+})();
 
 /* ═══════════════════════════════════════════════════════════════════
    Codec test harness (run with ?test=1)
