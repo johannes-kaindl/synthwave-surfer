@@ -69,6 +69,8 @@
   .algo-card[data-algo="dreamwave"].active .algo-name { color: var(--cyan); }
   .algo-card[data-algo="carpenter"].active { border-color: #b16cff; background: rgba(177, 108, 255, 0.08); }
   .algo-card[data-algo="carpenter"].active .algo-name { color: #b16cff; }
+  .algo-card[data-algo="techno"].active { border-color: #3ddc84; background: rgba(61, 220, 132, 0.08); }
+  .algo-card[data-algo="techno"].active .algo-name { color: #3ddc84; }
   .algo-card input[type="radio"] { display: none; }
   .algo-name { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 22px; color: var(--amber); margin-bottom: 4px; }
   .algo-desc { font-size: 10px; color: var(--steel); letter-spacing: 0.05em; line-height: 1.4; }
@@ -228,6 +230,11 @@
         <input type="radio" name="algo" value="carpenter">
         <div class="algo-name">Carpenter</div>
         <div class="algo-desc">92 BPM · phrygian · relentless 8th ostinato · sparse high motif · minimal drums · horror tension</div>
+      </label>
+      <label class="algo-card" data-algo="techno">
+        <input type="radio" name="algo" value="techno">
+        <div class="algo-name">Techno</div>
+        <div class="algo-desc">128 BPM · four-on-the-floor · offbeat open hats · hypnotic minor · rolling bass · sidechain pump</div>
       </label>
     </div>
   </div>
@@ -1239,6 +1246,18 @@ const ALGORITHMS = {
     swing: 0, sidechain: false,
     defaultBpm: 92, defaultMode: 'phrygian',
   },
+  techno: {
+    totalBars: 16, buildForm: buildOutrunForm,
+    riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.outrun),
+    leadGenA: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.noir, startBar: 4 }),
+    leadGenB: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.noir, startBar: 10 }),
+    padProg: [[0,2,4], [0,2,4], [-2,0,2], [-2,0,2]],
+    padStartBar: 0, padEndBar: 16, padRoot: 60, padStride: 4, padSustain: 0.5,
+    drumStartBar: 0, drumEndBar: 16, drumIntenseFrom: 999, drumBreakFrom: 999, drumBreakTo: 0,
+    drumPattern: 'fourfloor',
+    swing: 0, sidechain: true,
+    defaultBpm: 128, defaultMode: 'aeolian',
+  },
 };
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -1519,11 +1538,17 @@ function buildAudioGraph() {
   const hatFilter = new Tone.Filter(7500, 'highpass');
   const hatVol = new Tone.Volume(-16); hat.chain(hatFilter, hatVol, compressor);
 
+  // Open hi-hat — longer decay (house/techno offbeat signature)
+  const openhat = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.001, decay: 0.32, sustain: 0 } });
+  const openhatFilter = new Tone.Filter(8000, 'highpass');
+  const openhatVol = new Tone.Volume(-18); openhat.chain(openhatFilter, openhatVol, compressor);
+
   return {
     compressor, tapeSat, limiter, masterGain, meter, analyser,
     reverb, delay, reverbSend, delaySend,
     bassBus, leadBus, padBus,
     kick, snare, hat, kickVol, snareVol, hatVol, snareFilter, hatFilter,
+    openhat, openhatVol, openhatFilter,
     snareGateGain, snareGateReverb, snareGateVol,
     bassModel: null, leadModel: null, padModel: null,
     parts: [],
@@ -1731,6 +1756,11 @@ function scheduleAll(form, melodyScale, bpm, g, algo) {
             drumEvents.push({ time: beatT + e * (secBeat / 4), type: 'hat', vel });
           }
         }
+      } else if (pattern === 'fourfloor') {
+        drumEvents.push({ time: beatT, type: 'kick' });                                       // four-on-the-floor
+        if (beat === 1 || beat === 3) drumEvents.push({ time: beatT, type: 'snare', vel: 0.7 }); // clap backbeat (2 & 4)
+        drumEvents.push({ time: beatT, type: 'hat', vel: 0.28 });                              // closed hat on the beat
+        drumEvents.push({ time: beatT + secBeat / 2, type: 'openhat', vel: 0.5 });             // OPEN hat on the offbeat (house/techno signature)
       }
     }
   }
@@ -1743,6 +1773,8 @@ function scheduleAll(form, melodyScale, bpm, g, algo) {
       if (!muteState.drums) triggerGatedReverb(g, time);
     } else if (v.type === 'hat') {
       g.hat.triggerAttackRelease('32n', time, v.vel);
+    } else if (v.type === 'openhat') {
+      g.openhat.triggerAttackRelease('8n', time, v.vel);
     }
   });
 
@@ -2537,6 +2569,12 @@ const ENGINE_VOICINGS = {
     lead:   { model: 'crystal', volume: 0.52, detune: 0, attack: 0.004, decay: 0.35, sustain: 0.1, release: 0.5, cutoff: 0.8, resonance: 0.25, fenvAmount: 0.3, fenvDecay: 0.3, character: 0.4, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.15, arp: 'off', send: true },
     pad:    { model: 'vapor', volume: 0.32, detune: 0, attack: 2.0, decay: 0.8, sustain: 0.9, release: 3.5, cutoff: 0.3, resonance: 0.2, fenvAmount: 0.2, fenvDecay: 0.7, character: 0.6, lfoTarget: 'filter', lfoRate: 0.05, lfoDepth: 0.25, arp: 'off', send: true },
     master: { reverbSize: 0.7, reverbWet: 0.5, delayTime: 0.6, delayFB: 0.35, delayWet: 0.3, sidechain: 0.0, tapeSat: 0.4, masterGain: 0.8 },
+  },
+  techno: {
+    bass:   { model: 'alkali', volume: 0.6, detune: 0, attack: 0.003, decay: 0.2, sustain: 0.4, release: 0.15, cutoff: 0.35, resonance: 0.3, fenvAmount: 0.5, fenvDecay: 0.25, character: 0.4, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
+    lead:   { model: 'crystal', volume: 0.35, detune: 0, attack: 0.005, decay: 0.25, sustain: 0.2, release: 0.4, cutoff: 0.6, resonance: 0.3, fenvAmount: 0.4, fenvDecay: 0.3, character: 0.4, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.15, arp: 'off', send: true },
+    pad:    { model: 'vapor', volume: 0.14, detune: 0, attack: 0.6, decay: 0.4, sustain: 0.6, release: 1.5, cutoff: 0.4, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.6, lfoTarget: 'filter', lfoRate: 0.1, lfoDepth: 0.3, arp: 'off', send: true },
+    master: { reverbSize: 0.5, reverbWet: 0.35, delayTime: 0.5, delayFB: 0.4, delayWet: 0.3, sidechain: 0.8, tapeSat: 0.4, masterGain: 0.82 },
   },
 };
 function mergeVoicing(defaultVoicing, deltas) {
