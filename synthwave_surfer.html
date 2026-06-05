@@ -77,6 +77,8 @@
   .algo-card[data-algo="trance"].active .algo-name { color: #4aa3ff; }
   .algo-card[data-algo="dubstep"].active { border-color: #ff3b6b; background: rgba(255, 59, 107, 0.08); }
   .algo-card[data-algo="dubstep"].active .algo-name { color: #ff3b6b; }
+  .algo-card[data-algo="acid"].active { border-color: #c6ff00; background: rgba(198, 255, 0, 0.08); }
+  .algo-card[data-algo="acid"].active .algo-name { color: #c6ff00; }
   .algo-card input[type="radio"] { display: none; }
   .algo-name { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 22px; color: var(--amber); margin-bottom: 4px; }
   .algo-desc { font-size: 10px; color: var(--steel); letter-spacing: 0.05em; line-height: 1.4; }
@@ -256,6 +258,11 @@
         <input type="radio" name="algo" value="dubstep">
         <div class="algo-name">Dubstep</div>
         <div class="algo-desc">140 BPM half-time · snare on 3 · LFO wobble bass · dark phrygian drone · sub-heavy</div>
+      </label>
+      <label class="algo-card" data-algo="acid">
+        <input type="radio" name="algo" value="acid">
+        <div class="algo-name">Acid House</div>
+        <div class="algo-desc">124 BPM · four-on-the-floor · squelchy TB-303 bass (slide + accent) · single-key phrygian · hypnotic</div>
       </label>
     </div>
   </div>
@@ -806,6 +813,26 @@ function generateSustainedLead(rng, scaleLen, chordMap, opts) {
   }
   return events;
 }
+/* TB-303 acid line — 16th-note ostinato, root-centric with octave jumps, per-step
+   SLIDE (portamento glide) and ACCENT (velocity + brighter). The squelch comes from
+   the voicing (resonant filter env + distortion); this is the note pattern. */
+function generateAcidLine(rng, scaleLen) {
+  const steps = [];
+  for (let i = 0; i < 16; i++) {
+    const r = rng();
+    let degree;
+    if (i === 0) degree = 0;                              // downbeat root
+    else if (r < 0.5) degree = 0;                         // root
+    else if (r < 0.7) degree = scaleLen;                  // octave up
+    else if (r < 0.82) degree = -scaleLen;                // octave down
+    else if (r < 0.92) degree = (rng() < 0.5 ? 1 : 2);    // small step up (b2/2 menace)
+    else degree = 0;
+    const slide = rng() < 0.25;                           // ~25% slid steps
+    const accent = (i % 4 === 0) || rng() < 0.2;          // accents on strong steps + occasional
+    steps.push({ degree, duration: 1, slide, accent });
+  }
+  return steps;
+}
 // <<MELODY_ENGINE_END>>
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -1215,6 +1242,17 @@ function buildCarpenterForm(rng, material, opts) {
   parts.push({ voice: 'lead', line: melodyA, startBar: 2 }); // continuous arpeggiated ostinato (Halloween figure)
   return { parts, riff, melodyA, melodyB: material.melodyB };
 }
+function buildAcidForm(rng, material, opts) {
+  const { riff, melodyA } = material;
+  const chordMap = opts && opts.chordMap;
+  const parts = [];
+  for (let b = 0; b < 16; b++) {
+    const rootOffset = chordMap ? chordMap[b].root : 0;
+    parts.push({ voice: 'bass', line: riff.map(n => ({ ...n, degree: n.degree + rootOffset })), startBar: b }); // 303 ostinato — slide/accent preserved, no fill
+  }
+  if (melodyA && melodyA.length) parts.push({ voice: 'lead', line: melodyA, startBar: 8 }); // sparse atmosphere
+  return { parts, riff, melodyA, melodyB: material.melodyB };
+}
 
 /* ═══════════════════════════════════════════════════════════════════
    Algorithm config
@@ -1316,6 +1354,18 @@ const ALGORITHMS = {
     swing: 0, sidechain: false,
     defaultBpm: 140, defaultMode: 'phrygian',
     wobble: true, wobbleRate: 2,
+  },
+  acid: {
+    totalBars: 16, buildForm: buildAcidForm,
+    riffGen: (rng, sl) => generateAcidLine(rng, sl),
+    leadGenA: (rng, sl, ctx) => generateSustainedLead(rng, sl, ctx.chordMap, { startBar: 8, bars: 4 }),
+    leadGenB: (rng, sl, ctx) => [],
+    padProg: [[0,2,4], [0,2,4], [0,2,4], [0,2,4]],
+    padStartBar: 8, padEndBar: 16, padRoot: 60, padStride: 4, padSustain: 0.8,
+    drumStartBar: 0, drumEndBar: 16, drumIntenseFrom: 999, drumBreakFrom: 999, drumBreakTo: 0,
+    drumPattern: 'fourfloor',
+    swing: 0, sidechain: true,
+    defaultBpm: 124, defaultMode: 'phrygian',
   },
 };
 
@@ -1753,16 +1803,23 @@ function scheduleAll(form, melodyScale, bpm, g, algo) {
         arr.push({
           time: cursor * sec16,
           note: Tone.Frequency(midi, 'midi').toNote(),
-          duration: n.duration * sec16 * 0.92
+          duration: n.duration * sec16 * 0.92,
+          slide: n.slide, accent: n.accent
         });
       }
       cursor += n.duration;
     }
   }
   makePart(bassEvents, (time, v) => {
-    if (g.bassModel) {
-      try { g.bassModel.synth.triggerAttackRelease(v.note, v.duration, time); } catch(e) {}
-    }
+    if (!g.bassModel) return;
+    try {
+      if (v.accent !== undefined || v.slide !== undefined) {            // TB-303 acid line: slide = portamento glide, accent = velocity boost
+        if (g.bassModel.synth.portamento !== undefined) g.bassModel.synth.portamento = v.slide ? 0.055 : 0.0;
+        g.bassModel.synth.triggerAttackRelease(v.note, v.duration, time, v.accent ? 1.0 : 0.65);
+      } else {
+        g.bassModel.synth.triggerAttackRelease(v.note, v.duration, time);  // unchanged for non-acid engines
+      }
+    } catch(e) {}
   });
   makePart(leadEvents, (time, v) => {
     if (g.leadModel) {
@@ -2661,6 +2718,12 @@ const ENGINE_VOICINGS = {
     lead:   { model: 'crystal', volume: 0.3, detune: 0, attack: 0.05, decay: 0.5, sustain: 0.4, release: 1.2, cutoff: 0.6, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.5, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.1, arp: 'off', send: true },
     pad:    { model: 'vapor', volume: 0.16, detune: 0, attack: 1.5, decay: 0.6, sustain: 0.8, release: 3.0, cutoff: 0.3, resonance: 0.1, fenvAmount: 0.2, fenvDecay: 0.7, character: 0.7, lfoTarget: 'filter', lfoRate: 0.05, lfoDepth: 0.3, arp: 'off', send: true },
     master: { reverbSize: 0.7, reverbWet: 0.4, delayTime: 0.5, delayFB: 0.4, delayWet: 0.3, sidechain: 0, tapeSat: 0.5, masterGain: 0.82 },
+  },
+  acid: {
+    bass:   { model: 'alkali', volume: 0.62, detune: 0, attack: 0.002, decay: 0.18, sustain: 0.2, release: 0.1, cutoff: 0.25, resonance: 0.7, fenvAmount: 0.7, fenvDecay: 0.22, character: 0.7, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
+    lead:   { model: 'vapor', volume: 0.22, detune: 0, attack: 0.5, decay: 0.6, sustain: 0.5, release: 2.0, cutoff: 0.45, resonance: 0.15, fenvAmount: 0.2, fenvDecay: 0.6, character: 0.7, lfoTarget: 'filter', lfoRate: 0.05, lfoDepth: 0.3, arp: 'off', send: true },
+    pad:    { model: 'vapor', volume: 0.12, detune: 0, attack: 1.5, decay: 0.6, sustain: 0.7, release: 3.0, cutoff: 0.4, resonance: 0.1, fenvAmount: 0.2, fenvDecay: 0.7, character: 0.6, lfoTarget: 'filter', lfoRate: 0.04, lfoDepth: 0.3, arp: 'off', send: true },
+    master: { reverbSize: 0.6, reverbWet: 0.4, delayTime: 0.45, delayFB: 0.45, delayWet: 0.35, sidechain: 0.5, tapeSat: 0.45, masterGain: 0.82 },
   },
 };
 function mergeVoicing(defaultVoicing, deltas) {
@@ -3578,6 +3641,12 @@ default-phase: calm
       assert(line.reduce((s,e)=>s+e.duration,0) === 128, '8 bars filled');
       assert(line.filter(e=>!e.rest).length <= 16, 'sparse: <= 2 notes/bar');
       assert(line.every(e => e.rest || typeof e.degree === 'number'), 'valid events');
+    }],
+    ['acid: generateAcidLine — 16 steps, slide/accent flags, fills bar', () => {
+      const line = generateAcidLine(mulberry32(9), SCALES.phrygian.length);
+      assert(line.length === 16 && line.reduce((s,e)=>s+e.duration,0) === 16, '16 steps, one bar');
+      assert(line.every(e => typeof e.slide === 'boolean' && typeof e.accent === 'boolean'), 'slide/accent flags');
+      assert(line[0].degree === 0 && line[0].accent === true, 'downbeat root + accent');
     }],
     ['carpenter: ALGORITHMS entry wired', () => {
       const a = ALGORITHMS.carpenter;
