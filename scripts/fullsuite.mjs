@@ -3,7 +3,7 @@
 //   node scripts/fullsuite.mjs        # → real: 45 passed, 0 failed
 //
 // Extracts the in-file `tests` array plus the pure functions (helpers, engine,
-// codec, form builders, ALGORITHMS, ENGINE_VOICINGS, FACTORY_PRESETS) straight
+// codec, form builders, ALGORITHMS, ENGINE_VOICINGS) straight
 // out of synthwave_surfer.html and runs them under Node. DOM/Tone/window-
 // dependent tests cannot run here and are skipped (they run in the browser via
 // `?test=1`). Exit code is non-zero iff a real test fails.
@@ -22,9 +22,6 @@ const _formStart = src.indexOf('function buildOutrunForm');
 const B = src.slice(_formStart, _formStart + src.slice(_formStart).indexOf('\n};') + 3);
 // C: voicing model
 const C = slice('// <<VOICING_START>>', '// <<VOICING_END>>');
-// D: FACTORY_PRESETS (end at the object's closing top-level `\n};`)
-const fpS = src.indexOf('const FACTORY_PRESETS = {');
-const D = src.slice(fpS, fpS + src.slice(fpS).indexOf('\n};') + 3);
 
 // tests array source
 const tStart = src.indexOf('const tests = [');
@@ -44,7 +41,7 @@ const SKIP = new Set([
 const preamble = 'function assert(c,m){ if(!c) throw new Error(m || "assert failed"); }\n';
 let tests;
 try {
-  tests = new Function(preamble + A + '\n' + B + '\n' + C + '\n' + D + '\n' + testsSrc + '\nreturn tests;')();
+  tests = new Function(preamble + A + '\n' + B + '\n' + C + '\n' + testsSrc + '\nreturn tests;')();
 } catch (e) {
   console.error('EVAL FAIL:', e.message); process.exit(2);
 }

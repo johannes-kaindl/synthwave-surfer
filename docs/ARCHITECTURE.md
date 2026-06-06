@@ -56,9 +56,9 @@ curated preset.** Clicking a card (`:2946`) clears the others, then:
 `generate()`. `GENRE_SEED` (`:2945`) values are thematic (style birth years,
 Roland model numbers, signature tempos).
 
-> The old `FACTORY_PRESETS` / `applyPreset` / `renderFactoryRow` are **dead
-> code** — defined but never invoked, with no matching DOM. They are slated for
-> removal; ignore them when reasoning about the live path.
+> A separate `FACTORY_PRESETS` system predated this; it was removed once every
+> genre card became its own preset — the card-preset path above is now the only
+> preset mechanism.
 
 ## Composition layer
 
@@ -287,5 +287,5 @@ note events; changing the seed explores the same style.
 - **WAV export is broken** — the UI button is disabled; `Tone.Offline` clashes
   with the global `Tone.Destination` across audio contexts. MIDI / `.swmd` export
   and live playback are fine.
-- **Dead code** — `FACTORY_PRESETS` / `applyPreset` / `renderFactoryRow` linger
-  unused; `stratos` is a legacy synth model (still selectable, used by no genre).
+- **Legacy code** — `stratos` is a legacy synth model (still selectable in the
+  Model dropdown, but used by no genre voicing).

@@ -10,6 +10,12 @@ pre-public history.
 
 ## [Unreleased]
 
+### Removed
+
+- Dead `FACTORY_PRESETS` / `applyPreset` / `renderFactoryRow` (and their CSS),
+  superseded by the per-genre card-preset model — they were never reachable from
+  the UI. No behaviour change (logic suite stays 45/0).
+
 ## [0.1.1] - 2026-06-06
 
 ### Fixed

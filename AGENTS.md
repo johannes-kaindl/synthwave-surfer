@@ -45,7 +45,7 @@ from a seed. Long-term goal: an Obsidian plugin (the Kuro universe's audio layer
   = canonical synth voicing; `mergeVoicing` applies sparse deltas. `DRUM_KITS` +
   `drumParams` = the drum voicing (kit + live-editable knobs via the Drums panel).
 - Each genre card carries a curated seed (`GENRE_SEED`); clicking it = loading "its
-  preset". The old `FACTORY_PRESETS`/`applyPreset` are DEAD CODE (cleanup pending).
+  preset". (The old `FACTORY_PRESETS`/`applyPreset`/`renderFactoryRow` system was removed 2026-06-06.)
 - Synth models live in `buildSynthModel`; drum voices in `buildAudioGraph` (kit-driven).
 - Arrangement (`buildArrangedForm` + `arrangement{dropBars,breakdownStart/End}`):
   multi-section EDM structure (build→drop→main→breakdown→drop2→main) with riser+crash.

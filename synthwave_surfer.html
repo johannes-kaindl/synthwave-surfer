@@ -83,16 +83,6 @@
   .algo-name { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 22px; color: var(--amber); margin-bottom: 4px; }
   .algo-desc { font-size: 10px; color: var(--steel); letter-spacing: 0.05em; line-height: 1.4; }
 
-  /* Factory presets — prominent */
-  .factory-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
-  .factory-chip {
-    padding: 10px 14px; border: 1px solid var(--rule); background: rgba(10,6,18,0.4);
-    cursor: pointer; transition: all 0.15s ease; display: flex; flex-direction: column; gap: 4px;
-  }
-  .factory-chip:hover { border-color: var(--purple); background: rgba(160, 106, 255, 0.06); }
-  .factory-chip .fp-name { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: var(--purple); }
-  .factory-chip .fp-tag { font-size: 9px; letter-spacing: 0.15em; color: var(--steel); text-transform: uppercase; }
-
   .tracks-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
   .track-toggle { padding: 10px 16px; border: 1px solid var(--rule); background: rgba(10, 6, 18, 0.4); cursor: pointer; font-family: inherit; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--steel); display: flex; align-items: center; gap: 10px; user-select: none; transition: all 0.15s ease; }
   .track-toggle:hover { border-color: var(--amber-dim); }
@@ -2638,19 +2628,6 @@ function syncMasterUI() {
 });
 
 /* ═══════════════════════════════════════════════════════════════════
-   FACTORY PRESETS — six curated sounds that actually sound like Synthwave
-   ═══════════════════════════════════════════════════════════════════ */
-const FACTORY_PRESETS = {
-  'Miami Nights':      { engine: 'outrun',    seed: 1986, bpm: 120, mode: 'aeolian',  tag: 'Outrun · classic' },
-  'Highway Cruise':    { engine: 'outrun',    seed: 1984, bpm: 108, mode: 'aeolian',  tag: 'Outrun · chilled',
-    voicing: { bass: { volume: 0.65, attack: 0.008, decay: 0.3, sustain: 0.65, release: 0.4, cutoff: 0.4, resonance: 0.25, fenvAmount: 0.3, fenvDecay: 0.4, character: 0.3, lfoRate: 0.1, lfoDepth: 0.2 }, lead: { model: 'ether', attack: 0.6, release: 2.6, cutoff: 0.13, resonance: 0.08, fenvAmount: 0.1 }, master: { reverbSize: 0.65, reverbWet: 0.55, delayTime: 0.5, delayFB: 0.4, delayWet: 0.5, sidechain: 0.5, tapeSat: 0.4, masterGain: 0.78 } } },
-  'Blade Runner Rain': { engine: 'noir',      seed: 2019, bpm: 80,  mode: 'aeolian',  tag: 'Noir · cinematic' },
-  'Carpenter Synth':   { engine: 'carpenter', seed: 1978, bpm: 92,  mode: 'phrygian', tag: 'Carpenter · horror' },
-  'Mall Bliss':        { engine: 'dreamwave', seed: 1985, bpm: 100, mode: 'aeolian',  tag: 'Dreamwave · hazy',
-    voicing: { bass: { volume: 0.6, detune: 0, attack: 0.005, decay: 0.2, sustain: 0.5, release: 0.25, cutoff: 0.55, resonance: 0.3, fenvAmount: 0.5, fenvDecay: 0.3, character: 0.4, lfoRate: 0.4, lfoDepth: 0.3 }, lead: { model: 'crystal', volume: 0.45, detune: 0, attack: 0.015, decay: 0.4, sustain: 0.3, release: 1.2, cutoff: 0.65, fenvAmount: 0.4, fenvDecay: 0.5, character: 0.65, lfoRate: 0.5, lfoDepth: 0.06 }, pad: { detune: 0, attack: 1, decay: 0.5, release: 2.5, cutoff: 0.06, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.95, lfoRate: 0.1, lfoDepth: 0.4 }, master: { delayTime: 0.6, delayWet: 0.5, sidechain: 0.55, tapeSat: 0.4, masterGain: 0.78 } } },
-};
-
-/* ═══════════════════════════════════════════════════════════════════
    Phase Engine — multi-phase pattern playback state machine
    ═══════════════════════════════════════════════════════════════════ */
 
@@ -2705,53 +2682,6 @@ window.synthwaveSurfer = Object.freeze({
   onPhaseChange,
   getMeta: () => (patternMode === 'fixed' && currentSwmd) ? { ...currentSwmd.meta } : null,
 });
-
-function applyPreset(name) {
-  const p = FACTORY_PRESETS[name];
-  if (!p) return;
-  const algo = ALGORITHMS[p.engine];
-  // select engine (radio + card)
-  document.querySelectorAll('input[name="algo"]').forEach(r => r.checked = (r.value === p.engine));
-  document.querySelectorAll('.algo-card').forEach(c => c.classList.toggle('active', c.dataset.algo === p.engine));
-  // canonical engine voicing + sparse preset deltas
-  const merged = mergeVoicing(ENGINE_VOICINGS[p.engine], p.voicing);
-  Object.assign(trackParams.bass, merged.trackParams.bass);
-  Object.assign(trackParams.lead, merged.trackParams.lead);
-  Object.assign(trackParams.pad,  merged.trackParams.pad);
-  Object.assign(masterState,      merged.masterState);
-  if (trackParams.bass.lfoTarget === 'pwm' && trackParams.bass.model !== 'stratos') trackParams.bass.lfoTarget = 'off';
-  // settings (preset overrides, else engine defaults)
-  $('seed').value = p.seed;
-  $('bpm').value  = p.bpm  ?? algo.defaultBpm;
-  $('mode').value = p.mode ?? algo.defaultMode;
-  for (const k of ['bass','lead','pad']) syncTrackUI(k);
-  syncMasterUI();
-  // presets are generative now — no fixedSwmd
-  currentSwmd = null;
-  patternMode = 'generative';
-  const btn = $('pattern-toggle');
-  if (btn) { btn.className = 'pattern-toggle generative'; btn.textContent = '⚙ Generativ'; }
-  generate();
-  if (liveSynths) {
-    setTrackModel(liveSynths, 'bass', trackParams.bass.model, trackParams.bass);
-    setTrackModel(liveSynths, 'lead', trackParams.lead.model, trackParams.lead);
-    setTrackModel(liveSynths, 'pad',  trackParams.pad.model,  trackParams.pad);
-    applyAllToGraph(liveSynths);
-  }
-  setStatus('✓ Preset loaded: ' + name + ' (generative · seed ' + p.seed + ')');
-}
-
-function renderFactoryRow() {
-  const row = $('factory-row');
-  row.innerHTML = '';
-  for (const name of Object.keys(FACTORY_PRESETS)) {
-    const card = document.createElement('div');
-    card.className = 'factory-chip';
-    card.innerHTML = `<div class="fp-name">${name}</div><div class="fp-tag">${FACTORY_PRESETS[name].tag}</div>`;
-    card.addEventListener('click', () => applyPreset(name));
-    row.appendChild(card);
-  }
-}
 
 function buildFormFromSwmd(swmd, phase, algo) {
   const padProg = phase.padChords || algo.padProg;
