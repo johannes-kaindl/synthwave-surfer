@@ -10,6 +10,16 @@ pre-public history.
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-06-06
+
+### Fixed
+
+- Corrected stale in-app text from before the nine-engine expansion: the epigraph
+  read "Three algorithms" (now "Nine engines"), the footer listed only three
+  genres ("Outrun × Noir × Dreamwave", now "Nine genre engines"), and the header
+  badge advertised "v1.0 · Factory Presets" (Factory Presets are dead code) —
+  replaced with an accurate feature list.
+
 ## [0.1.0] - 2026-06-06
 
 ### Added
@@ -53,5 +63,6 @@ pre-public history.
 - Dead code (`FACTORY_PRESETS` / `applyPreset` / `renderFactoryRow`) remains in
   the source pending cleanup; it is not reachable from the UI.
 
-[Unreleased]: https://codeberg.org/jkaindl/synthwave-surfer/compare/v0.1.0...main
+[Unreleased]: https://codeberg.org/jkaindl/synthwave-surfer/compare/v0.1.1...main
+[0.1.1]: https://codeberg.org/jkaindl/synthwave-surfer/compare/v0.1.0...v0.1.1
 [0.1.0]: https://codeberg.org/jkaindl/synthwave-surfer/releases/tag/v0.1.0
