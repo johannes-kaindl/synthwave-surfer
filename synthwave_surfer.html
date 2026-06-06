@@ -1265,6 +1265,32 @@ function buildDropForm(rng, material, opts) {
   if (melodyB && melodyB.length) parts.push({ voice: 'lead', line: melodyB, startBar: 12 });
   return { parts, riff, melodyA, melodyB };
 }
+/* Multi-section arrangement phase for a bar: build (pre-drop, no bass) / main
+   (post-drop, full) / breakdown (bass+kick out, pads/lead exposed). */
+function arrPhase(arr, bar) {
+  if (!arr || !arr.dropBars) return 'main';
+  if (arr.breakdownStart != null && bar >= arr.breakdownStart && bar < arr.breakdownEnd) return 'breakdown';
+  if (bar < arr.dropBars[0]) return 'build';
+  return 'main';
+}
+/* Full multi-section EDM form: bass only in 'main' sections (slams in at each drop,
+   out in build/breakdown); lead phrase after drop 1 and an emotive one in the breakdown. */
+function buildArrangedForm(rng, material, opts) {
+  const { riff, melodyA, melodyB } = material;
+  const chordMap = opts && opts.chordMap;
+  const arr = opts && opts.arrangement;
+  const totalBars = (opts && opts.totalBars) || 16;
+  const parts = [];
+  for (let b = 0; b < totalBars; b++) {
+    if (arrPhase(arr, b) !== 'main') continue;
+    const rootOffset = chordMap ? chordMap[b].root : 0;
+    const cell = (b % 4 === 3) ? bassFill(riff, rng) : riff;
+    parts.push({ voice: 'bass', line: transpose(cell, rootOffset), startBar: b });
+  }
+  if (melodyA && melodyA.length && arr) parts.push({ voice: 'lead', line: melodyA, startBar: arr.dropBars[0] + 2 });
+  if (melodyB && melodyB.length && arr && arr.breakdownStart != null) parts.push({ voice: 'lead', line: melodyB, startBar: arr.breakdownStart });
+  return { parts, riff, melodyA, melodyB };
+}
 
 /* ═══════════════════════════════════════════════════════════════════
    Algorithm config
@@ -1319,7 +1345,7 @@ const ALGORITHMS = {
     defaultBpm: 92, defaultMode: 'phrygian',
   },
   techno: {
-    totalBars: 16, buildForm: buildDropForm, arrangement: { dropBar: 4 }, drumKit: '909',
+    totalBars: 32, buildForm: buildArrangedForm, arrangement: { dropBars: [8, 24], breakdownStart: 16, breakdownEnd: 24 }, drumKit: '909',
     riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.outrun),
     leadGenA: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.noir, startBar: 4 }),
     leadGenB: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.noir, startBar: 10 }),
@@ -1331,7 +1357,7 @@ const ALGORITHMS = {
     defaultBpm: 128, defaultMode: 'aeolian',
   },
   proghouse: {
-    totalBars: 16, buildForm: buildDropForm, arrangement: { dropBar: 4 }, drumKit: '909',
+    totalBars: 32, buildForm: buildArrangedForm, arrangement: { dropBars: [8, 24], breakdownStart: 16, breakdownEnd: 24 }, drumKit: '909',
     riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.outrun),
     leadGenA: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.dreamwave, startBar: 4 }),
     leadGenB: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.dreamwave, startBar: 10 }),
@@ -1343,7 +1369,7 @@ const ALGORITHMS = {
     defaultBpm: 126, defaultMode: 'aeolian',
   },
   trance: {
-    totalBars: 16, buildForm: buildDropForm, arrangement: { dropBar: 4 }, drumKit: '909',
+    totalBars: 32, buildForm: buildArrangedForm, arrangement: { dropBars: [8, 24], breakdownStart: 16, breakdownEnd: 24 }, drumKit: '909',
     riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.outrun),
     leadGenA: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.outrun, startBar: 4 }),
     leadGenB: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.outrun, startBar: 10 }),
@@ -1355,7 +1381,7 @@ const ALGORITHMS = {
     defaultBpm: 138, defaultMode: 'aeolian',
   },
   dubstep: {
-    totalBars: 16, buildForm: buildDropForm, arrangement: { dropBar: 4 }, drumKit: 'dubstep',
+    totalBars: 32, buildForm: buildArrangedForm, arrangement: { dropBars: [8, 24], breakdownStart: 16, breakdownEnd: 24 }, drumKit: 'dubstep',
     riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.dubstep),
     leadGenA: (rng, sl, ctx) => [],
     leadGenB: (rng, sl, ctx) => [],
@@ -1885,7 +1911,7 @@ function scheduleAll(form, melodyScale, bpm, g, algo) {
   const padChordMap = buildChordMap(algo.padProg, algo.totalBars); // SAME harmonic rhythm as bass/lead (was: cycled padProg every bar → clash)
   const padStride = algo.padStride || 1;                            // bars between pad hits (sporadic when > 1)
   const padSustain = algo.padSustain != null ? algo.padSustain : 0.85;
-  for (let bar = algo.padStartBar; bar < algo.padEndBar; bar += padStride) {
+  for (let bar = algo.padStartBar; bar < algo.totalBars; bar += padStride) {
     const chord = padChordMap[bar].tones;
     const notes = chord.map(d => Tone.Frequency(degreeToMidi(d, AEOLIAN, algo.padRoot), 'midi').toNote());
     padEvents.push({ time: bar * secBar, notes, duration: secBar * padStride * padSustain });
@@ -1900,9 +1926,9 @@ function scheduleAll(form, melodyScale, bpm, g, algo) {
     }
   });
 
-  const drumEvents = [];
+  let drumEvents = [];
   const pattern = algo.drumPattern;
-  for (let bar = algo.drumStartBar; bar < algo.drumEndBar; bar++) {
+  for (let bar = algo.drumStartBar; bar < algo.totalBars; bar++) {
     const intense = bar >= algo.drumIntenseFrom;
     const isBreak = (bar >= algo.drumBreakFrom && bar < algo.drumBreakTo);
     for (let beat = 0; beat < 4; beat++) {
@@ -1949,6 +1975,18 @@ function scheduleAll(form, melodyScale, bpm, g, algo) {
       }
     }
   }
+  // Kick runs through build + main; it cuts out in the breakdown and for the ONE bar
+  // before each drop (the pre-drop break) so kick+bass+crash slam back in on the drop.
+  if (algo.arrangement && algo.arrangement.dropBars) {
+    const drops = algo.arrangement.dropBars;
+    drumEvents = drumEvents.filter(e => {
+      if (e.type !== 'kick') return true;
+      const bar = Math.floor((e.time + 1e-6) / secBar);
+      if (arrPhase(algo.arrangement, bar) === 'breakdown') return false;
+      if (drops.some(db => bar === db - 1)) return false;
+      return true;
+    });
+  }
   makePart(drumEvents, (time, v) => {
     if (v.type === 'kick') {
       g.kick.triggerAttackRelease('C2', '8n', time, 0.95);
@@ -1964,10 +2002,10 @@ function scheduleAll(form, melodyScale, bpm, g, algo) {
   });
 
   // Arrangement: white-noise riser sweep + crash into the drop
-  if (algo.arrangement) {
-    const dropBar = algo.arrangement.dropBar != null ? algo.arrangement.dropBar : 8;
+  if (algo.arrangement && (algo.arrangement.dropBars || algo.arrangement.dropBar != null)) {
+    const drops = algo.arrangement.dropBars || [algo.arrangement.dropBar];
     const buildBars = 2;
-    makePart([{ time: Math.max(0, dropBar - buildBars) * secBar }], (time) => {
+    makePart(drops.map(db => ({ time: Math.max(0, db - buildBars) * secBar })), (time) => {
       try {
         g.riser.triggerAttack(time);
         g.riserFilter.frequency.setValueAtTime(150, time);
@@ -2019,7 +2057,7 @@ function drawRoll(form, melodyScale, algo, playheadProgress, mutes) {
   }
   ctx.globalAlpha = mutes.pad ? 0.18 : 1;
   ctx.fillStyle = 'rgba(62, 216, 216, 0.16)';
-  for (let bar = algo.padStartBar; bar < algo.padEndBar; bar++) {
+  for (let bar = algo.padStartBar; bar < algo.totalBars; bar++) {
     const chord = algo.padProg[(bar - algo.padStartBar) % algo.padProg.length];
     for (const d of chord) {
       const m = degreeToMidi(d, AEOLIAN, algo.padRoot);
@@ -2208,13 +2246,13 @@ function exportMidi() {
     }
   }
   const padEvents = [];
-  for (let bar = algo.padStartBar; bar < algo.padEndBar; bar++) {
+  for (let bar = algo.padStartBar; bar < algo.totalBars; bar++) {
     const chord = algo.padProg[(bar - algo.padStartBar) % algo.padProg.length];
     const start = bar * 16 * TPS; const dur = Math.round(16 * TPS * 0.96);
     for (const d of chord) padEvents.push({ start, duration: dur, note: degreeToMidi(d, AEOLIAN, algo.padRoot), vel: 70 });
   }
   const drumEvents = [];
-  for (let bar = algo.drumStartBar; bar < algo.drumEndBar; bar++) {
+  for (let bar = algo.drumStartBar; bar < algo.totalBars; bar++) {
     const intense = bar >= algo.drumIntenseFrom;
     const isBreak = (bar >= algo.drumBreakFrom && bar < algo.drumBreakTo);
     for (let beat = 0; beat < 4; beat++) {
@@ -2726,7 +2764,7 @@ function generate() {
       melodyA: algo.leadGenA(rng, scale.length, ctx),
       melodyB: algo.leadGenB(rng, scale.length, ctx),
     };
-    form = algo.buildForm(rng, material, { modeName: mode, chordMap, dropBar: algo.arrangement && algo.arrangement.dropBar });
+    form = algo.buildForm(rng, material, { modeName: mode, chordMap, dropBar: algo.arrangement && algo.arrangement.dropBar, arrangement: algo.arrangement, totalBars: algo.totalBars });
   }
 
   currentState = { seed, mode, bpm, material, form, algoName };
