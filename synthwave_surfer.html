@@ -1249,6 +1249,22 @@ function buildAcidForm(rng, material, opts) {
   if (melodyA && melodyA.length) parts.push({ voice: 'lead', line: melodyA, startBar: 8 }); // sparse atmosphere
   return { parts, riff, melodyA, melodyB: material.melodyB };
 }
+/* Arrangement/DROP form (EDM): bars 0..dropBar are the BUILD (no bass = tension);
+   the bass slams in AT the drop. A riser + crash are scheduled in scheduleAll. */
+function buildDropForm(rng, material, opts) {
+  const { riff, melodyA, melodyB } = material;
+  const chordMap = opts && opts.chordMap;
+  const dropBar = (opts && opts.dropBar != null) ? opts.dropBar : 8;
+  const parts = [];
+  for (let b = dropBar; b < 16; b++) {
+    const rootOffset = chordMap ? chordMap[b].root : 0;
+    const cell = (b % 4 === 3) ? bassFill(riff, rng) : riff;
+    parts.push({ voice: 'bass', line: transpose(cell, rootOffset), startBar: b });
+  }
+  if (melodyA && melodyA.length) parts.push({ voice: 'lead', line: melodyA, startBar: dropBar + 2 });
+  if (melodyB && melodyB.length) parts.push({ voice: 'lead', line: melodyB, startBar: 12 });
+  return { parts, riff, melodyA, melodyB };
+}
 
 /* ═══════════════════════════════════════════════════════════════════
    Algorithm config
@@ -1303,7 +1319,7 @@ const ALGORITHMS = {
     defaultBpm: 92, defaultMode: 'phrygian',
   },
   techno: {
-    totalBars: 16, buildForm: buildOutrunForm,
+    totalBars: 16, buildForm: buildDropForm, arrangement: { dropBar: 4 },
     riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.outrun),
     leadGenA: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.noir, startBar: 4 }),
     leadGenB: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.noir, startBar: 10 }),
@@ -1315,7 +1331,7 @@ const ALGORITHMS = {
     defaultBpm: 128, defaultMode: 'aeolian',
   },
   proghouse: {
-    totalBars: 16, buildForm: buildOutrunForm,
+    totalBars: 16, buildForm: buildDropForm, arrangement: { dropBar: 4 },
     riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.outrun),
     leadGenA: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.dreamwave, startBar: 4 }),
     leadGenB: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.dreamwave, startBar: 10 }),
@@ -1327,7 +1343,7 @@ const ALGORITHMS = {
     defaultBpm: 126, defaultMode: 'aeolian',
   },
   trance: {
-    totalBars: 16, buildForm: buildOutrunForm,
+    totalBars: 16, buildForm: buildDropForm, arrangement: { dropBar: 4 },
     riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.outrun),
     leadGenA: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.outrun, startBar: 4 }),
     leadGenB: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.outrun, startBar: 10 }),
@@ -1339,7 +1355,7 @@ const ALGORITHMS = {
     defaultBpm: 138, defaultMode: 'aeolian',
   },
   dubstep: {
-    totalBars: 16, buildForm: buildOutrunForm,
+    totalBars: 16, buildForm: buildDropForm, arrangement: { dropBar: 4 },
     riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.dubstep),
     leadGenA: (rng, sl, ctx) => [],
     leadGenB: (rng, sl, ctx) => [],
@@ -1668,12 +1684,23 @@ function buildAudioGraph() {
   const openhatFilter = new Tone.Filter(8000, 'highpass');
   const openhatVol = new Tone.Volume(-18); openhat.chain(openhatFilter, openhatVol, compressor);
 
+  // Riser — white-noise build-up sweep into the drop (arrangement engine)
+  const riser = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.01, decay: 0.05, sustain: 1, release: 0.08 } });
+  const riserFilter = new Tone.Filter(200, 'bandpass'); riserFilter.Q.value = 2.5;
+  const riserVol = new Tone.Volume(-40); riser.chain(riserFilter, riserVol, compressor);
+
+  // Crash cymbal — dedicated voice for the drop hit (separate from openhat to avoid schedule clashes)
+  const crash = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.001, decay: 1.2, sustain: 0 } });
+  const crashFilter = new Tone.Filter(4000, 'highpass');
+  const crashVol = new Tone.Volume(-14); crash.chain(crashFilter, crashVol, compressor);
+
   return {
     compressor, tapeSat, limiter, masterGain, meter, analyser,
     reverb, delay, reverbSend, delaySend,
     bassBus, leadBus, padBus,
     kick, snare, hat, kickVol, snareVol, hatVol, snareFilter, hatFilter,
     openhat, openhatVol, openhatFilter,
+    riser, riserFilter, riserVol, crash, crashFilter, crashVol,
     snareGateGain, snareGateReverb, snareGateVol,
     bassModel: null, leadModel: null, padModel: null,
     parts: [],
@@ -1926,6 +1953,22 @@ function scheduleAll(form, melodyScale, bpm, g, algo) {
     }
   });
 
+  // Arrangement: white-noise riser sweep + crash into the drop
+  if (algo.arrangement) {
+    const dropBar = algo.arrangement.dropBar != null ? algo.arrangement.dropBar : 8;
+    const buildBars = 2;
+    makePart([{ time: Math.max(0, dropBar - buildBars) * secBar }], (time) => {
+      try {
+        g.riser.triggerAttack(time);
+        g.riserFilter.frequency.setValueAtTime(150, time);
+        g.riserFilter.frequency.exponentialRampToValueAtTime(6000, time + buildBars * secBar);
+        g.riserVol.volume.setValueAtTime(-40, time);
+        g.riserVol.volume.linearRampToValueAtTime(-9, time + buildBars * secBar);
+        g.riser.triggerRelease(time + buildBars * secBar);
+        if (g.crash) g.crash.triggerAttackRelease('1n', time + buildBars * secBar, 0.7); // crash on the drop
+      } catch (e) {}
+    });
+  }
   g.parts = parts;
   return { parts, totalTime: loopLength + 2.8 };
 }
@@ -2673,7 +2716,7 @@ function generate() {
       melodyA: algo.leadGenA(rng, scale.length, ctx),
       melodyB: algo.leadGenB(rng, scale.length, ctx),
     };
-    form = algo.buildForm(rng, material, { modeName: mode, chordMap });
+    form = algo.buildForm(rng, material, { modeName: mode, chordMap, dropBar: algo.arrangement && algo.arrangement.dropBar });
   }
 
   currentState = { seed, mode, bpm, material, form, algoName };
