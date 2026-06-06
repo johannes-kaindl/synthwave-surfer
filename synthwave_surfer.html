@@ -1488,6 +1488,26 @@ function buildSynthModel(modelName, polyphonic) {
     chorus.wet.value = 0.4;
     return { synth, character: chorus, characterAmount: 0.5, type: 'ether' };
   }
+
+  if (modelName === 'supersaw') {
+    // Trance/Prog-House anthem lead — 7 detuned saws, bright, slow filter-env open
+    const synth = polyphonic
+      ? new Tone.PolySynth(Tone.MonoSynth, {
+          oscillator: { type: 'fatsawtooth', count: 7, spread: 40 },
+          envelope: { attack: 0.02, decay: 0.3, sustain: 0.75, release: 0.9 },
+          filter: { Q: 1, type: 'lowpass', rolloff: -12 },
+          filterEnvelope: { attack: 0.4, decay: 0.5, sustain: 0.85, release: 1.0, baseFrequency: 400, octaves: 3 }
+        })
+      : new Tone.MonoSynth({
+          oscillator: { type: 'fatsawtooth', count: 7, spread: 40 },
+          envelope: { attack: 0.02, decay: 0.3, sustain: 0.7, release: 0.8 },
+          filter: { Q: 1, type: 'lowpass', rolloff: -12 },
+          filterEnvelope: { attack: 0.3, decay: 0.4, sustain: 0.8, release: 0.8, baseFrequency: 500, octaves: 3 }
+        });
+    const chorus = new Tone.Chorus({ frequency: 0.8, delayTime: 3, depth: 0.6, feedback: 0.1 }).start();
+    chorus.wet.value = 0.5;
+    return { synth, character: chorus, characterAmount: 0.6, type: 'supersaw' };
+  }
 }
 
 /* Apply per-track params. Now includes LFO routing. */
@@ -1809,8 +1829,9 @@ function scheduleAll(form, melodyScale, bpm, g, algo) {
   makePart(bassEvents, (time, v) => {
     if (!g.bassModel) return;
     try {
-      if (v.accent !== undefined || v.slide !== undefined) {            // TB-303 acid line: slide = portamento glide, accent = velocity boost
+      if (v.accent !== undefined || v.slide !== undefined) {            // TB-303 acid line: slide = portamento glide, accent = velocity + brighter filter
         if (g.bassModel.synth.portamento !== undefined) g.bassModel.synth.portamento = v.slide ? 0.055 : 0.0;
+        if (g.bassModel.synth.filterEnvelope) g.bassModel.synth.filterEnvelope.octaves = v.accent ? 5 : 3.2; // accent opens the filter (brighter, not just louder)
         g.bassModel.synth.triggerAttackRelease(v.note, v.duration, time, v.accent ? 1.0 : 0.65);
       } else {
         g.bassModel.synth.triggerAttackRelease(v.note, v.duration, time);  // unchanged for non-acid engines
@@ -2071,10 +2092,11 @@ function buildLog(state) {
     alkali:  'Alkali · MS-20',
     acid:    'Acid · TB-303',
     ether:   'Ether · Juno-106 Lead',
+    supersaw:'Supersaw · 7-OSC Anthem',
   };
   for (const t of ['bass', 'lead', 'pad']) {
     const p = trackParams[t];
-    lines.push(`  ${k(t.toUpperCase().padEnd(6))} ${v(MDL_LABELS[p.model].padEnd(28))}  ${d('LFO →')} ${v(p.lfoTarget.padEnd(8))}  ${d('FX:')} ${v(p.send ? 'on' : 'off')}`);
+    lines.push(`  ${k(t.toUpperCase().padEnd(6))} ${v((MDL_LABELS[p.model] || p.model).padEnd(28))}  ${d('LFO →')} ${v(p.lfoTarget.padEnd(8))}  ${d('FX:')} ${v(p.send ? 'on' : 'off')}`);
   }
   return lines.join('\n');
 }
@@ -2705,13 +2727,13 @@ const ENGINE_VOICINGS = {
   },
   proghouse: {
     bass:   { model: 'alkali', volume: 0.55, detune: 0, attack: 0.004, decay: 0.18, sustain: 0.4, release: 0.15, cutoff: 0.4, resonance: 0.25, fenvAmount: 0.4, fenvDecay: 0.2, character: 0.4, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
-    lead:   { model: 'crystal', volume: 0.4, detune: 0, attack: 0.01, decay: 0.3, sustain: 0.3, release: 0.6, cutoff: 0.7, resonance: 0.2, fenvAmount: 0.4, fenvDecay: 0.4, character: 0.6, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.15, arp: 'off', send: true },
+    lead:   { model: 'supersaw', volume: 0.4, detune: 0, attack: 0.01, decay: 0.3, sustain: 0.3, release: 0.6, cutoff: 0.7, resonance: 0.2, fenvAmount: 0.4, fenvDecay: 0.4, character: 0.6, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.15, arp: 'off', send: true },
     pad:    { model: 'vapor', volume: 0.2, detune: 0, attack: 0.8, decay: 0.5, sustain: 0.8, release: 2.0, cutoff: 0.55, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.8, lfoTarget: 'filter', lfoRate: 0.1, lfoDepth: 0.3, arp: 'off', send: true },
     master: { reverbSize: 0.6, reverbWet: 0.45, delayTime: 0.5, delayFB: 0.45, delayWet: 0.4, sidechain: 0.85, tapeSat: 0.35, masterGain: 0.82 },
   },
   trance: {
     bass:   { model: 'alkali', volume: 0.55, detune: 0, attack: 0.003, decay: 0.15, sustain: 0.3, release: 0.12, cutoff: 0.4, resonance: 0.3, fenvAmount: 0.45, fenvDecay: 0.2, character: 0.4, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
-    lead:   { model: 'crystal', volume: 0.42, detune: 7, attack: 0.02, decay: 0.4, sustain: 0.5, release: 1.0, cutoff: 0.75, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.7, lfoTarget: 'off', lfoRate: 0.3, lfoDepth: 0.1, arp: 'off', send: true },
+    lead:   { model: 'supersaw', volume: 0.42, detune: 7, attack: 0.02, decay: 0.4, sustain: 0.5, release: 1.0, cutoff: 0.75, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.7, lfoTarget: 'off', lfoRate: 0.3, lfoDepth: 0.1, arp: 'off', send: true },
     pad:    { model: 'vapor', volume: 0.22, detune: 8, attack: 1.0, decay: 0.5, sustain: 0.85, release: 2.5, cutoff: 0.6, resonance: 0.12, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.9, lfoTarget: 'filter', lfoRate: 0.08, lfoDepth: 0.35, arp: 'off', send: true },
     master: { reverbSize: 0.7, reverbWet: 0.55, delayTime: 0.5, delayFB: 0.5, delayWet: 0.45, sidechain: 0.8, tapeSat: 0.35, masterGain: 0.82 },
   },
@@ -2722,7 +2744,7 @@ const ENGINE_VOICINGS = {
     master: { reverbSize: 0.7, reverbWet: 0.4, delayTime: 0.5, delayFB: 0.4, delayWet: 0.3, sidechain: 0, tapeSat: 0.5, masterGain: 0.82 },
   },
   acid: {
-    bass:   { model: 'alkali', volume: 0.62, detune: 0, attack: 0.002, decay: 0.18, sustain: 0.2, release: 0.1, cutoff: 0.25, resonance: 0.7, fenvAmount: 0.7, fenvDecay: 0.22, character: 0.7, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
+    bass:   { model: 'acid', volume: 0.62, detune: 0, attack: 0.002, decay: 0.18, sustain: 0.2, release: 0.1, cutoff: 0.25, resonance: 0.7, fenvAmount: 0.7, fenvDecay: 0.22, character: 0.7, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
     lead:   { model: 'vapor', volume: 0.22, detune: 0, attack: 0.5, decay: 0.6, sustain: 0.5, release: 2.0, cutoff: 0.45, resonance: 0.15, fenvAmount: 0.2, fenvDecay: 0.6, character: 0.7, lfoTarget: 'filter', lfoRate: 0.05, lfoDepth: 0.3, arp: 'off', send: true },
     pad:    { model: 'vapor', volume: 0.12, detune: 0, attack: 1.5, decay: 0.6, sustain: 0.7, release: 3.0, cutoff: 0.4, resonance: 0.1, fenvAmount: 0.2, fenvDecay: 0.7, character: 0.6, lfoTarget: 'filter', lfoRate: 0.04, lfoDepth: 0.3, arp: 'off', send: true },
     master: { reverbSize: 0.6, reverbWet: 0.4, delayTime: 0.45, delayFB: 0.45, delayWet: 0.35, sidechain: 0.5, tapeSat: 0.45, masterGain: 0.82 },

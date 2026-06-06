@@ -1,0 +1,354 @@
+[
+  {
+    "genre": "Detroit / Minimal Techno",
+    "authenticity": 52,
+    "matches": [
+      "Four-on-the-floor kick: 'fourfloor' pattern fires a kick on every beat (steps 1,5,9,13) with no variation — the non-negotiable 909 skeleton is correct.",
+      "Offbeat open hat: a dedicated openhat voice (longer 0.32s noise decay) on every '+' (the 8th offbeat) matches the signature pumping push-pull. Closed hat on each beat.",
+      "Clap/backbeat on 2 & 4: snare-as-clap fires on beat==1 and beat==3 (steps 5,13), correct backbeat placement.",
+      "Tempo: defaultBpm 128 sits exactly on the DNA's 'safe typical' of 128 for the combined Detroit/minimal target.",
+      "Mode: defaultMode 'aeolian' (natural minor) is the correct core scale.",
+      "Sidechain pump exists: algo.sidechain=true triggers triggerSidechain on every kick, ducking pad (floor ~0.32) and bass (floor ~0.74) with a ramp back — the audible 'pump' is implemented as a real ducking envelope, not just mixing.",
+      "Near-static harmony: padProg is effectively a 2-chord vamp (i for 8 bars, then a bVI/-2 shape for 8 bars) held over long spans via padStride 4 — matches the 'hypnotic loop, harmony barely moves' trait.",
+      "Bass voicing direction is plausible: alkali (MS-20-style fatsawtooth + 24dB LP + distortion), low cutoff 0.35, short decay 0.2 — a punchy gated mono sub is the right ballpark."
+    ],
+    "gaps": [
+      {
+        "element": "form-arrangement",
+        "dnaWants": "Loop-and-evolve DJ structure: 16-32 bar additive intro (kick+hats first, then sub, then stabs, then pad), at least one BREAKDOWN that drops the kick and exposes pads/stabs with rising filter/reverb, then a re-entry 'drop' (kick+bass return with sidechain pump). Subtle evolution every 8-16 bars via parameter automation. This is the single most load-bearing trait — a literal static loop 'sounds like a demo, not a track.'",
+        "currentImpl": "buildOutrunForm over a fixed 16 bars: bass on every bar 0-15, two short lead phrases at bars 4 and 10, pad across the whole form. drumStartBar 0 / drumEndBar 16 with drumIntenseFrom 999, drumBreakFrom 999, drumBreakTo 0 — i.e. the break/intensity logic is permanently disabled. No additive layering, no kick-drop breakdown, no re-entry drop, no per-bar/per-loop filter or send automation anywhere in the engine.",
+        "severity": "high",
+        "fix": "Build a buildTechnoForm (or extend the form/drum config) that (a) intros with kick+hats only for bars 0-3, adds bass at 4, stabs at 8, pad at 12; (b) sets drumBreakFrom=8,drumBreakTo=10 so the fourfloor branch's isBreak path actually fires (note: the fourfloor branch currently ignores isBreak entirely — add `if(isBreak) skip kick` there); (c) on break, ramp a filter-cutoff up and reverb send up, then re-enter kick+bass at bar 10. Also add the missing capability: a slow per-bar automation lane that ramps pad/stab filter cutoff across the loop (Tone .rampTo on the filter frequency) — without it the loop is static. See needsLayerC.",
+        "fix_note": ""
+      },
+      {
+        "element": "signature-sound",
+        "dnaWants": "The Detroit 'space chord' STAB: a SHORT, punchy minor7/min9 chord stab with a tight pluck envelope, placed on OFFBEATS, soaked in tempo-synced (dotted-8th) delay + reverb, ideally a detuned 2-3 osc saw into a resonant lowpass. This is one of the four identityMustHaves and the thing that most signals 'this is techno.'",
+        "currentImpl": "There is no stab voice at all. The pad is a slow vapor (Juno) wash (attack 0.6, release 1.5, padStride 4, sustain 0.5) playing sustained block chords on the downbeat of every 4th bar. The lead is generateMelody with MELODY_PROFILES.noir — a sparse single-note melodic motif, not a rhythmic chord stab. Nothing plays a short off-beat chord stab.",
+        "severity": "high",
+        "fix": "Add a dedicated 'stab' lead: reuse generateArpLead or a new generator that emits a 3-4 note minor7 chord ([0,2,4,6] in aeolian = root,b3,5,b7) as a single short event placed on offbeats (e.g. the '+' of beats 2 and 4, durations of 1-2 sixteenths), looped every bar. Voice it as detuned saw (alkali or a saw poly) with attack 0.003 / decay 0.12 / sustain 0 / release 0.15 (tight pluck), cutoff ~0.5, resonance ~0.4, send:true into the existing delay (delayTime already 0.5). This is the highest-authenticity-per-effort fix.",
+        "fix_note": ""
+      },
+      {
+        "element": "harmony",
+        "dnaWants": "Fixed-interval / 'chord-memory' parallel voicing: define ONE minor-triad/m7 shape and transpose it as a rigid block up/down the scale (e.g. Cm-Gm-Fm-Abm-Bbm), no diatonic re-voicing — plus min7/min9 color (root,b3,5,b7,9), not plain triads.",
+        "currentImpl": "padProg cells are diatonic-third stacks [0,2,4] interpreted through buildChordMap + degreeToMidi in AEOLIAN, which produces RE-VOICED diatonic triads (the third changes quality per scale degree). It's a plain minor triad with no 7th/9th color, and the [-2,0,2] second chord is diatonically re-voiced, not a parallel transpose of the same shape.",
+        "severity": "med",
+        "fix": "Two parts: (1) extend the chord cells to m7 by stacking another third: use [0,2,4,6] for the stab/pad tones so degreeToMidi yields root,b3,5,b7. (2) For the 'chord memory' sound, bypass diatonic re-voicing: pick a fixed semitone shape (minor triad = [0,3,7] in semitones, m7 = [0,3,7,10]) and transpose the whole block by the chord root in SEMITONES rather than mapping each degree through the scale. This needs a small parallel-voicing path in buildChordMap/degree mapping (transpose-as-block), which the DNA flags as 'trivial once recognized.'",
+        "fix_note": ""
+      },
+      {
+        "element": "bass",
+        "dnaWants": "Offbeat sub-bass that sits in the GAPS between kicks (never colliding with the kick fundamental), or a rolling 16th line where offbeats drop an octave; with glide/portamento (SH-101 slide) and accent, heavily sidechained to the kick.",
+        "currentImpl": "riffGen = generateRiff(BASS_PROFILES.outrun): grooves like [2,2,2,2,...] starting with a root ON the downbeat (step 0 → degree 0), i.e. the bass hits ON the kick, not in the offbeat gaps. No portamento/glide (alkali model has no portamento; only the unused 'acid' model does). Bass is NOT sidechained in a way that creates the offbeat pocket — and bass duck floor is shallow (~0.74). octaveProb 0.6 gives some octave jumps but placement collides with the kick.",
+        "severity": "med",
+        "fix": "Give techno its own BASS_PROFILES.techno with an offbeat groove that rests on step 0 (the kick) and places notes on the 'e/+/a' — e.g. groove [ {rest,2}, {root,2} ] repeated, or a rolling 16th line [1]*16 where every odd 16th drops -scaleLen (octave down). Add portamento to the alkali bass voice (or route techno bass through the existing 'acid' mono which already has portamento:0.05). Deepen the bass duck (bassFloor) so the kick clearly pockets the bass.",
+        "fix_note": ""
+      },
+      {
+        "element": "lead",
+        "dnaWants": "Sparse hypnotic motif / repeating 3-6 note cell or arpeggio in a higher octave, often a single 'bleep' tone, with dotted-8th tempo-synced delay creating the rolling Detroit shimmer; pitch transposition over the loop for evolution.",
+        "currentImpl": "leadGenA/B = generateMelody with MELODY_PROFILES.noir — a developed melodic motif (grammar A/A/A2/B, contour, ornaments) that plays as two one-off 4-bar phrases at bars 4 and 10. This is a through-composed melody, not a looped hypnotic cell, and it stops (no continuous ostinato). Delay exists (delayTime 0.5 = 1/8, delayWet 0.3) but it is straight 1/8, not dotted-8th, and there's no per-loop pitch transposition for evolution. crystal (DX7 bell) model is a reasonable 'bleep' source.",
+        "severity": "med",
+        "fix": "Replace the two noir phrases with a single short repeating cell looped for the whole track (like the carpenter arp approach): use generateArpLead or a 3-4 note fixed cell, octave-up, looped every 1-2 bars. Set the lead delay to dotted-8th (delayTime ~0.375 at this tempo, or a 3/16 sync) for the rolling shimmer. For evolution, transpose the cell by the parallel chord root each 8 bars (ties into the fixed-interval harmony fix).",
+        "fix_note": ""
+      },
+      {
+        "element": "beat",
+        "dnaWants": "Open-hat CHOKE (the next closed hat cuts off the ringing open hat), two layered closed-hat timbres alternated, light swing (~52-60%) on hats/perc but NOT the kick, and per-step velocity/accent automation that EVOLVES across the loop. Optional ride doubling the offbeats for the Jeff Mills rolling feel.",
+        "currentImpl": "openhat and hat are independent NoiseSynth voices — there is NO choke (the 0.32s open-hat tail rings through the next closed hat instead of being cut). swing is hard-set to 0 for techno (Transport.swing=0), so hats are dead-straight with zero shuffle. Hat velocities are fixed constants (hat 0.28, openhat 0.5) — no accent variation, no evolution. No ride layer, no second closed-hat timbre.",
+        "severity": "low",
+        "fix": "(1) Choke: on each closed-hat trigger, call openhat.triggerRelease(time) (or ramp openhatVol to -inf) just before the closed hat so the open tail is cut — the cheap fix is to shorten the open-hat decay or release it on the next 8th. (2) Set algo.swing to ~0.12-0.18 (Tone swing maps 0-1; ~55% feel) since Transport.swing on 16n already excludes the kick timing only partially — verify the four-on-floor kick stays straight. (3) Add light accent variation: vary hat vel per 16th (e.g. accent steps 4,8,12,16) and nudge it per-bar for the 'rolling' evolution.",
+        "fix_note": ""
+      }
+    ],
+    "topFixes": [
+      "Add the Detroit chord STAB voice: short off-beat minor7 chord stab (tight pluck, detuned saw, into delay+reverb) looped every bar. It's missing entirely and is the #1 identity signal of the genre — highest authenticity-per-effort.",
+      "Build a real loop-and-evolve arrangement: additive intro (kick+hats -> bass -> stab -> pad), a kick-drop BREAKDOWN, and a re-entry drop with the pump. The break logic is currently hard-disabled (drumBreakFrom 999) and the fourfloor branch ignores isBreak. This is the DNA's single most load-bearing trait.",
+      "Add slow parameter automation (filter cutoff / reverb-send ramps over 8-16 bars) so the static loop 'breathes' — the engine has zero automation lanes today, and the DNA calls this 'the single most important capability.'",
+      "Fix the bass to sit in the offbeat gaps with glide+deeper sidechain (techno-specific BASS_PROFILES + portamento), instead of the outrun on-downbeat groove that collides with the kick."
+    ],
+    "needsLayerC": true
+  },
+  {
+    "genre": "proghouse (Progressive House)",
+    "authenticity": 38,
+    "matches": [
+      "Tempo & meter correct: defaultBpm 126 sits dead-center of DNA 122-128, 4/4, swing 0 (straight) — matches 'Straight (no swing)'.",
+      "Mode correct: defaultMode 'aeolian' (natural minor) matches the canonical emotional prog-house tonality.",
+      "Four-on-the-floor kick is right: the 'fourfloor' drum branch fires a kick on every beat (steps 1,5,9,13) and triggers sidechain on each kick.",
+      "Backbeat clap-role is right: snare on beat 2 & 4 (steps 5,13), played at lower velocity as a clap stand-in.",
+      "Off-beat open hat is present: openhat on the '+' of every beat (the house 'tss' lift) — a genuine genre signature.",
+      "Sidechain pump exists and is wired: sidechain:true + triggerSidechain ducks bass and pad on every kick with an exponential recovery ramp (0.18s bass / 0.32s pad) — the 'breathing' is at least architecturally present.",
+      "Pad is a slow-attack detuned-saw (vapor = fatsawtooth count 3, spread 30, attack 0.8s, long release 2.0s) over a static 4-chord aeolian loop with padStride 2 (one chord per ~2 bars) — close to the DNA's emotional breakdown pad and slow harmonic rhythm.",
+      "Harmony rhythm is slow/static: padProg holds 4 chords across 16 bars re-read via buildChordMap, matching 'one chord per bar/2 bars, same loop persists'."
+    ],
+    "gaps": [
+      {
+        "element": "bass",
+        "dnaWants": "Rolling 16th-note bassline on a fine grid — the defining 3/16+3/16+2/16 cell (notes on steps 1,4,7) or 'offbeat-16ths that dodge the kick steps', root-repetition with octave jumps, short detached decay so it 'rolls', heavy kick-sidechain so it ducks and swells between hits.",
+        "currentImpl": "Reuses BASS_PROFILES.outrun whose grooves are 8th/quarter cells ([2,2,2,2,2,2,2,2] = straight 8ths, [3,1,2,2,2,2,4], etc.) on a coarse grid. generateRiff places root/octave on strong steps and tiny moves on weak steps. No 16th rolling cell, no 3+3+2, NO kick-dodging logic — bass notes land ON the kick steps instead of filling the gaps. octaveProb 0.6 over-jumps vs. root-anchored rolling.",
+        "severity": "high",
+        "fix": "Add a BASS_PROFILES.proghouse with a true 16th grid and the rolling cell, and point riffGen at it. Concretely: grooves like [3,3,2,3,3,2] and [2,2,2,2,2,2,2,2] expressed at the 16th level, with a kick-dodge rule that leaves steps 0,4,8,12 (where the kick lands) empty or ghosted and fills the offbeat 16ths. Keep degree mostly 0 (root) with octaveProb ~0.2 and an occasional +/-scaleLen jump every 4 bars. Shorten bass decay (voicing decay ~0.12, sustain ~0.25, release ~0.1) so notes detach and roll."
+      },
+      {
+        "element": "lead",
+        "dnaWants": "Big bright euphoric SUPERSAW wall-of-saws: 7-9 detuned saw voices, ~12-30 cent unison spread, wide stereo, lush plate/hall reverb, slow filter-env opening on builds, sidechained to pump with the bass. Played as rhythmic chord-locked stabs or a sustained anthemic line.",
+        "currentImpl": "lead voicing model is 'crystal' = a DX7-style FM bell (Tone.FMSynth, harmonicity 3, modIndex 8, single sine carrier, detune 0, no unison). This is a thin metallic bell, the opposite of a saw wall. Lead melody comes from generateMelody(dreamwave profile) — a single-note motif line, not chord-locked supersaw stabs. The lead is also NOT in the sidechain (triggerSidechain only ducks padBus and bassBus), so it cannot pump with the drop.",
+        "severity": "high",
+        "fix": "Switch proghouse lead model to a supersaw. Easiest within the existing engine: use the 'vapor' fatsawtooth path but bump count to 7 and spread to ~25 cents, wide stereo, lead voicing detune ~15, cutoff ~0.7 with fenvAmount up, big reverb send (already send:true; raise reverbWet). Better: add a dedicated 'supersaw' model (Tone.PolySynth(Tone.Synth,{oscillator:{type:'fatsawtooth',count:7,spread:25}})). Then drive the lead from chord-locked stabs (arpExpand/padProg triad at 1/8 or 1/4 in the drop) instead of a dreamwave single-note motif, and route the lead bus through the sidechain duckGain so it pumps."
+      },
+      {
+        "element": "form-arrangement",
+        "dnaWants": "Extended additive arrangement phrased in 8/16/32-bar multiples: intro -> rolling-bass groove -> BREAKDOWN (kick drops out, pads swell) -> BUILD-UP (accelerating snare roll 1/8->1/16->1/32 + white-noise upriser + rising filter + beat-skip on last bar) -> DROP (full supersaw + rolling bass + four-on-floor + heavy pump) -> breakdown 2 -> build 2 -> drop -> outro. Energy via gradual layering + filter automation, with a genuine build->drop arc.",
+        "currentImpl": "buildOutrunForm produces a flat 16-bar loop: bass every bar (turnaround fill on bar%4==3), two lead phrases at bar 4 and 10, pads + drums across the full 16 bars. drumIntenseFrom/drumBreakFrom = 999 and drumBreakTo = 0, so there is NO breakdown, NO build-up, NO drop. No snare roll, no riser, no filter automation, no layer add/remove, no beat-skip. The genre-defining breakdown->build->drop journey is entirely absent.",
+        "severity": "high",
+        "fix": "This needs the arrangement/automation engine that does not yet exist (see needsLayerC). Minimum viable: give proghouse its own form builder that (a) holds a pads-only breakdown for bars where kick is muted, (b) runs a build section that schedules an accelerating snare roll (subdivide 1/8->1/16->1/32 across the last 2-4 bars) plus a white-noise riser and a rising lead-filter ramp, (c) drops to full layers with a crash on the downbeat. Use drumBreakFrom/To and drumIntenseFrom (already plumbed) to carve a real breakdown+build, then add a riser/snare-roll FX generator."
+      },
+      {
+        "element": "drums",
+        "dnaWants": "Closed hat on the OFF-beats (steps 3,7,11,15) with velocity variation; open hat sharing the off-beat for the 'tss'; a SHAKER / 16th-note percussion layer for rolling movement; clap HP-filtered ~140 Hz and layered with small track-delay offsets; reverse cymbal/crash on the downbeat of each new 8-bar phrase.",
+        "currentImpl": "fourfloor puts the CLOSED hat ON the beat (steps 1,5,9,13) — DNA wants it on the off-beats. Velocity is a flat 0.28 (no variation). There is NO shaker / 16th perc layer, so the rolling 16th motion is missing. Clap is a generic snare voice at vel 0.7 (no ~140 Hz HP, no layered offsets). No reverse cymbal / crash on phrase boundaries.",
+        "severity": "med",
+        "fix": "In a proghouse-specific drum branch: move the closed hat to the off-beats (beatT + secBeat/2) with velocity variation (~0.22/0.30/0.24/0.27), keep the open-hat 'tss', and add a 16th shaker loop (4 hits per beat at varied low velocity ~0.12-0.20). Filter the clap higher and optionally double it with a ~8ms offset. Add a crash on bar%8==0 beat 0."
+      },
+      {
+        "element": "harmony",
+        "dnaWants": "Canonical i-VI-III-VII Aeolian loop (e.g. Am-F-C-G) with m7/add9/sus color, 9th extensions on pads, re-orchestrated over a static loop.",
+        "currentImpl": "padProg = [[0,2,4],[-2,0,2],[3,5,7],[-1,1,3]] — plain diatonic triads. Roots are i, then -2 (VI-ish), III, then -1 (VII-ish) which is roughly in the i-VI-III-VII family, but voiced as bare triads with no 7th/9th/sus color. Re-orchestration over the loop does not happen (pad is the only thing carrying the chords; no pad->pluck->stab hand-off).",
+        "severity": "low",
+        "fix": "Keep the i-VI-III-VII root motion but add chord color: extend pad triads to 4-note voicings ([0,2,4,6] for m7, add a 9th [0,2,4,8]) and let the supersaw lead re-state the same chords as stabs in the drop so the static loop is re-orchestrated rather than just held by one pad."
+      },
+      {
+        "element": "signature-sound",
+        "dnaWants": "Plucky arp (short-decay pluck from the chord triad, arp Up/Down at 1/16, drenched in 1/8-dotted delay + reverb) and build-up FX (white-noise upriser, accelerating snare roll, pitch riser, beat-skip).",
+        "currentImpl": "No pluck-arp at all: arp is 'off' for all proghouse tracks and the lead is a single-note FM-bell motif. No build-up FX generators exist (no riser, no snare roll, no pitch sweep). delayTime 0.5 is a straight 1/8, not the 1/8-dotted called for.",
+        "severity": "med",
+        "fix": "Add a plucky-arp layer: use arpExpand on the padProg triad at 1/16 (mode up/down), short-decay voicing (decay ~0.15, low sustain), routed to a delay set to dotted-1/8 (delayTime ~0.375 of a bar / use Tone '8n.'). Add the build-up FX generators (white-noise NoiseSynth ramp + accelerating hat/snare roll) as part of the build section."
+      }
+    ],
+    "topFixes": [
+      "Replace the lead voicing: swap the DX7 FM bell ('crystal') for a real supersaw (fatsawtooth count 7, ~25c spread, wide stereo, big reverb) driven as chord-locked stabs and routed through the sidechain — this is the single most identity-defining sound and is currently completely wrong.",
+      "Give proghouse a true rolling 16th-note bass (new BASS_PROFILES.proghouse with 3+3+2 cells on a 16th grid + kick-dodging so notes fill the gaps between kicks, short detached decay) instead of the borrowed straight-8th outrun groove — this plus the pump is what 'rolling bass' means.",
+      "Build the breakdown->build->drop arrangement: carve a pads-only breakdown, an accelerating snare-roll + white-noise riser + rising filter build, and a full-layer drop with a crash, using the already-plumbed drumBreakFrom/drumIntenseFrom plus a new FX/riser generator (requires the arrangement engine).",
+      "Fix the hat placement and add a 16th shaker: move closed hats to the off-beats with velocity variation and layer a 16th-note shaker so the groove has the rolling movement the DNA's canonicalPattern16 specifies."
+    ],
+    "needsLayerC": true
+  },
+  {
+    "genre": "Uplifting Trance",
+    "authenticity": 38,
+    "matches": [
+      "Tempo + mode correct: defaultBpm 138, defaultMode 'aeolian' (natural minor) lands squarely in the DNA's 136-142 BPM / minor tonal-center spec.",
+      "Four-on-the-floor kick is correct: the 'fourfloor' drum branch pushes a kick on every beat (steps 1/5/9/13) and a clap/snare backbeat on beats 2 & 4 (steps 5/13).",
+      "Offbeat open-hat is present: openhat is scheduled at beatT + secBeat/2 on every beat = steps 3/7/11/15, exactly the DNA's offbeat-8th open-hat lane.",
+      "Sidechain pump is wired and on: algo.sidechain=true, masterState.sidechain=0.8, and triggerSidechain() ducks BOTH the bass bus (floor ~0.76, 0.18s recover) and pad bus (floor ~0.32, 0.32s recover) on every kick — the core trance groove mechanic exists.",
+      "Lush wide pad intent is there: pad model 'vapor' (3 detuned fatsawtooth, heavy chorus wet 0.7) with slow attack 1.0s, long release 2.5s, big reverb (size 0.7/wet 0.55), sidechained — a credible detuned-saw string-ensemble pad.",
+      "Slow harmonic rhythm is correct: padProg has 4 chords over 16 bars via buildChordMap = 1 chord per 4 bars, and bass/lead read the SAME chordMap, so harmony moves slowly as the DNA wants (1 chord per 1-2 bars or slower)."
+    ],
+    "gaps": [
+      {
+        "element": "signature-sound",
+        "dnaWants": "Huge wide euphoric SUPERSAW anthem lead — 7+ detuned saw oscillators (JP-8000 lineage), wide unison/stereo, harmonic-minor melody doubled at octave + a 3rd, filter-env opening on the drop, ping-pong delay + big reverb. This is THE identity sound of the genre.",
+        "currentImpl": "lead.model = 'crystal' = a Tone.FMSynth DX7-style FM bell (harmonicity 3.0, modIndex 8, sine carrier+modulator). detune 7. Plays generateMelody with MELODY_PROFILES.outrun. No unison saw stack, no octave/3rd doubling, no harmonic minor, no arp. arp:'off'.",
+        "severity": "high",
+        "fix": "Swap the trance lead to a supersaw voice. Cheapest authentic route in this engine: reuse the 'vapor'/'ether' fatsawtooth path but build a dedicated 'supersaw' model = Tone.MonoSynth/PolySynth oscillator {type:'fatsawtooth', count:7, spread:25}, bright cutoff (~0.8) with a slow filterEnvelope attack (0.15-0.3s) so it 'opens', plus the existing chorus + ping-pong delay (delayWet already 0.45) + reverb. Then set lead.model='supersaw', detune 15-25 cents-equiv, arp stays off for sustained anthem OR add an octave-doubled harmony layer (see harmony gap). Crystal FM bell must go — it is the single biggest timbral miss."
+      },
+      {
+        "element": "bass",
+        "dnaWants": "Rolling 16th offbeat-octave 'gallop': a note on (almost) every 16th, but the 16th that lands ON the kick (steps 1/5/9/13) is OMITTED, offbeat 16ths are played, and the note just before/after each beat jumps UP AN OCTAVE. Mid-forward detuned saw, short decay so each 16th is a punchy tick. Mandatory sidechain (present).",
+        "currentImpl": "riffGen = generateRiff(rng, sl, BASS_PROFILES.outrun). Outrun grooves are 16th-ish ([2,2,2,2,2,2,2,2] etc.) but the algorithm places the ROOT on the downbeat (step 0) and octave jumps on STRONG beats (step%4===0) with octaveProb 0.6 — i.e. octave on the beats, root on the offbeats. That is the inverse of the trance rule. Nothing omits the on-kick 16th; bassFill adds a generic turnaround.",
+        "severity": "high",
+        "fix": "Add a BASS_PROFILES.trance with a dedicated rolling generator (the bass-riff engine already exists). Generate a fixed 16-step cell where step%4===0 (the on-kick 16ths) is a REST/omit, all other 15 offbeat 16ths play duration-1 ticks at the chord root, and the 16th immediately before each beat (steps 4,8,12,16 → indices 3,7,11,15) is pushed +scaleLen (octave up). Wire trance.riffGen to this instead of BASS_PROFILES.outrun, and use buildAcidForm-style per-bar transposition (no bassFill) so the gallop stays relentless. Bass voicing decay is already short (0.15) which is good for the tick."
+      },
+      {
+        "element": "form-arrangement",
+        "dnaWants": "Long-form: Intro -> first groove -> beatless BREAKDOWN (beat+bass muted, pads/strings + emerging lead, big reverb) -> BUILD-UP (rising white-noise sweep + accelerating snare/clap roll 8th->16th->32nd + filter open + pitch riser + crash on the '1') -> DROP/anthem (supersaw over rolling bass). The breakdown->build->drop dynamic is what makes it 'feel' like trance.",
+        "currentImpl": "buildForm = buildOutrunForm: a flat 16-bar loop, lead at bars 4 and 10, no section staging. trance config sets drumIntenseFrom:999, drumBreakFrom:999, drumBreakTo:0 — i.e. breakdown and intensity staging are DISABLED. The 'fourfloor' drum branch doesn't even read intense/isBreak, so there is zero arrangement movement. No riser/build/crash/snare-roll code exists anywhere in the file.",
+        "severity": "high",
+        "fix": "Needs the arrangement/automation engine (does not yet exist). Minimum viable: (1) give trance real drumBreakFrom/To (e.g. break bars 6-9: mute kick+bass, keep pad+lead, raise reverb) and re-entry. (2) Add a build-up generator at bars 8-9 in the drum scheduler: accelerating snare/clap roll (8th->16th->32nd subdivisions, ramp velocity) + a white-noise riser node automating up + filter-cutoff ramp + a crash on bar-10 step 1. (3) Mute/unmute whole busses via the existing duckGain/mute plumbing. This is the highest-leverage authenticity gain after the supersaw."
+      },
+      {
+        "element": "beat",
+        "dnaWants": "Closed hi-hats = a CONTINUOUS 16th-note stream (all 16 steps) with offbeat velocity accents; open hats on 3/7/11/15; ride doubling those in peak sections; tom/perc fills at phrase ends (steps 14-16).",
+        "currentImpl": "fourfloor pushes ONE closed hat per beat (4 hats/bar, on the beat, vel 0.28) plus the offbeat open hat. So the hi-hat layer is 4 on-beat closed hats, not a 16th stream. No ride, no fills.",
+        "severity": "med",
+        "fix": "In the 'fourfloor' branch, replace the single on-beat hat with a 16th loop: for (e=0;e<4;e++) push a closed hat at beatT + e*(secBeat/4) with velocity accenting the offbeats (e.g. e%2===1 -> 0.4, else 0.22). Keep the open hat on the +. Optionally add a ride lane on 3/7/11/15 gated to peak/drop bars, and a tom/hat fill on the last bar of each 4/8-bar phrase (steps 14-16)."
+      },
+      {
+        "element": "harmony",
+        "dnaWants": "Harmonic minor as the signature lead/melody scale (raised 7th -> the augmented-2nd b6->7 'trance interval'); sus2/sus4/add9 pad voicings; lead doubled at octave + 3rd/6th; classic loops like i-VI-III-VII or vi-IV-I-V.",
+        "currentImpl": "Mode is 'aeolian' (natural minor) for everything incl. the lead, so the raised-7th trance interval never occurs. padProg = [[0,2,4],[3,5,7],[-2,0,2],[-1,1,3]] are plain diatonic triads (no sus/add9). No octave/3rd harmony layer on the lead — generateMelody returns a single monophonic line.",
+        "severity": "med",
+        "fix": "Two parts: (a) For the lead/melody scale, use harmonic minor (raise the 7th degree) while keeping pads/bass in aeolian — pass a separate melodyScale to the lead generator so the b6->7 interval appears. (b) Add a harmony layer: post-process the lead line into a second voice at +octave and a diatonic 3rd (reuse degreeToMidi with degree+scaleLen and degree+2) and play both through the supersaw for the anthem 'wall'. (c) Optionally voice pads as sus2/add9 by using triads like [0,1,4] / [0,2,4,8] in padProg."
+      },
+      {
+        "element": "lead",
+        "dnaWants": "Lead frequently plays ARPEGGIATED 16th-note figures that subdivide the slow chords, in addition to sustained anthem phrases.",
+        "currentImpl": "leadGenA/B = generateMelody (free motif melody, outrun profile), arp:'off'. No arpeggiated 16th figure following the chordMap; an arpExpand/generateArpLead helper exists but trance doesn't use it.",
+        "severity": "low",
+        "fix": "For the groove/intro sections, add a background arp using the existing generateArpLead(scaleLen, chordMap, {mode:'updown', octaves:2, stepDur:1}) to get a 16th-note arp that subdivides each slow chord, and reserve the sustained generateMelody line for the drop/anthem. This gives the 'background arps' the DNA calls for in the first-climax section."
+      }
+    ],
+    "topFixes": [
+      "Replace the lead's 'crystal' FM bell with a real SUPERSAW voice (7 detuned fatsawtooth, bright cutoff with slow filter-env open, chorus + ping-pong delay + reverb). This is the single biggest identity miss — trance without a supersaw anthem lead does not read as trance.",
+      "Build a dedicated trance rolling bass (BASS_PROFILES.trance): omit the on-kick 16ths (steps 1/5/9/13), play all offbeat 16ths at the chord root, octave-jump the 16th just before each beat. The current outrun groove does the inverse (octaves ON the beats) and never omits under the kick.",
+      "Add the breakdown -> build-up -> drop arrangement engine (riser + accelerating snare roll 8th->16th->32nd + filter open + crash, with bus mute/unmute for the beatless breakdown). Currently breakdown/intensity are hard-disabled (drumBreakFrom:999) and the form is a flat 16-bar loop — the genre's defining macro-dynamic is entirely absent.",
+      "Make the closed hats a continuous 16th stream with offbeat accents (4 hats/bar -> 16) and switch the lead scale to harmonic minor with an octave+3rd harmony layer for the 'trance interval' and anthem-wall sound."
+    ],
+    "needsLayerC": true
+  },
+  {
+    "genre": "Dubstep (classic / \"140\")",
+    "authenticity": 48,
+    "matches": [
+      "Half-time drum identity is correct: snare on beat 3 only (step 9), NOT 2&4 — the single most important half-time signifier is implemented in the 'halftime' branch (synthwave_surfer.html:1885)",
+      "Kick on step 1 plus a syncopated ghost kick on the '+' before the snare (beat 2.5, step ~7) — matches the canonical minimal kick-on-1-and-7 pattern (line 1883-1884)",
+      "Closed hats are offbeat-leaning with a deliberate GAP around beat 3 to give the snare space, exactly as the DNA describes (line 1886)",
+      "Bar-2 fill: a 1/32 ascending-velocity hat roll into the downbeat (line 1888-1890) — matches 'bar 2 adds a fill leading back to the downbeat'",
+      "Tempo at defaultBpm 140 and defaultMode 'phrygian' are spot-on for dark classic dubstep tonality",
+      "The wobble architecture exists in principle: bass LFO is tempo-locked (line 1780-1781) and routed to a resonant 24 dB/oct lowpass cutoff (rolloff -24, line 1454; lfoTarget 'filter' connects lfo→filter.frequency, line 1546-1551) on a fatsawtooth osc — the correct synced-LFO-to-cutoff skeleton",
+      "Snare gets a big gated-reverb tail (triggerGatedReverb, line 1900) — supports the 'dub'-heritage reverberant snare",
+      "Bass groove is a static droning root ([[8,8]], octaveProb 0, moveProb 0) which correctly honors 'most classic dubstep loops drone on one root' for the harmony axis"
+    ],
+    "gaps": [
+      {
+        "element": "signature-sound",
+        "dnaWants": "Per-bar AUTOMATED wobble rate — the LFO rate is performed between 1/4, 1/8, 1/2, 1/16 (plus triplet/dotted) across the bar to make the defining 'wub-wub-WUBWUBWUB' growl; per-bar rate automation is called non-negotiable and the single highest-value engine feature",
+        "currentImpl": "wobble override sets ONE static rate for the whole track: lfo.frequency = (bpm/60)*wobbleRate = 2.33 Hz fixed (line 1780-1781), wobbleRate:1 hardcoded (line 1352). No per-bar or per-step rate change anywhere — the LFO just oscillates at a constant quarter-note rate forever",
+        "severity": "high",
+        "fix": "Add a per-bar wobble-rate schedule. Define e.g. wobbleRates:[1,1,2,4] (cycles per beat → 1/4,1/4,1/8,1/16 feel) and in scheduleAll, for each bar push a Tone.Transport.schedule that ramps g.bassBus.lfo.frequency.value = (bpm/60)*wobbleRates[bar%4]. Quantize the LFO phase to the bar so each new rate restarts cleanly. This single change is the difference between 'a sub bassline' and 'dubstep'."
+      },
+      {
+        "element": "bass",
+        "dnaWants": "TWO co-existing layers: an UNMODULATED clean sine sub at 20-80 Hz carrying the root + a separate gritty modulated mid-bass growl from ~80 Hz up, EQ/crossover-split so they coexist",
+        "currentImpl": "Single fatsawtooth MonoSynth (count:2, spread:10) does both jobs (alkali model, line 1452); the same osc that wobbles is also the only low end. No clean sine sub layer exists; lows wobble away with the cutoff, gutting the felt fundamental",
+        "severity": "high",
+        "fix": "Add a parallel sine sub voice for the dubstep bass: a second Tone.MonoSynth (oscillator sine, fixed lowpass ~120 Hz, NO LFO) triggered from the same bassEvents one octave below, summed pre-master and NOT routed through the wobble LFO. Keep the fatsawtooth as the wobble/growl layer. Optionally high-pass the wobble layer ~80 Hz so the two don't clash. This is engineRequirement 'two-layer bass voice'."
+      },
+      {
+        "element": "form-arrangement",
+        "dnaWants": "The DROP is the defining dynamic event: intro → build/riser+filter-sweep+silence → DROP onto sub+wobble on a downbeat → breakdown → build → DROP 2. Heavy use of silence/empty bars; sparse, minimal arrangement",
+        "currentImpl": "Uses buildOutrunForm — a flat continuous 16-bar loop with drums from bar 0 (drumStartBar:0) and no dynamics: drumIntenseFrom:999 and drumBreakFrom:999 mean intensity/break NEVER fire (line 1348). No intro, no riser, no build, no silence-then-downbeat resolution, no second drop. Everything plays at once for all 16 bars",
+        "severity": "high",
+        "fix": "Author a buildDubstepForm with explicit sections on a 16-bar grid: bars 0-3 intro (pad only, no drums/bass), bar 4 = build (1/32 hat roll accelerando + filter-sweep-up on pad + snare-rush), bar 5 DROP (bass+wobble+drums enter on the downbeat after a beat of silence), bars 5-10 body, bars 11-12 breakdown (drums out, pad swell + reverb tail), bar 13 build, bar 14 DROP 2. Requires the build/riser/drop engine (see needsLayerC)."
+      },
+      {
+        "element": "bass",
+        "dnaWants": "Bass riff is rhythmically SYNCOPATED, leaving holes in the half-time grid (off-grid stabs against the kick/snare), with optional tritone/Phrygian b2 dissonance baked into the riff",
+        "currentImpl": "BASS_PROFILES.dubstep grooves are [[8,8]] — two straight half-note roots filling the whole bar with zero syncopation and zero rests (line 731). It drones but never leaves a hole or lands off-grid; no b2/tritone color in the riff",
+        "severity": "med",
+        "fix": "Replace the groove with syncopated cells that leave gaps and align to the wobble, e.g. grooves:[[3,1,4,4,4],[4,2,2,4,'rest'-style],[6,2,8]] in 16th units, and allow a Phrygian b2 (degree shift to scale index 1) or tritone (degree to b5) on an accented step via a small dubstepMoveProb. Keep degree 0 on the downbeat for the drone, but put rests/holes on beats 2 and 4 so the wobble pulses through empty space."
+      },
+      {
+        "element": "beat",
+        "dnaWants": "Snare layered with a high-passed clap for the top; occasional open-hat accent on step 15 ('and' of beat 4); light shaker/perc on steps 2,6,10,14; ghost-note velocity variation on hats",
+        "currentImpl": "Snare is a single bandpassed noise burst (no clap layer, line 1632-1635); halftime branch fires no openhat and no shaker/perc track; hats have only coarse velocity (0.22 / 0.12 ghost)",
+        "severity": "low",
+        "fix": "In the 'halftime' branch: layer a high-passed clap on the beat-3 snare (trigger g.hat or a dedicated clap with HPF ~800 Hz alongside the snare at step 9); add an openhat accent at beatT(3)+secBeat/2 (step 15); add light perc/shaker hits at steps 2,6,10,14 (vel ~0.12); add subtle per-step velocity jitter on the offbeat hats for ghost-note feel."
+      },
+      {
+        "element": "harmony",
+        "dnaWants": "Pads/harmony in the same dark mode as the rest (Phrygian/minor), holding the root; static drone or a slow i-VI-III-VII / i-bII move",
+        "currentImpl": "Pad triggering hardcodes AEOLIAN for degreeToMidi (line 1832) while melody/bass use the selected phrygian melodyScale — so the pad's b2 color (the signature Phrygian menace) is lost and pads can sit a half-step off the bass's Phrygian degrees. padProg [[0,2,4],[0,2,4],[-1,1,3],[-1,1,3]] is a reasonable slow i↔VII move but in the wrong scale",
+        "severity": "med",
+        "fix": "Pass melodyScale (or algo.padMode) into the pad event builder instead of the hardcoded AEOLIAN at line 1832 so the pad voices Phrygian triads consistent with the bass/lead. For maximum classic-dubstep menace, also offer a drone padProg of all [[0,2,4]] (static tonic) and add a i-bII option (root then b2 triad) to exploit the Phrygian half-step."
+      },
+      {
+        "element": "lead",
+        "dnaWants": "Either the bass riff doubled as the 'lead', OR a melodic supersaw/pluck carrying a dark minor melody with tritone/b2 intervals, big reverb + dotted-1/8 delay",
+        "currentImpl": "leadGenA and leadGenB both return [] (line 1344-1345) — there is no lead voice at all. Defensible for ultra-minimal classic dubstep, but no melodic-dubstep option and no detuned-stab/pluck variant",
+        "severity": "low",
+        "fix": "Add an optional sparse stab lead: a detuned saw pluck (fast filter-env, ~200 ms decay, unison detune, send:true for the dotted-1/8 delay that's already wired at line 1600) playing the root/b5 on the snare backbeat (beat 3) for a classic dubstep stab. Keep it optional/sparse so the empty space is preserved."
+      }
+    ],
+    "topFixes": [
+      "Add per-bar AUTOMATED wobble-rate scheduling (1/4→1/8→1/16 across the bar) — currently a single static 2.33 Hz LFO; this is THE genre identity and the highest-value single change (the synced-LFO-to-cutoff plumbing already exists, only the per-bar rate automation is missing)",
+      "Split the bass into two layers: keep the fatsawtooth as the modulated wobble/growl, and ADD a parallel unmodulated sine sub one octave down (no LFO, fixed LP ~120 Hz) so the felt fundamental survives the cutoff sweep",
+      "Author a buildDubstepForm with a real DROP: intro (pad only) → riser/build with filter sweep + 1/32 hat rush + a beat of silence → bass+wobble+drums slam in on a downbeat → breakdown → build → DROP 2; replace the flat buildOutrunForm and the disabled drumIntenseFrom/drumBreakFrom (999)",
+      "Make the bass groove syncopated with holes (replace [[8,8]] with cells that rest on beats 2 & 4) and inject a Phrygian b2 / tritone accent so the wobble pulses through empty space instead of a continuous droned half-note"
+    ],
+    "needsLayerC": true
+  },
+  {
+    "genre": "acid (Acid House / TB-303)",
+    "authenticity": 52,
+    "matches": [
+      "Four-on-the-floor kick is correct: 'fourfloor' drum branch puts a kick on every beat (steps 1,5,9,13), matching the DNA canonical kick.",
+      "Clap/snare backbeat is on beats 2 and 4 (beat===1||beat===3), matching DNA CLAP 5,13.",
+      "Open hat on the offbeat is present: 'openhat' on beatT + secBeat/2 of every beat = the '+' of each beat, matching the DNA open-hat-on-offbeat signature gesture (DNA's offbeat-8ths 3,7,11,15).",
+      "Tempo (defaultBpm 124) sits inside the DNA range 118-130 and near typical 122.",
+      "Single-key static modal vamp: padProg is one chord [[0,2,4]] repeated, buildAcidForm loops one 16-step ostinato across all 16 bars with no progression — matches 'i (static one-chord modal vamp)' and 'minimal-to-no harmonic change'.",
+      "phrygian default mode is a legitimate DNA scale ('Phrygian / Phrygian-dominant for a darker Eastern acid flavour').",
+      "Bass note generator is root-centric with octave-up (+scaleLen) and octave-down (-scaleLen) jumps plus occasional b2/2 steps, matching DNA 'octave jumps (+12 on scattered steps)' and 'random modal/pentatonic notes with octave jumps genuinely work'.",
+      "Per-step slide and accent FLAGS exist on each of the 16 steps, and slide is wired to portamento (0.055s) in the scheduler — the single most important 303 gesture is at least partially modeled.",
+      "sidechain: true with master sidechain 0.5 gives the pumping house glue.",
+      "Bass voicing has high resonance (0.7 -> Q~12.6) and env-mod (fenvAmount 0.7) with a short fenvDecay (0.22) — a per-note resonant filter pluck, the core squelch ingredient."
+    ],
+    "gaps": [
+      {
+        "element": "signature-sound",
+        "dnaWants": "The TB-303 squelch 'IS the genre' — a single-oscillator saw monosynth with a 3-pole resonant lowpass, env-mod pluck, portamento slide, accent-coupled cutoff, and POST-FILTER distortion that screams at the resonant peak. The HTML even defines a dedicated 'acid' model (single sawtooth, portamento 0.05, Q 10, Chebyshev waveshaper) for exactly this.",
+        "currentImpl": "ENGINE_VOICINGS.acid.bass.model is 'alkali', NOT 'acid'. The purpose-built acid MonoSynth (single saw + Chebyshev) is defined in buildSynthModel but never wired into any voicing. Alkali is a 2-osc fatsawtooth (count:2 spread:10) through a generic Tone.Distortion at character 0.7*0.5=0.35. So the genre's defining instrument is substituted by a detuned-saw house bass.",
+        "severity": "high",
+        "fix": "Change ENGINE_VOICINGS.acid.bass.model from 'alkali' to 'acid'. The 'acid' model is already correct (oscillator type 'sawtooth' single osc, portamento 0.05, filter Q 10 rolloff -24, filterEnvelope octaves 4, Chebyshev(4) post-filter waveshaper). Then bump its Chebyshev wet from 0.15 toward 0.3-0.4 and raise characterAmount so the resonant peak audibly distorts (DNA: 'distortion interacting with the resonant peak is essential')."
+      },
+      {
+        "element": "bass",
+        "dnaWants": "ACCENT must boost BOTH amplitude AND filter cutoff via a separate accent envelope ('it is not just velocity') — accented notes pop brighter, not just louder.",
+        "currentImpl": "In scheduleAll the accent path only changes triggerAttackRelease velocity (1.0 vs 0.65). There is no cutoff/filter-envelope boost on accented steps. This is the exact 'house but not acid' failure the DNA risk-note warns about ('a generic resonant filter without true accent-coupling sounds house but not acid').",
+        "severity": "high",
+        "fix": "In the bass makePart callback, when v.accent is true, momentarily raise the filter envelope before triggering: e.g. g.bassModel.synth.filterEnvelope.octaves = base+1.5 and/or g.bassModel.synth.filterEnvelope.baseFrequency *= 1.6 for that note (restore on non-accented steps), in addition to the 1.0 velocity. Couple amp+cutoff so accents are brighter, not just louder."
+      },
+      {
+        "element": "signature-sound",
+        "dnaWants": "Real-time filter movement (slowly opening/closing CUTOFF and riding RESONANCE over many bars) is the PRIMARY source of evolution and the main arrangement device — 'the filter opening up is the build'. Listed as a non-negotiable identityMustHave.",
+        "currentImpl": "acid.bass.lfoTarget is 'off' and there is no automation lane. The bass filter cutoff is static for the whole 16 bars. The ONLY evolution mechanism (filter-sweep performance) is entirely absent on the bass. The static loop never morphs.",
+        "severity": "high",
+        "fix": "Set acid.bass.lfoTarget:'filter' with a very slow lfoRate (~0.04-0.08 mapped Hz, i.e. a 20-40s sweep) and lfoDepth ~0.5 so the cutoff slowly opens/closes — the applyTrackParams 'filter' branch already sweeps around the cutoff slider. Better: add a multi-bar cutoff automation ramp tied to form position (cutoff rising across bars 0-8, peaking, easing) to emulate the performed filter open. This is the single highest-authenticity-per-effort change after switching the model."
+      },
+      {
+        "element": "bass",
+        "dnaWants": "Variable 303 pattern length INDEPENDENT of the 16-step drum loop (13/15/odd steps) so the line phases against the 4/4 drums, generating evolving variation from static material (explicitly called out in form + engineRequirements).",
+        "currentImpl": "generateAcidLine produces exactly 16 steps and buildAcidForm repeats the identical riff every bar locked to the drum grid (riff.map per bar, same line). No phasing, no per-bar variation — every bar is byte-identical.",
+        "severity": "med",
+        "fix": "Generate an odd-length step array (e.g. 15 steps) and index it modulo its length across a continuous 16-step-per-bar cursor so the 303 drifts against the drums (step = line[(globalStep) % 15]). This gives free evolving variation that, combined with the filter sweep, is what makes a static acid loop listenable for minutes."
+      },
+      {
+        "element": "form-arrangement",
+        "dnaWants": "Arrangement-by-subtraction/addition: intro builds drums element-by-element (kick, then hats, then clap) over 8-16 bars; drop the 303 in and let it run; breakdowns strip to bare drums or bare 303; long DJ-friendly intros/outros. The 'build' is the filter opening, not a synth riser/impact.",
+        "currentImpl": "drumStartBar 0 / drumEndBar 16 with drumIntenseFrom 999 and drumBreakFrom 999 — i.e. NO build, NO break, NO subtraction. Full drum kit and full 303 from bar 0 to 16, flat. The sustained 'lead' pad only enters at bar 8 (the only arrangement event). No layered intro, no breakdown.",
+        "severity": "med",
+        "fix": "Stage the drums: kick-only bars 0-3, add closed hats bar 4, add open-hat + clap bar 8 (gate hat/openhat/snare pushes on bar thresholds inside the fourfloor branch). Optionally strip to bare 303 for a 2-bar breakdown via drumBreakFrom/To. This is achievable in the existing engine WITHOUT a riser/drop FX engine — the 'build' is purely additive layering + the filter sweep."
+      },
+      {
+        "element": "lead",
+        "dnaWants": "Acid house usually has NO distinct lead — the 303 is lead, bass and hook simultaneously. If a secondary voice appears it is a SECOND 303 line an octave up with its own slides/accents, a filtered acid arp, or a percussive vocal stab — never a soft sustained pad-melody.",
+        "currentImpl": "leadGenA uses generateSustainedLead (whole-bar held chord tones / rests) on a 'vapor' Juno-style chorused fatsaw pad with 0.5s attack, 2.0s release, lfoTarget filter. That is a soft atmospheric pad-lead, the opposite of a percussive 303/stab aesthetic. leadGenB returns [] (fine).",
+        "severity": "low",
+        "fix": "Either drop the lead entirely (most authentic — set leadGenA to return []), or replace it with a second acid-model voice an octave up running generateAcidLine with its own slide/accent through the same resonant+distortion chain, entering only in a later section. Avoid the chorused vapor pad as a 'lead'."
+      },
+      {
+        "element": "harmony",
+        "dnaWants": "Either no pad at all, or a cold low-passed string/organ wash used purely for breakdown atmosphere, sitting quietly behind the 303 with low-cut reverb above ~400Hz so it doesn't clutter the sub.",
+        "currentImpl": "Pad is a vapor fatsaw on a single [0,2,4] triad, bars 8-16, volume 0.12 — quiet and minimal, which is acceptable. It is acceptable but the triad reinforces a 'chord' where the genre prefers root+fifth/octave drones or no harmony.",
+        "severity": "low",
+        "fix": "Optional: reduce the pad chord to a power-interval drone (root+fifth or root+octave: padProg [[0,4]] or [[0,0]] with octave) rather than a full triad, and restrict it to a breakdown section only, to stay inside 'power-interval drones' / 'minimal-to-no harmonic change'."
+      },
+      {
+        "element": "beat",
+        "dnaWants": "Closed-hat 16ths (every step 1-16) for the propulsive shimmer in the busy variant, plus optional light MPC swing 54-58% on hats for the groovier 909/UK feel; open-hat choke by the next closed hat.",
+        "currentImpl": "Closed hat fires only ON the beat (1 per beat = 4 per bar), not 16ths and not 8ths — sparser than either DNA option. swing:0 (acceptable for the raw Chicago variant). No open-hat choke modeling.",
+        "severity": "low",
+        "fix": "Add closed hats on 8ths or 16ths (loop e=0..1 or e=0..3 within the beat like the 'shuffle' branch) for the propulsive shimmer; optionally set swing ~0.08-0.12 for the grooved 909 variant. Choke is minor given the 8n openhat decays quickly."
+      }
+    ],
+    "topFixes": [
+      "Switch ENGINE_VOICINGS.acid.bass.model from 'alkali' to the already-built 'acid' MonoSynth (single saw + portamento + Q10 resonant LP + Chebyshev post-filter distortion) and raise its distortion wet — this restores the genre's single defining instrument with zero new code.",
+      "Add real-time bass filter automation: set bass.lfoTarget:'filter' with a slow rate + depth, or a multi-bar cutoff ramp tied to form position, so the static loop evolves via the performed filter sweep (a non-negotiable identityMustHave that is currently fully absent).",
+      "Make ACCENT open the filter cutoff (via filterEnvelope boost) in addition to velocity in the bass makePart callback, so accented steps pop BRIGHTER not just louder — fixing the exact 'house but not acid' failure the DNA flags.",
+      "Stage the arrangement additively (kick-only intro -> add hats -> add clap/open-hat -> 303) and give the 303 an odd step length (15) that phases against the 16-step drum grid, so the loop builds and evolves without needing any riser/drop FX engine."
+    ],
+    "needsLayerC": false
+  }
+]
