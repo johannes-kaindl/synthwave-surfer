@@ -4,21 +4,22 @@ Conventions for AI assistants working in this repo.
 
 ## What this is
 **Synthwave Surfer** — a single-file generative music app (`synthwave_surfer.html`,
-~3.5k lines, HTML/JS + Tone.js 14 from CDN). It generates multi-genre electronic
+~3.9k lines, HTML/JS + Tone.js 14 from CDN). It generates multi-genre electronic
 music in the browser: pick a genre "engine" (Outrun, Noir, Dreamwave, Carpenter,
-Techno, Prog House, Trance, Dubstep, Acid …), it composes + plays deterministically
+Techno, Prog House, Trance, Dubstep, Acid House), it composes + plays deterministically
 from a seed. Long-term goal: an Obsidian plugin (the Kuro universe's audio layer).
 
 ## Workflow conventions
 - **Edit `synthwave_surfer.html` directly** — it's the whole app (no build step).
 - **Tests:**
-  - Headless logic suite: `node .remember/tmp/fullsuite.mjs` (extracts the in-file
-    `tests` array + pure functions, runs with Node — expect "real: N passed, 0 failed").
+  - Headless logic suite (committed, canonical): `node scripts/fullsuite.mjs`
+    (extracts the in-file `tests` array + pure functions, runs with Node — expect
+    "real: 45 passed, 0 failed"). A `.remember/tmp/fullsuite.mjs` copy may also exist.
+  - Syntax gate (committed): `node scripts/check-syntax.mjs` before committing.
   - Headless AUDIO verification (Claude can self-check sound, not just the user's ear):
     `NODE_PATH=~/.npm/_npx/e41f203b7505f1fb/node_modules node .remember/tmp/verify_*.cjs`
     (Playwright + cached Chrome) — loads the app, captures console errors, measures
     master-output RMS via an analyser/offline render. Build new `verify_*.cjs` per task.
-  - Syntax gate: extract the main `<script>` and `node --check` it before committing.
   - In-browser: `synthwave_surfer.html?test=1` runs the test harness in the console.
   - Audio needs an HTTP server (Tone.js won't load on `file://`):
     `python3 -m http.server 8745` → http://localhost:8745/synthwave_surfer.html
