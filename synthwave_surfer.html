@@ -288,6 +288,11 @@
   <div id="track-panels"></div>
 
   <div class="panel">
+    <span class="panel-label">Drums · Kit &amp; Voicing</span>
+    <div id="drum-panel"></div>
+  </div>
+
+  <div class="panel">
     <span class="panel-label">Master · FX &amp; Bus</span>
     <div class="master-grid">
       <div class="slider-row"><div class="slider-header"><span class="slider-name">Reverb Size</span><span class="slider-value" id="v-reverbSize">0.55</span></div><input type="range" id="reverbSize" min="0" max="1" step="0.01" value="0.55"></div>
@@ -1692,17 +1697,16 @@ function buildAudioGraph() {
   const leadBus = makeTrackBus();
   const padBus = makeTrackBus();
 
-  // Drums — kit-selectable (parallel to synth models): pick the current genre's kit
-  const _sel = document.querySelector('input[name="algo"]:checked');
-  const _kit = DRUM_KITS[(_sel && ALGORITHMS[_sel.value] && ALGORITHMS[_sel.value].drumKit) || 'linn'] || DRUM_KITS.linn;
-  const snareGated = _kit.snare.gate;
+  // Drums — built from the editable drumParams (kit + per-voice knobs)
+  const _kit = DRUM_KITS[drumParams.kit] || DRUM_KITS.linn;
+  const snareGated = !!drumParams.snareGate;
 
-  const kick = new Tone.MembraneSynth({ pitchDecay: _kit.kick.pitchDecay, octaves: _kit.kick.octaves, envelope: { attack: 0.001, decay: _kit.kick.decay, sustain: 0, release: 0.12 } });
+  const kick = new Tone.MembraneSynth({ pitchDecay: drumParams.kickBoom, octaves: _kit.kick.octaves, envelope: { attack: 0.001, decay: drumParams.kickDecay, sustain: 0, release: 0.12 } });
   const kickVol = new Tone.Volume(_kit.kick.vol); kick.connect(kickVol); kickVol.connect(compressor);
 
-  // GATED REVERB tail (80s/dubstep snare) — only fired when the kit's snare.gate is true.
-  const snare = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.001, decay: _kit.snare.decay, sustain: 0 } });
-  const snareFilter = new Tone.Filter(_kit.snare.filterFreq, _kit.snare.filterType);
+  // GATED REVERB tail — only fired when snareGated (kit/toggle).
+  const snare = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.001, decay: drumParams.snareDecay, sustain: 0 } });
+  const snareFilter = new Tone.Filter(drumParams.snareTone, _kit.snare.filterType);
   const snareVol = new Tone.Volume(_kit.snare.vol);
   snare.chain(snareFilter, snareVol, compressor);
   const snareGateGain = new Tone.Gain(0);
@@ -1711,7 +1715,7 @@ function buildAudioGraph() {
   snareVol.connect(snareGateGain);
   snareGateGain.chain(snareGateReverb, snareGateVol, compressor);
 
-  const hat = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.001, decay: _kit.hat.decay, sustain: 0 } });
+  const hat = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.001, decay: drumParams.hatDecay, sustain: 0 } });
   const hatFilter = new Tone.Filter(_kit.hat.filterFreq, 'highpass');
   const hatVol = new Tone.Volume(_kit.hat.vol); hat.chain(hatFilter, hatVol, compressor);
 
@@ -1794,6 +1798,15 @@ const masterState = {
   sidechain: 0.7, tapeSat: 0.3, masterGain: 0.8,
 };
 const muteState = { bass: false, lead: false, pad: false, drums: false };
+// Editable drum voicing (parallel to trackParams) — kit + per-voice knobs.
+const drumParams = { kit: 'linn', kickDecay: 0.42, kickBoom: 0.08, snareDecay: 0.16, snareTone: 1800, snareGate: 1, hatDecay: 0.045 };
+const DRUM_CONTROLS = [
+  { key: 'kickDecay',  label: 'Kick Decay', min: 0.1,  max: 1.0,  step: 0.01 },
+  { key: 'kickBoom',   label: 'Kick Boom',  min: 0.02, max: 0.2,  step: 0.005 },
+  { key: 'snareDecay', label: 'Snare Whip', min: 0.05, max: 0.5,  step: 0.01 },
+  { key: 'snareTone',  label: 'Snare Tone', min: 600,  max: 4000, step: 50 },
+  { key: 'hatDecay',   label: 'Hat Decay',  min: 0.02, max: 0.2,  step: 0.005 },
+];
 let loopMode = false;
 
 function applyAllToGraph(g) {
@@ -2450,6 +2463,60 @@ function formatParamValue(key, val) {
   return Number(val).toFixed(2);
 }
 
+function applyDrumParams(g) {
+  if (!g) return;
+  const dp = drumParams;
+  try {
+    if (g.kick) { g.kick.pitchDecay = dp.kickBoom; if (g.kick.envelope) g.kick.envelope.decay = dp.kickDecay; }
+    if (g.snare && g.snare.envelope) g.snare.envelope.decay = dp.snareDecay;
+    if (g.snareFilter) g.snareFilter.frequency.value = dp.snareTone;
+    if (g.hat && g.hat.envelope) g.hat.envelope.decay = dp.hatDecay;
+    g.snareGated = !!dp.snareGate;
+  } catch (e) {}
+}
+function loadDrumKit(kitName) {
+  const k = DRUM_KITS[kitName] || DRUM_KITS.linn;
+  drumParams.kit = kitName;
+  drumParams.kickDecay = k.kick.decay;
+  drumParams.kickBoom = k.kick.pitchDecay;
+  drumParams.snareDecay = k.snare.decay;
+  drumParams.snareTone = k.snare.filterFreq;
+  drumParams.snareGate = k.snare.gate ? 1 : 0;
+  drumParams.hatDecay = k.hat.decay;
+  syncDrumUI();
+  if (liveSynths) applyDrumParams(liveSynths);
+}
+function syncDrumUI() {
+  const sel = $('drum-kit-select'); if (sel) sel.value = drumParams.kit;
+  for (const d of DRUM_CONTROLS) {
+    const el = $('drum-' + d.key); if (el) el.value = drumParams[d.key];
+    const v = $('v-drum-' + d.key); if (v) v.textContent = (+drumParams[d.key]).toFixed(d.step < 1 ? 3 : 0);
+  }
+  const gt = $('snare-gate-toggle'); if (gt) gt.classList.toggle('on', !!drumParams.snareGate);
+}
+function buildDrumPanel() {
+  const c = $('drum-panel'); if (!c) return;
+  c.innerHTML =
+    '<div class="track-header"><label>Kit</label>' +
+    '<select id="drum-kit-select">' + Object.keys(DRUM_KITS).map(k => '<option value="' + k + '">' + k.toUpperCase() + '</option>').join('') + '</select>' +
+    '<button class="send-toggle small" id="snare-gate-toggle">Snare Gate</button></div>' +
+    '<div class="slider-grid">' + DRUM_CONTROLS.map(d =>
+      '<div class="slider-row"><div class="slider-header"><span class="slider-name">' + d.label + '</span><span class="slider-value" id="v-drum-' + d.key + '">0</span></div>' +
+      '<input type="range" id="drum-' + d.key + '" data-dparam="' + d.key + '" min="' + d.min + '" max="' + d.max + '" step="' + d.step + '"></div>').join('') +
+    '</div>';
+  c.querySelectorAll('input[type="range"]').forEach(el => el.addEventListener('input', e => {
+    drumParams[e.target.dataset.dparam] = parseFloat(e.target.value);
+    const v = $('v-drum-' + e.target.dataset.dparam); if (v) v.textContent = (+e.target.value).toFixed(parseFloat(e.target.step) < 1 ? 3 : 0);
+    if (liveSynths) applyDrumParams(liveSynths);
+  }));
+  $('drum-kit-select').addEventListener('change', e => loadDrumKit(e.target.value));
+  $('snare-gate-toggle').addEventListener('click', () => {
+    drumParams.snareGate = drumParams.snareGate ? 0 : 1;
+    $('snare-gate-toggle').classList.toggle('on', !!drumParams.snareGate);
+    if (liveSynths) applyDrumParams(liveSynths);
+  });
+  syncDrumUI();
+}
 function buildTrackPanels() {
   const container = $('track-panels');
   container.innerHTML = '';
@@ -2882,6 +2949,7 @@ document.querySelectorAll('.algo-card').forEach(card => {
     card.classList.add('active');
     card.querySelector('input[type="radio"]').checked = true;
     const algoName = card.dataset.algo;
+    loadDrumKit((ALGORITHMS[algoName] && ALGORITHMS[algoName].drumKit) || 'linn');
     $('seed').value = GENRE_SEED[algoName] || $('seed').value;
     $('bpm').value = ALGORITHMS[algoName].defaultBpm;
     $('mode').value = ALGORITHMS[algoName].defaultMode;
@@ -3209,6 +3277,7 @@ window.addEventListener('resize', () => {
 
 /* Boot — load the default genre (Outrun) like a card click, no auto-play */
 buildTrackPanels();
+buildDrumPanel();
 syncMasterUI();
 renderPresetList();
 (function bootGenre() {
@@ -3218,6 +3287,7 @@ renderPresetList();
   $('seed').value = GENRE_SEED[name];
   $('bpm').value = ALGORITHMS[name].defaultBpm;
   $('mode').value = ALGORITHMS[name].defaultMode;
+  loadDrumKit((ALGORITHMS[name] && ALGORITHMS[name].drumKit) || 'linn');
   applyGenreVoicing(name);
   generate();
 })();
