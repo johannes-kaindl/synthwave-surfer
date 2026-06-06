@@ -1319,7 +1319,7 @@ const ALGORITHMS = {
     defaultBpm: 92, defaultMode: 'phrygian',
   },
   techno: {
-    totalBars: 16, buildForm: buildDropForm, arrangement: { dropBar: 4 },
+    totalBars: 16, buildForm: buildDropForm, arrangement: { dropBar: 4 }, drumKit: '909',
     riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.outrun),
     leadGenA: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.noir, startBar: 4 }),
     leadGenB: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.noir, startBar: 10 }),
@@ -1331,7 +1331,7 @@ const ALGORITHMS = {
     defaultBpm: 128, defaultMode: 'aeolian',
   },
   proghouse: {
-    totalBars: 16, buildForm: buildDropForm, arrangement: { dropBar: 4 },
+    totalBars: 16, buildForm: buildDropForm, arrangement: { dropBar: 4 }, drumKit: '909',
     riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.outrun),
     leadGenA: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.dreamwave, startBar: 4 }),
     leadGenB: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.dreamwave, startBar: 10 }),
@@ -1343,7 +1343,7 @@ const ALGORITHMS = {
     defaultBpm: 126, defaultMode: 'aeolian',
   },
   trance: {
-    totalBars: 16, buildForm: buildDropForm, arrangement: { dropBar: 4 },
+    totalBars: 16, buildForm: buildDropForm, arrangement: { dropBar: 4 }, drumKit: '909',
     riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.outrun),
     leadGenA: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.outrun, startBar: 4 }),
     leadGenB: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.outrun, startBar: 10 }),
@@ -1355,7 +1355,7 @@ const ALGORITHMS = {
     defaultBpm: 138, defaultMode: 'aeolian',
   },
   dubstep: {
-    totalBars: 16, buildForm: buildDropForm, arrangement: { dropBar: 4 },
+    totalBars: 16, buildForm: buildDropForm, arrangement: { dropBar: 4 }, drumKit: 'dubstep',
     riffGen: (rng, sl) => generateRiff(rng, sl, BASS_PROFILES.dubstep),
     leadGenA: (rng, sl, ctx) => [],
     leadGenB: (rng, sl, ctx) => [],
@@ -1368,7 +1368,7 @@ const ALGORITHMS = {
     wobble: true, wobbleRate: 1,
   },
   acid: {
-    totalBars: 16, buildForm: buildAcidForm,
+    totalBars: 16, buildForm: buildAcidForm, drumKit: '909',
     riffGen: (rng, sl) => generateAcidLine(rng, sl),
     leadGenA: (rng, sl, ctx) => generateSustainedLead(rng, sl, ctx.chordMap, { startBar: 8, bars: 4 }),
     leadGenB: (rng, sl, ctx) => [],
@@ -1619,6 +1619,14 @@ function disposeLive() {
   liveSynths = null;
 }
 
+/* Drum kits — selectable classic machines, parallel to the synth models.
+   Each shapes kick (boom/punch), snare (snap↔whip + gated-reverb tail), hat. */
+const DRUM_KITS = {
+  linn:    { kick: { pitchDecay: 0.08, octaves: 4, decay: 0.42, vol: -1 }, snare: { decay: 0.16, filterFreq: 1800, filterType: 'bandpass', vol: -10, gate: true,  gateDecay: 1.4 }, hat: { decay: 0.045, filterFreq: 7500, vol: -16 } },
+  '909':   { kick: { pitchDecay: 0.04, octaves: 4, decay: 0.30, vol: -1 }, snare: { decay: 0.20, filterFreq: 2400, filterType: 'highpass', vol: -6,  gate: false }, hat: { decay: 0.040, filterFreq: 8000, vol: -15 } },
+  '808':   { kick: { pitchDecay: 0.05, octaves: 6, decay: 0.85, vol:  0 }, snare: { decay: 0.12, filterFreq: 2000, filterType: 'bandpass', vol: -11, gate: false }, hat: { decay: 0.060, filterFreq: 9000, vol: -16 } },
+  dubstep: { kick: { pitchDecay: 0.06, octaves: 5, decay: 0.50, vol:  0 }, snare: { decay: 0.28, filterFreq: 1600, filterType: 'bandpass', vol: -5,  gate: true,  gateDecay: 1.9 }, hat: { decay: 0.050, filterFreq: 8500, vol: -18 } },
+};
 function buildAudioGraph() {
   // Master chain — Compressor → Tape Sat → Limiter → Master Gain → Meter → Output
   const compressor = new Tone.Compressor({ threshold: -12, ratio: 2.5, attack: 0.01, release: 0.18 });
@@ -1658,26 +1666,28 @@ function buildAudioGraph() {
   const leadBus = makeTrackBus();
   const padBus = makeTrackBus();
 
-  // Drums — kick direct, snare with gated reverb, hat direct
-  const kick = new Tone.MembraneSynth({ pitchDecay: 0.08, octaves: 4, envelope: { attack: 0.001, decay: 0.42, sustain: 0, release: 0.12 } });
-  const kickVol = new Tone.Volume(-1); kick.connect(kickVol); kickVol.connect(compressor);
+  // Drums — kit-selectable (parallel to synth models): pick the current genre's kit
+  const _sel = document.querySelector('input[name="algo"]:checked');
+  const _kit = DRUM_KITS[(_sel && ALGORITHMS[_sel.value] && ALGORITHMS[_sel.value].drumKit) || 'linn'] || DRUM_KITS.linn;
+  const snareGated = _kit.snare.gate;
 
-  // GATED REVERB — the 80s drum signature.
-  // Snare → bandpass → vol → splits to (dry+compressor) and (gated reverb chain).
-  // Gate logic: a Gain node we slam to 1 when snare hits, ramp to 0 after 280ms.
-  const snare = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.001, decay: 0.16, sustain: 0 } });
-  const snareFilter = new Tone.Filter(1800, 'bandpass');
-  const snareVol = new Tone.Volume(-10);
+  const kick = new Tone.MembraneSynth({ pitchDecay: _kit.kick.pitchDecay, octaves: _kit.kick.octaves, envelope: { attack: 0.001, decay: _kit.kick.decay, sustain: 0, release: 0.12 } });
+  const kickVol = new Tone.Volume(_kit.kick.vol); kick.connect(kickVol); kickVol.connect(compressor);
+
+  // GATED REVERB tail (80s/dubstep snare) — only fired when the kit's snare.gate is true.
+  const snare = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.001, decay: _kit.snare.decay, sustain: 0 } });
+  const snareFilter = new Tone.Filter(_kit.snare.filterFreq, _kit.snare.filterType);
+  const snareVol = new Tone.Volume(_kit.snare.vol);
   snare.chain(snareFilter, snareVol, compressor);
   const snareGateGain = new Tone.Gain(0);
-  const snareGateReverb = new Tone.Reverb({ decay: 1.4, preDelay: 0.01, wet: 1.0 });
+  const snareGateReverb = new Tone.Reverb({ decay: _kit.snare.gateDecay || 1.4, preDelay: 0.01, wet: 1.0 });
   const snareGateVol = new Tone.Volume(-6);
   snareVol.connect(snareGateGain);
   snareGateGain.chain(snareGateReverb, snareGateVol, compressor);
 
-  const hat = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.001, decay: 0.045, sustain: 0 } });
-  const hatFilter = new Tone.Filter(7500, 'highpass');
-  const hatVol = new Tone.Volume(-16); hat.chain(hatFilter, hatVol, compressor);
+  const hat = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.001, decay: _kit.hat.decay, sustain: 0 } });
+  const hatFilter = new Tone.Filter(_kit.hat.filterFreq, 'highpass');
+  const hatVol = new Tone.Volume(_kit.hat.vol); hat.chain(hatFilter, hatVol, compressor);
 
   // Open hi-hat — longer decay (house/techno offbeat signature)
   const openhat = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.001, decay: 0.32, sustain: 0 } });
@@ -1701,7 +1711,7 @@ function buildAudioGraph() {
     kick, snare, hat, kickVol, snareVol, hatVol, snareFilter, hatFilter,
     openhat, openhatVol, openhatFilter,
     riser, riserFilter, riserVol, crash, crashFilter, crashVol,
-    snareGateGain, snareGateReverb, snareGateVol,
+    snareGateGain, snareGateReverb, snareGateVol, snareGated,
     bassModel: null, leadModel: null, padModel: null,
     parts: [],
   };
@@ -1945,7 +1955,7 @@ function scheduleAll(form, melodyScale, bpm, g, algo) {
       if (algo.sidechain && !muteState.drums) triggerSidechain(g, time, masterState.sidechain);
     } else if (v.type === 'snare') {
       g.snare.triggerAttackRelease('16n', time, v.vel);
-      if (!muteState.drums) triggerGatedReverb(g, time);
+      if (g.snareGated && !muteState.drums) triggerGatedReverb(g, time);
     } else if (v.type === 'hat') {
       g.hat.triggerAttackRelease('32n', time, v.vel);
     } else if (v.type === 'openhat') {
