@@ -10,11 +10,28 @@ pre-public history.
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-06-07
+
+### Fixed
+
+- **WAV export now works.** The offline render hit a cross-context error —
+  `buildAudioGraph` connected to the frozen global `Tone.Destination`, which does
+  not follow `Tone.Offline`'s context swap. It now renders via `setContext()` +
+  `OfflineContext.render()`, with `buildAudioGraph`/`scheduleAll` using
+  `getDestination()`/`getTransport()`. Verified across all nine genres.
+- **Switching genre while the music plays now changes the composition, not just
+  the sound.** `generate()` re-arms the running transport (previously only the
+  voicing was applied live, so you heard the new instruments playing the old notes).
+- **Dubstep half-time pattern** scheduled two hat hits at the same instant (the
+  offbeat hat overlapped the first step of the 1/32 roll) — which a monophonic
+  voice cannot retrigger, breaking the offline render. The scheduler now collapses
+  same-time, same-voice drum hits.
+
 ### Removed
 
 - Dead `FACTORY_PRESETS` / `applyPreset` / `renderFactoryRow` (and their CSS),
   superseded by the per-genre card-preset model — they were never reachable from
-  the UI. No behaviour change (logic suite stays 45/0).
+  the UI.
 
 ## [0.1.1] - 2026-06-06
 
@@ -69,6 +86,7 @@ pre-public history.
 - Dead code (`FACTORY_PRESETS` / `applyPreset` / `renderFactoryRow`) remains in
   the source pending cleanup; it is not reachable from the UI.
 
-[Unreleased]: https://codeberg.org/jkaindl/synthwave-surfer/compare/v0.1.1...main
+[Unreleased]: https://codeberg.org/jkaindl/synthwave-surfer/compare/v0.1.2...main
+[0.1.2]: https://codeberg.org/jkaindl/synthwave-surfer/compare/v0.1.1...v0.1.2
 [0.1.1]: https://codeberg.org/jkaindl/synthwave-surfer/compare/v0.1.0...v0.1.1
 [0.1.0]: https://codeberg.org/jkaindl/synthwave-surfer/releases/tag/v0.1.0

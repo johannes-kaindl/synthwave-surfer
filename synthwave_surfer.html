@@ -1657,7 +1657,7 @@ function buildAudioGraph() {
   const masterGain = new Tone.Gain(0.8);
   const meter = new Tone.Meter({ channels: 2, smoothing: 0.5 });
   const analyser = new Tone.FFT(512);
-  compressor.chain(tapeSat, limiter, masterGain, meter, Tone.Destination);
+  compressor.chain(tapeSat, limiter, masterGain, meter, Tone.getDestination());
   masterGain.connect(analyser);
 
   // Send buses
@@ -1854,9 +1854,10 @@ function triggerGatedReverb(g, time) {
    Scheduling
    ═══════════════════════════════════════════════════════════════════ */
 function scheduleAll(form, melodyScale, bpm, g, algo) {
-  Tone.Transport.bpm.value = bpm;
-  Tone.Transport.swing = algo.swing;
-  Tone.Transport.swingSubdivision = '16n';
+  const transport = Tone.getTransport();   // context-following (live OR offline render)
+  transport.bpm.value = bpm;
+  transport.swing = algo.swing;
+  transport.swingSubdivision = '16n';
   const sec16 = 60 / bpm / 4;
   const secBeat = 60 / bpm;
   const secBar = secBeat * 4;
@@ -1988,6 +1989,19 @@ function scheduleAll(form, melodyScale, bpm, g, algo) {
       if (arrPhase(algo.arrangement, bar) === 'breakdown') return false;
       if (drops.some(db => bar === db - 1)) return false;
       return true;
+    });
+  }
+  // A monophonic drum voice can't be retriggered at the exact same instant — the
+  // offline render throws "start time must be strictly greater than previous start
+  // time". Collapse same-time, same-type hits (e.g. dubstep's half-time offbeat hat
+  // overlapping the first step of the 1/32 roll). Sonically neutral: the 2nd hit on
+  // a mono voice never sounded anyway.
+  {
+    const seenHits = new Set();
+    drumEvents = drumEvents.filter(e => {
+      const k = e.type + '@' + Math.round(e.time * 1e6);
+      if (seenHits.has(k)) return false;
+      seenHits.add(k); return true;
     });
   }
   makePart(drumEvents, (time, v) => {
@@ -2321,18 +2335,24 @@ async function exportWav() {
   const bpm = currentState.bpm;
   const algo = ALGORITHMS[currentState.algoName];
   const totalSec = (algo.totalBars * 4 * 60 / bpm) + 3;
+  const original = Tone.getContext();
+  const wasLoop = loopMode;
   try {
-    const buffer = await Tone.Offline(({ transport }) => {
-      const offGraph = buildAudioGraph();
-      setTrackModel(offGraph, 'bass', trackParams.bass.model, trackParams.bass);
-      setTrackModel(offGraph, 'lead', trackParams.lead.model, trackParams.lead);
-      setTrackModel(offGraph, 'pad', trackParams.pad.model, trackParams.pad);
-      applyAllToGraph(offGraph);
-      const wasLoop = loopMode; loopMode = false;
-      scheduleAll(currentState.form, SCALES[currentState.mode], bpm, offGraph, algo);
-      loopMode = wasLoop;
-      transport.start(0);
-    }, totalSec);
+    // Render in a dedicated offline context. We swap the global Tone context so
+    // buildAudioGraph()/scheduleAll() — which use getDestination()/getTransport() —
+    // build and schedule entirely inside the offline context. (Plain Tone.Offline
+    // left the frozen global Tone.Destination behind → cross-context connect error.)
+    const offline = new Tone.OfflineContext(2, totalSec, original.sampleRate);
+    Tone.setContext(offline);
+    const g = buildAudioGraph();
+    setTrackModel(g, 'bass', trackParams.bass.model, trackParams.bass);
+    setTrackModel(g, 'lead', trackParams.lead.model, trackParams.lead);
+    setTrackModel(g, 'pad', trackParams.pad.model, trackParams.pad);
+    applyAllToGraph(g);
+    loopMode = false;
+    scheduleAll(currentState.form, SCALES[currentState.mode], bpm, g, algo);
+    Tone.getTransport().start(0);
+    const buffer = await offline.render();
     const audioBuf = buffer.get ? buffer.get() : buffer;
     const wavBytes = audioBufferToWav(audioBuf);
     download(wavBytes, `synthwave_${currentState.algoName}_${currentState.seed}_${currentState.mode}.wav`, 'audio/wav');
@@ -2340,6 +2360,8 @@ async function exportWav() {
   } catch (e) {
     console.error(e); setStatus('⚠ Render error: ' + e.message, true);
   } finally {
+    loopMode = wasLoop;
+    Tone.setContext(original);   // CRITICAL: restore the live audio context
     $('export-wav').disabled = false;
   }
 }
@@ -2772,6 +2794,9 @@ function generate() {
   const stExp  = $('state-export'); if (stExp) stExp.disabled = false;
   syncPhaseSelector();
   setStatus('✓ generated · ' + algoName + ' · ' + (patternMode === 'fixed' ? 'fixed: ' + (getCurrentPhase() || 'default') : 'seed ' + seed));
+  // If music is playing, re-arm the transport so the new composition takes effect
+  // live (otherwise only the voicing/sound changes, not the notes).
+  if (Tone.Transport.state === 'started') startPlayback();
 }
 
 $('generate').onclick = generate;
@@ -2936,9 +2961,9 @@ $('loop-toggle').addEventListener('click', () => {
   }
 });
 
-$('play').onclick = async () => {
-  if (!currentState) return;
-  try { await Tone.start(); } catch (e) { setStatus('⚠ Audio context blocked', true); return; }
+// (Re)build the live graph and arm the transport with the CURRENT state. Reused by
+// both Play and any generate() that happens while the transport is already running.
+function startPlayback() {
   Tone.Transport.stop(); Tone.Transport.cancel(); Tone.Transport.position = 0;
   cancelAutoStop();
   disposeLive();
@@ -2955,6 +2980,11 @@ $('play').onclick = async () => {
   renderMeters();
   setStatus((loopMode ? '↻ ' : '▶ ') + 'playing · ' + currentState.algoName + ' · seed ' + currentState.seed);
   $('play').disabled = true; $('stop').disabled = false;
+}
+$('play').onclick = async () => {
+  if (!currentState) return;
+  try { await Tone.start(); } catch (e) { setStatus('⚠ Audio context blocked', true); return; }
+  startPlayback();
 };
 $('stop').onclick = () => {
   Tone.Transport.stop(); Tone.Transport.cancel();
