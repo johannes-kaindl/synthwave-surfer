@@ -77,6 +77,7 @@
   .algo-card[data-algo="trance"].active .algo-name { color: #4aa3ff; }
   .algo-card[data-algo="dubstep"].active { border-color: #ff3b6b; background: rgba(255, 59, 107, 0.08); }
   .algo-card[data-algo="dubstep"].active .algo-name { color: #ff3b6b; }
+  .algo-card[data-algo="dubstep"] { display: none; }   /* parked until a real wobble (per-bar bass-filter modulation) is built */
   .algo-card[data-algo="acid"].active { border-color: #c6ff00; background: rgba(198, 255, 0, 0.08); }
   .algo-card[data-algo="acid"].active .algo-name { color: #c6ff00; }
   .algo-card input[type="radio"] { display: none; }
@@ -726,7 +727,7 @@ const BASS_PROFILES = {
   dubstep:   { grooves: [[8,8]],                                                              octaveProb: 0.0,  moveProb: 0.0  },
   // Rolling offbeat 16th basses (kick-dodging) — the house/techno/trance signature.
   // Same 16-step grid; per-genre octave energy (techno hypnotic → trance euphoric).
-  techno:    { bassSteps: [2, 6, 10, 14],                       octaveProb: 0.20, rollingOffbeat: true }, // sparse offbeat 8ths (groovy, not "bububu")
+  techno:    { bassSteps: [2, 6, 10, 14], stepDur: 2, octaveProb: 0.15, moveProb: 0.25, rollingOffbeat: true }, // sustained, melodic, pumping offbeat bass (contrasts the staccato stab)
   proghouse: { bassSteps: [1,2,3,5,6,7,9,10,11,13,14,15],       octaveProb: 0.30, rollingOffbeat: true }, // rolling offbeat 16ths
   trance:    { bassSteps: [1,2,3,5,6,7,9,10,11,13,14,15],       octaveProb: 0.45, rollingOffbeat: true }, // rolling offbeat 16ths, euphoric octaves
 };
@@ -735,12 +736,23 @@ function generateRiff(rng, scaleLen, profile) {
   const out = [];
   if (profile.rollingOffbeat) {
     // Rolling offbeat bass: sound ONLY on the profile's offbeat steps (never on a
-    // four-on-the-floor kick step 0/4/8/12), root + an occasional octave jump.
-    // Techno = sparse offbeat 8ths (groovy); prog house / trance = full offbeat 16ths.
-    for (let s = 0; s < 16; s++) {
-      if (profile.bassSteps.includes(s)) out.push({ degree: rng() < profile.octaveProb ? (rng() < 0.5 ? scaleLen : -scaleLen) : 0, duration: 1 });
-      else out.push({ rest: true, duration: 1 });
+    // four-on-the-floor kick step 0/4/8/12). degree = root, an octave jump, or a
+    // melodic move (5th/b7/b3/down-4th) so it isn't a one-note drone. stepDur sets
+    // the note length (techno = sustained 8ths that pump under the kick; prog house
+    // / trance = staccato offbeat 16ths).
+    const dur = profile.stepDur || 1;
+    const moves = [4, 6, 2, -3];
+    let cursor = 0;
+    for (const st of profile.bassSteps) {
+      if (st > cursor) out.push({ rest: true, duration: st - cursor });
+      const r = rng();
+      let degree = 0;
+      if (r < profile.octaveProb) degree = rng() < 0.5 ? scaleLen : -scaleLen;
+      else if (profile.moveProb && r < profile.octaveProb + profile.moveProb) degree = moves[Math.floor(rng() * moves.length)];
+      out.push({ degree, duration: dur });
+      cursor = st + dur;
     }
+    if (cursor < 16) out.push({ rest: true, duration: 16 - cursor });
     return out;
   }
   const groove = profile.grooves[Math.floor(rng() * profile.grooves.length)];
@@ -762,9 +774,9 @@ function generateRiff(rng, scaleLen, profile) {
 }
 
 function bassFill(cell, rng) {
-  const out = cell.map(n => ({ degree: n.degree, duration: n.duration }));
+  const out = cell.map(n => n.rest ? { rest: true, duration: n.duration } : { degree: n.degree, duration: n.duration });
   const last = out[out.length - 1];
-  if (last.duration >= 4) {
+  if (!last.rest && last.duration >= 4) {   // turnaround only on a sustained NOTE tail — never a rest (rolling offbeat basses)
     out.pop();
     const half = Math.floor(last.duration / 2);
     const dir = rng() < 0.5 ? 1 : -1;
@@ -1297,8 +1309,15 @@ function buildArrangedForm(rng, material, opts) {
     const cell = (b % 4 === 3) ? bassFill(riff, rng) : riff;
     parts.push({ voice: 'bass', line: transpose(cell, rootOffset), startBar: b });
   }
-  if (melodyA && melodyA.length && arr) parts.push({ voice: 'lead', line: melodyA, startBar: arr.dropBars[0] + 2 });
-  if (melodyB && melodyB.length && arr && arr.breakdownStart != null) parts.push({ voice: 'lead', line: melodyB, startBar: arr.breakdownStart });
+  // Lead presence: repeat the 4-bar phrase to fill each main section (after every
+  // drop) and the breakdown — a single short phrase felt far too sparse.
+  if (melodyA && melodyA.length && arr) {
+    for (const db of arr.dropBars) { parts.push({ voice: 'lead', line: melodyA, startBar: db }); parts.push({ voice: 'lead', line: melodyA, startBar: db + 4 }); }
+  }
+  if (melodyB && melodyB.length && arr && arr.breakdownStart != null) {
+    parts.push({ voice: 'lead', line: melodyB, startBar: arr.breakdownStart });
+    parts.push({ voice: 'lead', line: melodyB, startBar: arr.breakdownStart + 4 });
+  }
   return { parts, riff, melodyA, melodyB };
 }
 
@@ -1361,10 +1380,12 @@ const ALGORITHMS = {
     leadGenB: (rng, sl, ctx) => generateMelody(rng, sl, 4, { ...ctx, profile: MELODY_PROFILES.noir, startBar: 10 }),
     padProg: [[0,2,4], [0,2,4], [-2,0,2], [-2,0,2]],
     padStartBar: 0, padEndBar: 16, padRoot: 60, padStride: 4, padSustain: 0.5,
+    padStab: { steps: [2, 6, 10, 14], dur: 1.5 },   // off-beat m7 stab instead of a sustained pad
+
     drumStartBar: 0, drumEndBar: 16, drumIntenseFrom: 999, drumBreakFrom: 999, drumBreakTo: 0,
     drumPattern: 'fourfloor',
     swing: 0, sidechain: true,
-    defaultBpm: 128, defaultMode: 'aeolian',
+    defaultBpm: 128, defaultMode: 'aeolian', leadRoot: 57,   // supersaw lead an octave lower (matches prog house / trance)
   },
   proghouse: {
     totalBars: 32, buildForm: buildArrangedForm, arrangement: { dropBars: [8, 24], breakdownStart: 16, breakdownEnd: 24 }, drumKit: '909',
@@ -1376,7 +1397,7 @@ const ALGORITHMS = {
     drumStartBar: 0, drumEndBar: 16, drumIntenseFrom: 999, drumBreakFrom: 999, drumBreakTo: 0,
     drumPattern: 'fourfloor',
     swing: 0, sidechain: true,
-    defaultBpm: 126, defaultMode: 'aeolian',
+    defaultBpm: 126, defaultMode: 'aeolian', leadRoot: 57,   // supersaw lead an octave lower
   },
   trance: {
     totalBars: 32, buildForm: buildArrangedForm, arrangement: { dropBars: [8, 24], breakdownStart: 16, breakdownEnd: 24 }, drumKit: '909',
@@ -1388,7 +1409,7 @@ const ALGORITHMS = {
     drumStartBar: 0, drumEndBar: 16, drumIntenseFrom: 999, drumBreakFrom: 999, drumBreakTo: 0,
     drumPattern: 'fourfloor',
     swing: 0, sidechain: true,
-    defaultBpm: 138, defaultMode: 'aeolian',
+    defaultBpm: 138, defaultMode: 'aeolian', leadRoot: 57,   // supersaw lead an octave lower
   },
   dubstep: {
     totalBars: 32, buildForm: buildArrangedForm, arrangement: { dropBars: [8, 24], breakdownStart: 16, breakdownEnd: 24 }, drumKit: 'dubstep',
@@ -1875,6 +1896,29 @@ function triggerGatedReverb(g, time) {
 /* ═══════════════════════════════════════════════════════════════════
    Scheduling
    ═══════════════════════════════════════════════════════════════════ */
+/* Pad/stab note events — shared by the scheduler AND the piano roll so they never
+   drift. A sustained chord every padStride bars, OR (when algo.padStab) short
+   off-beat m7 stabs. Returns { startStep, durSteps, tones } in 16th-note units. */
+function buildPadHits(algo) {
+  const chordMap = buildChordMap(algo.padProg, algo.totalBars);
+  const hits = [];
+  if (algo.padStab) {
+    const steps = algo.padStab.steps || [2, 6, 10, 14];
+    const dur = algo.padStab.dur || 1.5;
+    for (let bar = algo.padStartBar; bar < algo.totalBars; bar++) {
+      const t = chordMap[bar].tones;
+      const tones = t.concat([t[0] + 6]);   // triad + b7 → minor-7th stab
+      for (const st of steps) hits.push({ startStep: bar * 16 + st, durSteps: dur, tones });
+    }
+  } else {
+    const stride = algo.padStride || 1;
+    const sustain = algo.padSustain != null ? algo.padSustain : 0.85;
+    for (let bar = algo.padStartBar; bar < algo.totalBars; bar += stride) {
+      hits.push({ startStep: bar * 16, durSteps: 16 * stride * sustain, tones: chordMap[bar].tones });
+    }
+  }
+  return hits;
+}
 function scheduleAll(form, melodyScale, bpm, g, algo) {
   const transport = Tone.getTransport();   // context-following (live OR offline render)
   transport.bpm.value = bpm;
@@ -1900,7 +1944,7 @@ function scheduleAll(form, melodyScale, bpm, g, algo) {
   const bassEvents = [], leadEvents = [];
   for (const part of form.parts) {
     const arr = part.voice === 'bass' ? bassEvents : leadEvents;
-    const rootMidi = part.voice === 'bass' ? 45 : 69;
+    const rootMidi = part.voice === 'bass' ? 45 : (algo.leadRoot || 69);
     let cursor = part.startBar * 16;
     for (const n of part.line) {
       if (!n.rest) {
@@ -1933,15 +1977,11 @@ function scheduleAll(form, melodyScale, bpm, g, algo) {
     }
   });
 
-  const padEvents = [];
-  const padChordMap = buildChordMap(algo.padProg, algo.totalBars); // SAME harmonic rhythm as bass/lead (was: cycled padProg every bar → clash)
-  const padStride = algo.padStride || 1;                            // bars between pad hits (sporadic when > 1)
-  const padSustain = algo.padSustain != null ? algo.padSustain : 0.85;
-  for (let bar = algo.padStartBar; bar < algo.totalBars; bar += padStride) {
-    const chord = padChordMap[bar].tones;
-    const notes = chord.map(d => Tone.Frequency(degreeToMidi(d, AEOLIAN, algo.padRoot), 'midi').toNote());
-    padEvents.push({ time: bar * secBar, notes, duration: secBar * padStride * padSustain });
-  }
+  const padEvents = buildPadHits(algo).map(h => ({
+    time: h.startStep * sec16,
+    notes: h.tones.map(d => Tone.Frequency(degreeToMidi(d, AEOLIAN, algo.padRoot), 'midi').toNote()),
+    duration: h.durSteps * sec16,
+  }));
   makePart(padEvents, (time, v) => {
     if (g.padModel) {
       try {
@@ -2075,10 +2115,10 @@ function drawRoll(form, melodyScale, algo, playheadProgress, mutes) {
   const BAR_W = cssW / TB; const SIXTEENTH_W = BAR_W / 16;
   const allMidi = [];
   for (const part of form.parts) {
-    const rootMidi = part.voice === 'bass' ? 45 : 69;
+    const rootMidi = part.voice === 'bass' ? 45 : (algo.leadRoot || 69);
     for (const n of part.line) if (!n.rest) allMidi.push(degreeToMidi(n.degree, melodyScale, rootMidi));
   }
-  for (const ch of algo.padProg) for (const d of ch) allMidi.push(degreeToMidi(d, AEOLIAN, algo.padRoot));
+  for (const h of buildPadHits(algo)) for (const d of h.tones) allMidi.push(degreeToMidi(d, AEOLIAN, algo.padRoot));
   const lo = Math.min(...allMidi) - 2; const hi = Math.max(...allMidi) + 2;
   const rows = hi - lo + 1; const rowH = cssH / rows;
   for (let m = lo; m <= hi; m++) {
@@ -2096,18 +2136,19 @@ function drawRoll(form, melodyScale, algo, playheadProgress, mutes) {
   }
   ctx.globalAlpha = mutes.pad ? 0.18 : 1;
   ctx.fillStyle = 'rgba(62, 216, 216, 0.16)';
-  for (let bar = algo.padStartBar; bar < algo.totalBars; bar++) {
-    const chord = algo.padProg[(bar - algo.padStartBar) % algo.padProg.length];
-    for (const d of chord) {
+  for (const h of buildPadHits(algo)) {
+    const x = h.startStep * SIXTEENTH_W;
+    const w = Math.max(2, h.durSteps * SIXTEENTH_W - 1);
+    for (const d of h.tones) {
       const m = degreeToMidi(d, AEOLIAN, algo.padRoot);
-      ctx.fillRect(bar * BAR_W + 1, cssH - (m - lo + 1) * rowH + 1, BAR_W - 2, rowH - 2);
+      ctx.fillRect(x + 1, cssH - (m - lo + 1) * rowH + 1, w, rowH - 2);
     }
   }
   ctx.globalAlpha = 1;
   for (const part of form.parts) {
     const isMuted = part.voice === 'bass' ? mutes.bass : mutes.lead;
     ctx.globalAlpha = isMuted ? 0.22 : 1;
-    const rootMidi = part.voice === 'bass' ? 45 : 69;
+    const rootMidi = part.voice === 'bass' ? 45 : (algo.leadRoot || 69);
     const color = part.voice === 'bass' ? '#ffb547' : '#ff2d95';
     let cursor = part.startBar * 16;
     for (const n of part.line) {
@@ -2278,7 +2319,7 @@ function exportMidi() {
   const bassEvents = [], leadEvents = [];
   for (const part of currentState.form.parts) {
     const arr = part.voice === 'bass' ? bassEvents : leadEvents;
-    const rootMidi = part.voice === 'bass' ? 45 : 69;
+    const rootMidi = part.voice === 'bass' ? 45 : (algo.leadRoot || 69);
     let cursor = part.startBar * 16;
     for (const n of part.line) {
       if (!n.rest) arr.push({ start: Math.round(cursor * TPS), duration: Math.round(n.duration * TPS * 0.94), note: degreeToMidi(n.degree, scale, rootMidi), vel: 100 });
@@ -2858,20 +2899,20 @@ const ENGINE_VOICINGS = {
   },
   techno: {
     bass:   { model: 'alkali', volume: 0.6, detune: 0, attack: 0.003, decay: 0.2, sustain: 0.4, release: 0.15, cutoff: 0.35, resonance: 0.3, fenvAmount: 0.5, fenvDecay: 0.25, character: 0.4, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
-    lead:   { model: 'crystal', volume: 0.35, detune: 0, attack: 0.005, decay: 0.25, sustain: 0.2, release: 0.4, cutoff: 0.6, resonance: 0.3, fenvAmount: 0.4, fenvDecay: 0.3, character: 0.4, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.15, arp: 'off', send: true },
-    pad:    { model: 'vapor', volume: 0.14, detune: 0, attack: 0.6, decay: 0.4, sustain: 0.6, release: 1.5, cutoff: 0.4, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.6, lfoTarget: 'filter', lfoRate: 0.1, lfoDepth: 0.3, arp: 'off', send: true },
+    lead:   { model: 'supersaw', volume: 0.32, detune: 0, attack: 0.02, decay: 0.3, sustain: 0.10, release: 0.8, cutoff: 0.6, resonance: 0.2, fenvAmount: 0.35, fenvDecay: 0.4, character: 0.5, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.15, arp: 'off', send: true }, // supersaw pluck
+    pad:    { model: 'vapor', volume: 0.16, detune: 0, attack: 0.002, decay: 0.16, sustain: 0.0, release: 0.14, cutoff: 0.5, resonance: 0.25, fenvAmount: 0.45, fenvDecay: 0.18, character: 0.5, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: true }, // Detroit stab (short pluck, not a pad)
     master: { reverbSize: 0.5, reverbWet: 0.35, delayTime: 0.5, delayFB: 0.4, delayWet: 0.3, sidechain: 0.8, tapeSat: 0.4, masterGain: 0.82 },
   },
   proghouse: {
     bass:   { model: 'alkali', volume: 0.55, detune: 0, attack: 0.004, decay: 0.18, sustain: 0.4, release: 0.15, cutoff: 0.4, resonance: 0.25, fenvAmount: 0.4, fenvDecay: 0.2, character: 0.4, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
-    lead:   { model: 'supersaw', volume: 0.4, detune: 0, attack: 0.01, decay: 0.3, sustain: 0.3, release: 0.6, cutoff: 0.7, resonance: 0.2, fenvAmount: 0.4, fenvDecay: 0.4, character: 0.6, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.15, arp: 'off', send: true },
-    pad:    { model: 'vapor', volume: 0.2, detune: 0, attack: 0.8, decay: 0.5, sustain: 0.8, release: 2.0, cutoff: 0.55, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.8, lfoTarget: 'filter', lfoRate: 0.1, lfoDepth: 0.3, arp: 'off', send: true },
+    lead:   { model: 'supersaw', volume: 0.4, detune: 0, attack: 0.01, decay: 0.3, sustain: 0.10, release: 0.6, cutoff: 0.7, resonance: 0.2, fenvAmount: 0.4, fenvDecay: 0.4, character: 0.6, lfoTarget: 'off', lfoRate: 0.2, lfoDepth: 0.15, arp: 'off', send: true },
+    pad:    { model: 'vapor', volume: 0.11, detune: 0, attack: 0.8, decay: 0.5, sustain: 0.7, release: 1.6, cutoff: 0.55, resonance: 0.15, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.65, lfoTarget: 'filter', lfoRate: 0.1, lfoDepth: 0.3, arp: 'off', send: true },
     master: { reverbSize: 0.6, reverbWet: 0.45, delayTime: 0.5, delayFB: 0.45, delayWet: 0.4, sidechain: 0.85, tapeSat: 0.35, masterGain: 0.82 },
   },
   trance: {
     bass:   { model: 'alkali', volume: 0.55, detune: 0, attack: 0.003, decay: 0.15, sustain: 0.3, release: 0.12, cutoff: 0.4, resonance: 0.3, fenvAmount: 0.45, fenvDecay: 0.2, character: 0.4, lfoTarget: 'off', lfoRate: 0.1, lfoDepth: 0.2, arp: 'off', send: false },
-    lead:   { model: 'supersaw', volume: 0.42, detune: 7, attack: 0.02, decay: 0.4, sustain: 0.5, release: 1.0, cutoff: 0.75, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.7, lfoTarget: 'off', lfoRate: 0.3, lfoDepth: 0.1, arp: 'off', send: true },
-    pad:    { model: 'vapor', volume: 0.22, detune: 8, attack: 1.0, decay: 0.5, sustain: 0.85, release: 2.5, cutoff: 0.6, resonance: 0.12, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.9, lfoTarget: 'filter', lfoRate: 0.08, lfoDepth: 0.35, arp: 'off', send: true },
+    lead:   { model: 'supersaw', volume: 0.42, detune: 7, attack: 0.02, decay: 0.4, sustain: 0.10, release: 1.0, cutoff: 0.75, resonance: 0.2, fenvAmount: 0.3, fenvDecay: 0.5, character: 0.7, lfoTarget: 'off', lfoRate: 0.3, lfoDepth: 0.1, arp: 'off', send: true },
+    pad:    { model: 'vapor', volume: 0.13, detune: 8, attack: 1.0, decay: 0.5, sustain: 0.8, release: 2.5, cutoff: 0.6, resonance: 0.12, fenvAmount: 0.3, fenvDecay: 0.6, character: 0.8, lfoTarget: 'filter', lfoRate: 0.08, lfoDepth: 0.35, arp: 'off', send: true },
     master: { reverbSize: 0.7, reverbWet: 0.55, delayTime: 0.5, delayFB: 0.5, delayWet: 0.45, sidechain: 0.8, tapeSat: 0.35, masterGain: 0.82 },
   },
   dubstep: {
@@ -3779,6 +3820,13 @@ default-phase: calm
       const f = bassFill(cell, mulberry32(4));
       assert(f.reduce((s, e) => s + e.duration, 0) === 16, 'still one bar');
       assert(f.every(e => typeof e.degree === 'number' && e.duration >= 1), 'valid format');
+    }],
+    ['bass: bassFill preserves rests on a rolling-offbeat cell (no undefined degrees)', () => {
+      const cell = generateRiff(mulberry32(8), 7, BASS_PROFILES.proghouse);  // rolling cell HAS rests
+      const f = bassFill(cell, mulberry32(2));
+      assert(f.reduce((s, e) => s + e.duration, 0) === 16, 'still one bar');
+      assert(f.some(e => e.rest), 'rests preserved (not turned into undefined-degree notes)');
+      assert(f.every(e => e.rest || typeof e.degree === 'number'), 'every entry is a rest or a real note');
     }],
     ['bass: rolling offbeat profiles never sound on a kick step (0/4/8/12)', () => {
       for (const g of ['techno', 'proghouse', 'trance']) {
