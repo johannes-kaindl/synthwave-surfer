@@ -1,5 +1,9 @@
 # AGENTS.md
 
+> **Workspace-Standards:** Die verbindliche Leitkonvention steht in `_docs/CONVENTIONS.md`
+> (am Workspace-Root `/Users/Shared/code/`), Modell comply-or-explain. Offene Punkte fuer
+> dieses Repo siehe Abschnitt "Offene Konventions-Punkte".
+
 Conventions for AI assistants working in this repo.
 
 ## What this is
@@ -53,3 +57,11 @@ from a seed. Long-term goal: an Obsidian plugin (the Kuro universe's audio layer
   multi-section EDM structure (build→drop→main→breakdown→drop2→main) with riser+crash.
 - **Current state lives in `claude/memory/project_synthwave_surfer.md`** — including the
   active branch and the open next-steps. Always reconcile against it.
+
+## Offene Konventions-Punkte
+
+- [ ] CORE-META-03 — Hero/Screenshots nach `docs/images/` verschieben (statt `assets/`) und reproduzierbar per Skript erzeugen.
+- [ ] CORE-META-08 — Doc-Lizenz `LICENSE-DOCS` (CC BY-SA 4.0) anlegen und im README verlinken.
+- [ ] CORE-META-10 — Beschreibung + Topics auf Codeberg/GitHub setzen (kein Manifest vorhanden, daher manuell pflegen).
+- [ ] CORE-AGENT-01 — Abschnitt "Abweichungen von der Leitkonvention" in AGENTS.md ergaenzen (Skeleton vervollstaendigen).
+- [ ] CORE-AGENT-05 — `.claude/` gitignoren (nur `.claude/settings.local.json` erlauben); bereits getrackte `.claude/launch.json` aus dem Index nehmen.
