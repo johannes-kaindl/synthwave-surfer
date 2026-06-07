@@ -10,6 +10,19 @@ pre-public history.
 
 ## [Unreleased]
 
+### Added
+- Rolling offbeat basses for Techno / Prog House / Trance — kick-dodging (the bass
+  rests on the four-on-the-floor kick steps): Techno plays a sparse offbeat-8th
+  groove; Prog House and Trance roll the offbeat 16ths.
+
+### Fixed
+- Performance degradation over time: the live audio graph was only partially
+  disposed on each rebuild — the track-bus and synth-model wrappers leaked their
+  nodes (including PolySynths), and `renderMeters` stacked a new requestAnimationFrame
+  loop on every re-arm. Both are now cleaned up.
+- Trance / Prog House showed no instrument in the lead Model dropdown — the
+  `supersaw` option was missing from the list.
+
 ## [0.1.2] - 2026-06-07
 
 ### Fixed
