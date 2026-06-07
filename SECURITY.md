@@ -60,8 +60,8 @@ Synthwave Surfer is **fully client-side**:
 - The only runtime fetch is the [Tone.js](https://tonejs.github.io/) library
   from a CDN; everything else is in the single HTML file.
 - Presets and settings live in the browser's `localStorage`.
-- Audio rendering and all exports (MIDI / `.swmd` / JSON; WAV is currently
-  disabled) happen entirely in the browser.
+- Audio rendering and all exports (WAV / MIDI / `.swmd` / JSON) happen entirely
+  in the browser.
 
 Reports that violate these assumptions (covert network calls, tracking, synced
 data) are very much in scope and especially welcome.

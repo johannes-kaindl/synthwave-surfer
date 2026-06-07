@@ -29,7 +29,9 @@ from a seed. Long-term goal: an Obsidian plugin (the Kuro universe's audio layer
 - **Tone.js gotchas (learned the hard way):** cutoff ≤ ~0.04 ≈ 140 Hz lowpass mutes a
   bass; new synth models need a `MDL_LABELS` entry (else `padEnd` crash); schedule
   one-shots via `makePart` (transport-synced + cleaned up), not raw `triggerAttack`;
-  `Tone.Offline` clashes with the global `Tone.Destination` (the WAV-export bug).
+  for the offline render (WAV export) use `Tone.getDestination()`/`Tone.getTransport()` +
+  `setContext()`+`OfflineContext.render()`, NOT the frozen global `Tone.Destination`/`Tone.Transport`
+  (cross-context connect error — fixed in v0.1.2).
 
 ## Memory + logs
 - **Vault memory (tracked, primary):** `claude/memory/` — `MEMORY.md` is the index,

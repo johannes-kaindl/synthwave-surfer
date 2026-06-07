@@ -284,8 +284,11 @@ note events; changing the seed explores the same style.
 ## Known limitations
 
 - **Audio requires an HTTP origin** — Tone.js does not initialise on `file://`.
-- **WAV export is broken** — the UI button is disabled; `Tone.Offline` clashes
-  with the global `Tone.Destination` across audio contexts. MIDI / `.swmd` export
-  and live playback are fine.
 - **Legacy code** — `stratos` is a legacy synth model (still selectable in the
   Model dropdown, but used by no genre voicing).
+
+WAV export renders offline in a dedicated `OfflineContext`: it swaps the global
+context with `setContext()` so `buildAudioGraph()`/`scheduleAll()` (which use
+`getDestination()`/`getTransport()`) build and schedule inside it, then restores
+the live context. (Connecting to the frozen global `Tone.Destination` from inside
+an offline render is the cross-context trap to avoid.)

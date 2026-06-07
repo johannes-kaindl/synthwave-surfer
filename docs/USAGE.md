@@ -134,13 +134,10 @@ canvas visualises the generated notes for the current form.
 
 | Format | Contents |
 |--------|----------|
+| **WAV** | The current composition rendered to audio (offline render — includes your mutes and current sound). |
 | **MIDI** | All tracks as a standard MIDI file. |
 | **`.swmd`** | The composition as Obsidian-compatible Markdown — saved as `<name>.md` (the `.swmd` format with a `.md` extension so Obsidian renders it). |
 | **State JSON** | A full snapshot of the current state, including the serialised SWMD. |
-
-> **WAV export is currently disabled** — the WAV button is greyed out pending a
-> `Tone.Offline` / `Tone.Destination` fix. Use MIDI or `.swmd` for now; live
-> playback is unaffected.
 
 ## Importing `.swmd`
 

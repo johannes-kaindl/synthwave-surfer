@@ -74,8 +74,7 @@ it live.
 - **Real-time editing** — per-track instrument panels (model, ADSR, filter, LFO)
   and a master FX bus (reverb, feedback delay, sidechain, tape saturation).
 - **Export** — MIDI (all tracks), `.swmd` (a [Markdown music format](#the-swmd-format)
-  that opens in Obsidian), and full state as JSON. (A WAV export exists in the UI
-  but is currently disabled — see [known limitations](docs/ARCHITECTURE.md#known-limitations).)
+  that opens in Obsidian), WAV (offline render), and full state as JSON.
 - **Presets** — every genre card *is* a curated preset; save your own tweaks to
   `localStorage` and export/import them as JSON.
 - **External API** — a small frozen `window.synthwaveSurfer` for driving phase
@@ -120,7 +119,7 @@ The essentials:
 | **Instrument panels** | Live model + ADSR + filter + LFO per track |
 | **Drums · Kit & Voicing** | Drum-kit selector + live per-voice knobs + snare-gate toggle |
 | **Master · FX & Bus** | Reverb, delay, sidechain, tape saturation, master gain |
-| **Export** | MIDI · `.swmd` · State JSON |
+| **Export** | WAV · MIDI · `.swmd` · State JSON |
 
 ## The .swmd format
 
