@@ -62,6 +62,6 @@ from a seed. Long-term goal: an Obsidian plugin (the Kuro universe's audio layer
 
 - [ ] CORE-META-03 — Hero/Screenshots nach `docs/images/` verschieben (statt `assets/`) und reproduzierbar per Skript erzeugen.
 - [ ] CORE-META-08 — Doc-Lizenz `LICENSE-DOCS` (CC BY-SA 4.0) anlegen und im README verlinken.
-- [ ] CORE-META-10 — Beschreibung + Topics auf Codeberg/GitHub setzen (kein Manifest vorhanden, daher manuell pflegen).
+- [x] CORE-META-10 — Beschreibung + Topics auf Codeberg/GitHub setzen — erledigt 2026-06-08 (Description + Homepage=Live-Demo + 15 Topics auf beiden via API; manuell gepflegt).
 - [ ] CORE-AGENT-01 — Abschnitt "Abweichungen von der Leitkonvention" in AGENTS.md ergaenzen (Skeleton vervollstaendigen).
 - [ ] CORE-AGENT-05 — `.claude/` gitignoren (nur `.claude/settings.local.json` erlauben); bereits getrackte `.claude/launch.json` aus dem Index nehmen.
