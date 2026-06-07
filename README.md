@@ -1,6 +1,6 @@
 # Synthwave Surfer
 
-> Deterministic generative synthwave in the browser — nine genre engines, one
+> Deterministic generative synthwave in the browser — eight genre engines, one
 > seed, no build step. Pick a genre, hit play, get a full arrangement.
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-8a4dff?style=flat-square)](LICENSE)
@@ -53,15 +53,15 @@ it live.
 
 ## What it does
 
-- **Nine genre engines**, each with its own composition algorithm *and* its own
-  synth voicing — Outrun, Noir, Dreamwave, Carpenter, Techno, Prog House,
-  Trance, Dubstep, Acid House (see the [genre table](#genres)).
+- **Eight genre engines**, each with its own composition algorithm *and* its own
+  synth voicing — Outrun, Noir, Dreamwave, Carpenter, Techno, Prog House, Trance,
+  Acid House (see the [genre table](#genres)). A ninth, Dubstep, is parked.
 - **Deterministic** — `seed + genre` fully determines the output. Reproducible,
   shareable, diff-able. No two seeds sound alike; the same seed never drifts.
 - **Motif-based composition** — a melody engine that states a motif and develops
   it (transpose / invert / ornament) instead of random-walking, plus a
   root-anchored bass-riff engine with turnaround fills.
-- **Six synth voices**, shared across the nine engines — a DX7-style FM bell, an
+- **Six synth voices**, shared across the engines — a DX7-style FM bell, an
   MS-20 distorted bass, a TB-303 (saw + resonant filter envelope + Chebyshev
   squelch), two Juno-106-style detuned-saw voices (a washed pad and a brighter
   lead), and a 7-oscillator supersaw anthem lead.
@@ -97,8 +97,11 @@ kit, and voicing in one go.
 | **Techno** | Four-on-the-floor, offbeat open hats, two drops + breakdown | 128 | A aeolian | 808 |
 | **Prog House** | Four-on-the-floor, supersaw plucks, pumping pads | 126 | A aeolian | 909 |
 | **Trance** | Euphoric supersaw anthem leads, full 32-bar arrangement | 138 | A aeolian | 138 |
-| **Dubstep** | Half-time groove, beat-locked wobble bass, no melodic lead | 140 | A phrygian | 70 |
 | **Acid House** | TB-303 squelch line (per-step slide + accent), hypnotic single key | 124 | A phrygian | 303 |
+
+> A ninth engine, **Dubstep**, is currently **parked** (hidden from the selector)
+> — its wobble needs per-bar bass-filter modulation that isn't wired yet. The
+> code is still in the repo; see the [roadmap](#roadmap).
 
 The seeds are deliberate flavour, not arbitrary: birth years of the style
 (Outrun `1986`, *Halloween* `1978`), Roland model numbers (`808`, `909`, TB-`303`),
@@ -202,8 +205,8 @@ No build, three test layers (details in [CONTRIBUTING.md](CONTRIBUTING.md)):
 
 ```bash
 node scripts/check-syntax.mjs           # 1. syntax gate (parses the inline <script>)
-node scripts/fullsuite.mjs              # 2. headless logic suite → real: 45 passed, 0 failed
-# 3. in-browser: open http://localhost:8745/synthwave_surfer.html?test=1  (49 tests → console)
+node scripts/fullsuite.mjs              # 2. headless logic suite → real: 47 passed, 0 failed
+# 3. in-browser: open http://localhost:8745/synthwave_surfer.html?test=1  (51 tests → console)
 ```
 
 A Playwright + headless-Chrome audio harness (measuring master-output RMS) is
@@ -231,6 +234,10 @@ Shipped:
 - [x] `.swmd` Markdown codec (import / export)
 
 Capability-layer expansion (in progress):
+
+- [ ] **Dubstep wobble** — per-bar bass-filter modulation via a dedicated filter
+  node in the bass bus (the bus LFO can't reach the PolySynth's per-voice filter);
+  Dubstep is parked until then.
 
 - [ ] **Layer B** — extended jazz voicings for Lo-fi / DnB, per-track
   swing + humanisation, lo-fi texture (crackle / bitcrush)

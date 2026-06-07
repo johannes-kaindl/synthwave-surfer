@@ -55,7 +55,7 @@ the whole app.
 
 ```bash
 node scripts/fullsuite.mjs
-# → real: 45 passed, 0 failed | probes: 1 pass, 2 expected-fail | skipped(DOM): 4
+# → real: 47 passed, 0 failed | probes: 1 pass, 2 expected-fail | skipped(DOM): 4
 ```
 
 It extracts the in-file `tests` array plus the pure functions and runs them under
@@ -69,7 +69,7 @@ python3 -m http.server 8745
 # → http://localhost:8745/synthwave_surfer.html?test=1
 ```
 
-The `?test=1` flag runs the full `tests` array (49 real tests) in the browser
+The `?test=1` flag runs the full `tests` array (51 real tests) in the browser
 console.
 
 ### 4. Headless audio verification (optional — for audio-graph / synth / drum / scheduling changes)
@@ -95,11 +95,11 @@ python3 -m http.server 8745   # → http://localhost:8745/synthwave_surfer.html
 ```
 
 - [ ] Default genre (Outrun) loads and **Generate → ▶ Play** produces sound
-- [ ] All **9 genre cards** load and play without console errors
-      (outrun, noir, dreamwave, carpenter, techno, proghouse, trance, dubstep, acid)
+- [ ] All **8 visible genre cards** load and play without console errors
+      (outrun, noir, dreamwave, carpenter, techno, proghouse, trance, acid; Dubstep is parked)
 - [ ] Changing the **seed** and regenerating yields a different composition in
       the same style; the same seed reproduces exactly
-- [ ] The EDM genres (techno/proghouse/trance/dubstep) audibly **drop** after
+- [ ] The EDM genres (techno/proghouse/trance) audibly **drop** after
       the build and expose pads in the breakdown
 - [ ] **Drums panel**: switching kit + moving the knobs changes the drums live;
       the snare-gate toggle changes the snare tail

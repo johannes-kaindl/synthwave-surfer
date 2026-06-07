@@ -14,7 +14,7 @@ from a seed. Long-term goal: an Obsidian plugin (the Kuro universe's audio layer
 - **Tests:**
   - Headless logic suite (committed, canonical): `node scripts/fullsuite.mjs`
     (extracts the in-file `tests` array + pure functions, runs with Node — expect
-    "real: 45 passed, 0 failed"). A `.remember/tmp/fullsuite.mjs` copy may also exist.
+    "real: 47 passed, 0 failed"). A `.remember/tmp/fullsuite.mjs` copy may also exist.
   - Syntax gate (committed): `node scripts/check-syntax.mjs` before committing.
   - Headless AUDIO verification (Claude can self-check sound, not just the user's ear):
     `NODE_PATH=~/.npm/_npx/e41f203b7505f1fb/node_modules node .remember/tmp/verify_*.cjs`

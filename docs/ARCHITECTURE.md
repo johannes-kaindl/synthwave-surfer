@@ -113,7 +113,7 @@ Six named patterns are dispatched in the scheduler (`:1949`):
 genres a song arc. `arrPhase` classifies each bar as **build** (before the first
 drop), **main** (after a drop), or **breakdown**.
 
-The four EDM genres share an identical
+The four EDM engines (Techno / Prog House / Trance, plus the parked Dubstep) share an identical
 `arrangement = { dropBars: [8, 24], breakdownStart: 16, breakdownEnd: 24 }` over
 32 bars — two drops, one breakdown (bars 16–23). The arc is built from these
 rules:
@@ -273,10 +273,10 @@ note events; changing the seed explores the same style.
 
 ## Tests
 
-- **In-browser:** `?test=1` runs the in-file `tests` array (49 real tests) to the
+- **In-browser:** `?test=1` runs the in-file `tests` array (51 real tests) to the
   console.
 - **Headless logic:** `node scripts/fullsuite.mjs` extracts the same tests plus
-  the pure functions and runs them under Node → `real: 45 passed, 0 failed`
+  the pure functions and runs them under Node → `real: 47 passed, 0 failed`
   (4 DOM tests skipped). `node scripts/check-syntax.mjs` is the syntax gate.
 - **Headless audio:** Playwright + Chrome measures master-output RMS to confirm
   an engine actually produces sound. See [CONTRIBUTING.md](../CONTRIBUTING.md).
@@ -286,6 +286,9 @@ note events; changing the seed explores the same style.
 - **Audio requires an HTTP origin** — Tone.js does not initialise on `file://`.
 - **Legacy code** — `stratos` is a legacy synth model (still selectable in the
   Model dropdown, but used by no genre voicing).
+- **Dubstep is parked** — hidden from the genre selector. Its wobble needs per-bar
+  bass-filter modulation, but the bus LFO can't reach the `alkali` PolySynth's
+  per-voice filter; bringing it back needs a dedicated filter node in the bass bus.
 
 WAV export renders offline in a dedicated `OfflineContext`: it swaps the global
 context with `setContext()` so `buildAudioGraph()`/`scheduleAll()` (which use

@@ -10,18 +10,37 @@ pre-public history.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-08
+
 ### Added
-- Rolling offbeat basses for Techno / Prog House / Trance — kick-dodging (the bass
-  rests on the four-on-the-floor kick steps): Techno plays a sparse offbeat-8th
-  groove; Prog House and Trance roll the offbeat 16ths.
+- **Rolling offbeat basses** for Techno / Prog House / Trance (kick-dodging — the
+  bass never lands on a four-on-the-floor kick step): Techno plays a sustained,
+  melodic, pumping offbeat bass; Prog House and Trance roll the offbeat 16ths.
+- **Detroit-style stab for Techno** — a short off-beat m7 chord stab replaces the
+  sustained pad: transient and narrow, so it frees the frequency space the wide pad
+  was hogging.
+- **Supersaw leads** for Techno / Prog House / Trance — an octave lower with a
+  plucky 0.10 sustain; the lead phrase now repeats across both main sections and
+  the breakdown (was a single short phrase).
+
+### Changed
+- EDM **pads dialed back** (quieter, darker, drier) so they sit under the bass and
+  lead instead of washing over everything.
+- The **piano roll now renders the actual pad/stab patterns** — a shared
+  `buildPadHits` feeds both the scheduler and the roll, so they can't drift.
+- **Dubstep is parked** (hidden from the genre selector) until a real wobble
+  (per-bar bass-filter modulation) exists — the bus LFO can't reach the PolySynth's
+  per-voice filter. The engine code stays in the repo.
 
 ### Fixed
-- Performance degradation over time: the live audio graph was only partially
-  disposed on each rebuild — the track-bus and synth-model wrappers leaked their
-  nodes (including PolySynths), and `renderMeters` stacked a new requestAnimationFrame
-  loop on every re-arm. Both are now cleaned up.
-- Trance / Prog House showed no instrument in the lead Model dropdown — the
+- **Performance degradation over time** — the live audio graph leaked its track-bus
+  and synth-model nodes (including PolySynths) on every rebuild, and `renderMeters`
+  stacked a requestAnimationFrame loop on every re-arm. Both are cleaned up.
+- **Trance / Prog House lead showed no instrument** in the Model dropdown — the
   `supersaw` option was missing from the list.
+- **`bassFill` dropped the `rest` flag**, turning rolling-bass rests into
+  `undefined`-degree notes — which blanked the piano roll (NaN range) for the
+  rolling-bass genres and silently dropped those bass notes. Rests are preserved now.
 
 ## [0.1.2] - 2026-06-07
 
@@ -99,7 +118,8 @@ pre-public history.
 - Dead code (`FACTORY_PRESETS` / `applyPreset` / `renderFactoryRow`) remains in
   the source pending cleanup; it is not reachable from the UI.
 
-[Unreleased]: https://codeberg.org/jkaindl/synthwave-surfer/compare/v0.1.2...main
+[Unreleased]: https://codeberg.org/jkaindl/synthwave-surfer/compare/v0.2.0...main
+[0.2.0]: https://codeberg.org/jkaindl/synthwave-surfer/compare/v0.1.2...v0.2.0
 [0.1.2]: https://codeberg.org/jkaindl/synthwave-surfer/compare/v0.1.1...v0.1.2
 [0.1.1]: https://codeberg.org/jkaindl/synthwave-surfer/compare/v0.1.0...v0.1.1
 [0.1.0]: https://codeberg.org/jkaindl/synthwave-surfer/releases/tag/v0.1.0

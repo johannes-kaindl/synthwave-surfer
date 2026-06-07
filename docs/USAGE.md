@@ -44,7 +44,7 @@ A status line confirms the last action (e.g. `✓ GENERATED · OUTRUN · SEED 19
 
 ## Genre cards
 
-The nine cards are one-click presets. Selecting one loads that genre's curated
+The eight cards are one-click presets. Selecting one loads that genre's curated
 seed, BPM, scale, drum kit, and full voicing, then regenerates:
 
 | Genre | Character | BPM | Key |
@@ -56,10 +56,10 @@ seed, BPM, scale, drum kit, and full voicing, then regenerates:
 | **Techno** | Four-on-the-floor, offbeat open hats, two drops | 128 | A aeolian |
 | **Prog House** | Four-on-the-floor, supersaw plucks, pumping pads | 126 | A aeolian |
 | **Trance** | Euphoric supersaw anthem, full 32-bar arrangement | 138 | A aeolian |
-| **Dubstep** | Half-time, beat-locked wobble bass | 140 | A phrygian |
+| **Dubstep** _(parked)_ | Half-time, beat-locked wobble — pending a wobble engine | 140 | A phrygian |
 | **Acid House** | TB-303 squelch line (slide + accent), hypnotic | 124 | A phrygian |
 
-The four EDM genres (Techno, Prog House, Trance, Dubstep) generate a **32-bar
+The three EDM genres (Techno, Prog House, Trance) generate a **32-bar
 arrangement** with two drops and a breakdown; the rest are 16-bar loops.
 
 ## Determinism — the seed
