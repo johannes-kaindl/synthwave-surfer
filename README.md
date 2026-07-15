@@ -51,7 +51,7 @@ Then: click a **genre card**, press **Generate**, hit **▶ Play**. Change the
 seed for a different composition in the same style; tweak any slider to re-voice
 it live.
 
-## What it does
+## Features
 
 - **Eight genre engines**, each with its own composition algorithm *and* its own
   synth voicing — Outrun, Noir, Dreamwave, Carpenter, Techno, Prog House, Trance,
@@ -161,6 +161,19 @@ Engine (composition) and voicing (sound) are deliberately decoupled, so a
 genre's algorithm and its tone evolve independently. Full technical docs —
 synth models, drum-kit graph, arrangement engine, the `.swmd` codec, the
 public API — are in **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
+
+## No build step
+
+Synthwave Surfer is a **single self-contained HTML file** — the UI, all eight
+engines, the voicings, the audio graph, and the in-browser tests all live in
+`synthwave_surfer.html`. There is no bundler, no transpiler, and no
+`node_modules`: the only runtime dependency, [Tone.js](https://tonejs.github.io/),
+loads from a CDN.
+
+That is deliberate. The app stays inspectable straight from source, is trivially
+hostable as a static page (Codeberg Pages, `python3 -m http.server`, any CDN), and
+diffs cleanly. The only reason it needs an HTTP origin at all is Tone.js's
+autoplay-policy initialisation (see [Quickstart](#quickstart)) — not a build.
 
 ## Browser compatibility
 
