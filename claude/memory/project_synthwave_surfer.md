@@ -4,7 +4,7 @@ description: Single-file Musikgenerator – Vision, Roadmap, aktueller Stand, n�
 type: project
 ---
 
-**Synthwave Surfer** ist ein single-file HTML/JS Musikgenerator unter `/Users/Shared/code/synthwave-surfer/synthwave_surfer.html`, gebaut mit Tone.js 14. Git-Repo (Branch `main`).
+**Synthwave Surfer** ist ein single-file HTML/JS Musikgenerator unter `synthwave_surfer.html` (im Repo-Root), gebaut mit Tone.js 14. Git-Repo (Branch `main`).
 
 **Echte Vision (Brainstorming-Session 2026-05-14):**
 Synthwave Surfer ist die Audio-Schicht des **Kuro-Universums**: Theme + Companion-Plugin + Synthwave Surfer als zusammengehöriges Obsidian-Ökosystem. `.swmd` ist die didaktische Markdown-Brücke zu Obsidian. Original-Use-Case: Carpenter-Soundtracks für 3D-Animationen (insbesondere Kuro-Screensaver). Ziel: Standalone Obsidian-Plugin, optional gekoppelt mit Kuro Companion via Plugin-Events.

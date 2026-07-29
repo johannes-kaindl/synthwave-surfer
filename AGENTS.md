@@ -1,7 +1,8 @@
 # AGENTS.md
 
-> **Workspace-Standards:** Die verbindliche Leitkonvention steht in `_docs/CONVENTIONS.md`
-> (am Workspace-Root `/Users/Shared/code/`), Modell comply-or-explain. Offene Punkte fuer
+> **Workspace-Standards (maintainer-lokal):** Die verbindliche Leitkonvention steht in `_docs/CONVENTIONS.md`
+> im Multi-Projekt-Workspace des Maintainers, `../_docs` relativ zu diesem Repo — nicht Teil dieses Repos,
+> ignorieren falls im Klon nicht vorhanden. Modell comply-or-explain. Offene Punkte fuer
 > dieses Repo siehe Abschnitt "Offene Konventions-Punkte".
 
 Conventions for AI assistants working in this repo.
@@ -43,7 +44,16 @@ from a seed. Long-term goal: an Obsidian plugin (the Kuro universe's audio layer
 - **Global memory:** `~/.claude/projects/-Users-Shared-code-synthwave-surfer/memory/`.
 - **Session logs:** `claude/logs/YYYY-MM-DD-<topic>.md`. (The `remember` plugin also
   keeps daily scratch in `.remember/` — gitignored.)
-- **Specs / plans / research:** `docs/superpowers/{specs,plans,research}/`.
+- **SDD artifacts (since 2026-07-16): Cockpit, not repo** — specs/plans/task reports live in
+  the maintainer's Coding-Cockpit (`$VAULT/25_Coding/synthwave-surfer/_SDD/`, CORE-META-14,
+  maintainer-local). They carry working context (vault paths, sister-repo internals) that is
+  of no use to anyone in a public repo. The repo keeps the design essence in this file +
+  `CHANGELOG.md`.
+- **Legacy stock:** `docs/superpowers/{specs,plans,research}/` is frozen — do not add
+  anything new there (the existing files stay as historical record).
+- **Never in the repo:** absolute paths outside the repo (`/Users/…`, vault paths) — use
+  placeholders (`$VAULT/…`, `~/…`, repo-relative). Provenance as repo name + `file:line`
+  is welcome, though.
 
 ## Architecture notes
 - **Genre = Engine + Voicing.** `ALGORITHMS[engine]` = composition (form builder,

@@ -59,5 +59,5 @@ status: abgeschlossen
   erst per `PATCH has_releases=true` aktivieren, sonst 404 auf `/releases`. Pages via
   `pages`-Branch. Tokens: `~/.codeberg-token`, `~/.github-token`.
 - **Workspace-Konvention (neu, User/Linter):** Leitkonvention in
-  `_docs/CONVENTIONS.md` (Workspace-Root `/Users/Shared/code/`), comply-or-explain;
+  `_docs/CONVENTIONS.md` (Schwester-Repo `_docs` am Workspace-Root, `../_docs` vom Repo-Root aus), comply-or-explain;
   offene Repo-Punkte in AGENTS.md „Offene Konventions-Punkte".
