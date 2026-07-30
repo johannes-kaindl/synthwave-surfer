@@ -118,8 +118,8 @@ pre-public history.
 - Dead code (`FACTORY_PRESETS` / `applyPreset` / `renderFactoryRow`) remains in
   the source pending cleanup; it is not reachable from the UI.
 
-[Unreleased]: https://codeberg.org/jkaindl/synthwave-surfer/compare/v0.2.0...main
-[0.2.0]: https://codeberg.org/jkaindl/synthwave-surfer/compare/v0.1.2...v0.2.0
-[0.1.2]: https://codeberg.org/jkaindl/synthwave-surfer/compare/v0.1.1...v0.1.2
-[0.1.1]: https://codeberg.org/jkaindl/synthwave-surfer/compare/v0.1.0...v0.1.1
-[0.1.0]: https://codeberg.org/jkaindl/synthwave-surfer/releases/tag/v0.1.0
+[Unreleased]: https://git.jkaindl.de/jkaindl/synthwave-surfer/compare/v0.2.0...main
+[0.2.0]: https://git.jkaindl.de/jkaindl/synthwave-surfer/compare/v0.1.2...v0.2.0
+[0.1.2]: https://git.jkaindl.de/jkaindl/synthwave-surfer/compare/v0.1.1...v0.1.2
+[0.1.1]: https://git.jkaindl.de/jkaindl/synthwave-surfer/compare/v0.1.0...v0.1.1
+[0.1.0]: https://git.jkaindl.de/jkaindl/synthwave-surfer/releases/tag/v0.1.0

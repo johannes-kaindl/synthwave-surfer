@@ -10,13 +10,13 @@
 [![Runtime: Browser](https://img.shields.io/badge/runtime-browser-orange?style=flat-square)](#browser-compatibility)
 
 <p align="center">
-  <a href="https://jkaindl.codeberg.page/synthwave-surfer/">
+  <a href="https://pages.jkaindl.de/synthwave-surfer/">
     <img alt="Launch the web app" src="https://img.shields.io/badge/▶_Launch_Web_App-16e0e0?style=for-the-badge&logo=pwa&logoColor=060709">
   </a>
 </p>
 
 <p align="center">
-  <a href="https://jkaindl.codeberg.page/synthwave-surfer/">
+  <a href="https://pages.jkaindl.de/synthwave-surfer/">
     <img src="assets/hero.png" alt="Synthwave Surfer — the Outrun engine with the genre selector and instrument panels" width="100%">
   </a>
 </p>
@@ -39,13 +39,13 @@ a `file://` page, so double-clicking the HTML will show the UI but stay silent.
 Serve it locally:
 
 ```bash
-git clone https://codeberg.org/jkaindl/synthwave-surfer.git
+git clone https://git.jkaindl.de/jkaindl/synthwave-surfer.git
 cd synthwave-surfer
 python3 -m http.server 8745
 # → open http://localhost:8745/synthwave_surfer.html
 ```
 
-Or just use the hosted build: **[jkaindl.codeberg.page/synthwave-surfer](https://jkaindl.codeberg.page/synthwave-surfer/)**.
+Or just use the hosted build: **[pages.jkaindl.de/synthwave-surfer](https://pages.jkaindl.de/synthwave-surfer/)**.
 
 Then: click a **genre card**, press **Generate**, hit **▶ Play**. Change the
 seed for a different composition in the same style; tweak any slider to re-voice
@@ -171,7 +171,7 @@ engines, the voicings, the audio graph, and the in-browser tests all live in
 loads from a CDN.
 
 That is deliberate. The app stays inspectable straight from source, is trivially
-hostable as a static page (Codeberg Pages, `python3 -m http.server`, any CDN), and
+hostable as a static page (any static host, `python3 -m http.server`, any CDN), and
 diffs cleanly. The only reason it needs an HTTP origin at all is Tone.js's
 autoplay-policy initialisation (see [Quickstart](#quickstart)) — not a build.
 

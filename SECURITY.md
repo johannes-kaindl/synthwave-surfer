@@ -26,7 +26,7 @@ reporting.
 ## Out of scope
 
 - General bug reports without security impact — please file a public issue:
-  <https://codeberg.org/jkaindl/synthwave-surfer/issues>.
+  <https://git.jkaindl.de/jkaindl/synthwave-surfer/issues>.
 - Browser / Web Audio quirks with no security implication — those belong with
   the vendors.
 - General hardening suggestions without a concrete attack scenario — fine as a
@@ -34,12 +34,12 @@ reporting.
 
 ## How to report
 
-**Preferred:** private Codeberg issue in this repo, or DM via Codeberg to
-[@jkaindl](https://codeberg.org/jkaindl). Codeberg supports private issues —
+**Preferred:** private issue in this repo, or DM via the forge to
+[@jkaindl](https://git.jkaindl.de/jkaindl). The forge supports private issues —
 tick the privacy box when filing.
 
 **Alternative:** email to the address listed on the
-[Codeberg profile](https://codeberg.org/jkaindl).
+[forge profile](https://git.jkaindl.de/jkaindl).
 
 PGP isn't set up; for sensitive reports I can publish a key on request.
 
@@ -68,7 +68,7 @@ data) are very much in scope and especially welcome.
 
 ## Known design decisions that aren't bugs
 
-- **No CSP header on the live demo.** Codeberg Pages serves pages without custom
+- **No CSP header on the live demo.** The pages host serves pages without custom
   headers. Mitigation: no `eval`, no inline construction of script from user
   input.
 - **Imports are trusted to the extent of the current tab.** A `.swmd` / preset /

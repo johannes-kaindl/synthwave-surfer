@@ -10,7 +10,7 @@ status: abgeschlossen
   (remote `origin`) + GitHub-Mirror `johannes-kaindl/synthwave-surfer` (remote
   `github`), beide SSH. `genre-layer-a` per Fast-Forward in `main` gemerged.
   **Codeberg-Pages-Live-Demo** (`pages`-Branch + `index.html`-Redirect):
-  https://jkaindl.codeberg.page/synthwave-surfer/
+  https://pages.jkaindl.de/synthwave-surfer/
 - **Umfassende EN-Doku** im Hausstil (Vorbild `perlin-studio`): README (Hero,
   Genre-Tabelle, Architektur-Diagramm, Quickstart, Roadmap), `docs/ARCHITECTURE.md`
   + `docs/USAGE.md`, CONTRIBUTING, CHANGELOG, SECURITY, LICENSING + CLA + LICENSE
@@ -57,7 +57,7 @@ status: abgeschlossen
   erhalten (sonst NaN-Noten bei Rolling-Bässen).
 - **Publishing:** `origin`=Codeberg / `github`=GitHub (SSH). Codeberg-Releases-Unit ggf.
   erst per `PATCH has_releases=true` aktivieren, sonst 404 auf `/releases`. Pages via
-  `pages`-Branch. Tokens: `~/.codeberg-token`, `~/.github-token`.
+  `pages`-Branch. Tokens: `~/.forgejo-token`, `~/.github-token`.
 - **Workspace-Konvention (neu, User/Linter):** Leitkonvention in
   `_docs/CONVENTIONS.md` (Schwester-Repo `_docs` am Workspace-Root, `../_docs` vom Repo-Root aus), comply-or-explain;
   offene Repo-Punkte in AGENTS.md „Offene Konventions-Punkte".

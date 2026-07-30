@@ -8,14 +8,14 @@ A complete walkthrough of every control. For the *why* behind the design, see
 From the cloned repo root, serve the app over HTTP (it stays silent on `file://`):
 
 ```bash
-git clone https://codeberg.org/jkaindl/synthwave-surfer.git
+git clone https://git.jkaindl.de/jkaindl/synthwave-surfer.git
 cd synthwave-surfer
 python3 -m http.server 8745
 # → http://localhost:8745/synthwave_surfer.html
 ```
 
 …or use the hosted build at
-**[jkaindl.codeberg.page/synthwave-surfer](https://jkaindl.codeberg.page/synthwave-surfer/)**.
+**[pages.jkaindl.de/synthwave-surfer](https://pages.jkaindl.de/synthwave-surfer/)**.
 
 The shortest path to sound: **click a genre card → Generate → ▶ Play.** Audio
 unlocks on your first click, per browser autoplay policy.

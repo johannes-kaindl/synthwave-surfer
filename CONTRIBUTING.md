@@ -13,7 +13,7 @@ loaded from a CDN). You only need:
 - Optional: Node.js for the headless checks
 
 ```bash
-git clone https://codeberg.org/jkaindl/synthwave-surfer.git
+git clone https://git.jkaindl.de/jkaindl/synthwave-surfer.git
 cd synthwave-surfer
 python3 -m http.server 8745
 # → http://localhost:8745/synthwave_surfer.html
