@@ -11,7 +11,7 @@ liefert:
   - id: wav
     artefakt: WAV-Export (Offline-Render)
     format: ".wav"
-    deterministisch_aus: [seed, genre, bpm, scale]
+    deterministisch_aus: []
     befehl: "Browser-UI, Export → WAV"
     lizenz: "AGPL-3.0-or-later; kommerzielle Lizenz auf Anfrage (LICENSING.md)"
   - id: swmd
@@ -23,24 +23,20 @@ liefert:
   - id: state-json
     artefakt: Vollständiger State-Snapshot inkl. SWMD
     format: ".json"
-    deterministisch_aus: [seed, genre, bpm, scale]
+    deterministisch_aus: [seed, genre, bpm, scale, voicing, mutes, master]
     befehl: "Browser-UI, Export → State JSON"
     lizenz: "AGPL-3.0-or-later; kommerzielle Lizenz auf Anfrage (LICENSING.md)"
 nicht_geliefert:
-  - was: Export ohne Browser-UI
-    grund: Die App ist eine reine Client-Side Web-App ohne Backend oder CLI.
-  - was: Kommandozeilen-Schnittstelle (CLI)
-    grund: Es existiert kein CLI-Tool zur Steuerung oder zum Export.
-  - was: Headless-Generierung von Seed und Genre
-    grund: Die Steuerung erfolgt ausschließlich über die grafische Benutzeroberfläche.
+  - was: Export ohne Browser (CLI oder Befehl für Seed und Genre)
+    grund: Die App ist eine reine Client-Web-App; Export und Steuerung laufen nur über die Oberfläche. Erster Bedarf der Medienintegration an dieses Repo
 ---
 # Angebot
 
-synthwave-surfer liefert anderen Repos **Kompositionen als Dateien**: MIDI mit allen Spuren, WAV aus dem Offline-Render, `.swmd` als Markdown-Partitur und den vollständigen Zustand als JSON, alle deterministisch aus Seed, Genre, BPM und Scale (README § Features, § Usage; docs/USAGE.md § Export). Ein Kommando ohne Browser gibt es nicht; das ist der erste Bedarf der Medienintegration an dieses Repo.
+synthwave-surfer liefert anderen Repos **Kompositionen als Dateien**: MIDI mit allen Spuren, WAV aus dem Offline-Render, `.swmd` als Markdown-Partitur und den vollständigen Zustand als JSON, die Komposition folgt aus Seed, Genre, BPM und Scale, das WAV ist nicht byteweise wiederholbar (README § Features, § Usage; docs/USAGE.md § Export). Ein Kommando ohne Browser gibt es nicht; das ist der erste Bedarf der Medienintegration an dieses Repo.
 
 ## Holen
 
-Die Artefakte werden über die Browser-UI der Web-App erzeugt. Nach Auswahl eines Genres und optionaler Anpassung von Seed, BPM und Scale kann der gewünschte Export über das Export-Panel gestartet werden. Die resultierenden Dateien werden direkt über den Browser heruntergeladen.
+Die Artefakte werden über die Browser-UI der Web-App erzeugt. Nach Auswahl eines Genres und optionaler Anpassung von Seed, BPM und Scale kann der gewünschte Export über das Export-Panel gestartet werden. Die resultierenden Dateien werden direkt über den Browser heruntergeladen. Die Komposition (Noten, Form) folgt aus Seed, Genre, BPM und Scale; der Klang hängt zusätzlich an Voicing, Mutes und Master, und die Rauschquellen der Drums machen das WAV nicht byteweise wiederholbar. Ein Konsument friert das WAV deshalb ein und stempelt Seed, Genre, BPM, Scale und das Exportdatum (PROF-MEDIA-02).
 
 ## Was es nicht ist
 
