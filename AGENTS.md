@@ -75,3 +75,9 @@ from a seed. Long-term goal: an Obsidian plugin (the Kuro universe's audio layer
 - [x] CORE-META-10 — Beschreibung + Topics auf Forgejo (git.jkaindl.de)/GitHub setzen — erledigt 2026-06-08 (Description + Homepage=Live-Demo + 15 Topics auf beiden via API; manuell gepflegt).
 - [ ] CORE-AGENT-01 — Abschnitt "Abweichungen von der Leitkonvention" in AGENTS.md ergaenzen (Skeleton vervollstaendigen).
 - [ ] CORE-AGENT-05 — `.claude/` gitignoren (nur `.claude/settings.local.json` erlauben); bereits getrackte `.claude/launch.json` aus dem Index nehmen.
+## Crew-Ordner
+
+Dieses Projekt hat einen Crew-Ordner (`.crew/` im Repo, `_Crew/` im Vault) für Aufträge an lokale
+Worker. Worker lesen `RULES.md` und ihren Auftrag unter `tasks/`, arbeiten nur in den dort
+erlaubten Pfaden und schreiben einen Report unter `reports/`. Worker committen nie.
+Der Teamleader (Claude-Session, Skill `team-lead`) integriert.
