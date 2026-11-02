@@ -17,7 +17,7 @@
 
 <p align="center">
   <a href="https://pages.jkaindl.de/synthwave-surfer/">
-    <img src="assets/hero.png" alt="Synthwave Surfer — the Outrun engine with the genre selector and instrument panels" width="100%">
+    <img src="assets/hero.png" alt="Synthwave Surfer — the Outrun engine with the genre selector and instrument panels" width="820">
   </a>
 </p>
 

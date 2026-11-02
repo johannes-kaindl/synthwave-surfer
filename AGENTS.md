@@ -41,7 +41,7 @@ from a seed. Long-term goal: an Obsidian plugin (the Kuro universe's audio layer
 ## Memory + logs
 - **Vault memory (tracked, primary):** `claude/memory/` — `MEMORY.md` is the index,
   `project_synthwave_surfer.md` is the live project state. READ THIS FIRST each session.
-- **Global memory:** `~/.claude/projects/-Users-Shared-code-synthwave-surfer/memory/`.
+- **Global memory:** `~/.claude/projects/-Users-johannes-Projects-jkaindl-apps-synthwave-surfer/memory/` (bis zum Umzug 2026-10: `-Users-Shared-code-synthwave-surfer`).
 - **Session logs:** `claude/logs/YYYY-MM-DD-<topic>.md`. (The `remember` plugin also
   keeps daily scratch in `.remember/` — gitignored.)
 - **SDD artifacts (since 2026-07-16): Cockpit, not repo** — specs/plans/task reports live in
