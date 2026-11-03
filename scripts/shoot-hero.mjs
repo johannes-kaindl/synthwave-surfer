@@ -11,11 +11,13 @@
 // Voraussetzung: Playwright ist nicht Teil des Repos (kein Build, keine Abhängigkeiten).
 // Auflösung über NODE_PATH, z. B.:
 //   NODE_PATH=../kuro-screensaver/node_modules node scripts/shoot-hero.mjs
+// Optional: pngquant + oxipng (brew install pngquant oxipng) für die Dateigröße.
 // Exit 0 nur, wenn die Seite ohne Skriptfehler geladen wurde und das Bild
 // 2880x1920 Pixel hat (Hero-Breite im README: 820 px, readme_lint).
 
 import { createRequire } from 'node:module';
 import { createServer } from 'node:http';
+import { execFileSync } from 'node:child_process';
 import { readFile, mkdir, stat } from 'node:fs/promises';
 import { dirname, extname, join, normalize, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -64,6 +66,14 @@ try {
   await page.evaluate(() => window.scrollTo(0, 0));
   await mkdir(dirname(out), { recursive: true });
   await page.screenshot({ path: out, fullPage: false, animations: 'disabled' });
+  // Dateigröße: readme_lint (image-budget) erlaubt 400 KB. pngquant (Palette, 80-95) + oxipng
+  // sind deterministisch; fehlen sie, bleibt das Rohbild (~1 MB) und das Skript warnt.
+  try {
+    execFileSync('pngquant', ['--quality', '80-95', '--speed', '1', '--force', '--output', out, out], { stdio: 'pipe' });
+    execFileSync('oxipng', ['-q', '-o', '4', '--strip', 'safe', out], { stdio: 'pipe' });
+  } catch (e) {
+    console.warn('pngquant/oxipng nicht nutzbar — Bild bleibt unkomprimiert (' + e.message.split('\n')[0] + ')');
+  }
   const png = await readFile(out);
   const dim = `${png.readUInt32BE(16)}x${png.readUInt32BE(20)}`;
   const seed = await page.inputValue('#seed');
