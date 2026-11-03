@@ -73,9 +73,18 @@ from a seed. Long-term goal: an Obsidian plugin (the Kuro universe's audio layer
 - [ ] CORE-META-03 — Hero/Screenshots nach `docs/images/` verschieben (statt `assets/`) und reproduzierbar per Skript erzeugen.
 - [ ] CORE-META-08 — Doc-Lizenz `LICENSE-DOCS` (CC BY-SA 4.0) anlegen und im README verlinken.
 - [x] CORE-META-10 — Beschreibung + Topics auf Forgejo (git.jkaindl.de)/GitHub setzen — erledigt 2026-06-08 (Description + Homepage=Live-Demo + 15 Topics auf beiden via API; manuell gepflegt).
-- [ ] CORE-AGENT-01 — Abschnitt "Abweichungen von der Leitkonvention" in AGENTS.md ergaenzen (Skeleton vervollstaendigen).
+- [x] CORE-AGENT-01 — Abschnitt "Abweichungen von der Leitkonvention" ergänzt (siehe unten) — erledigt 2026-11-03.
 - [x] CORE-AGENT-05 — `.claude/*` gitignored (`!.claude/rules/` bleibt versionierbar); `.claude/launch.json` und `.claude/settings.local.json` aus dem Index genommen — erledigt 2026-11-03.
 
 ## Crew-Ordner
 
 Dieses Projekt hat einen Crew-Ordner (`.crew/` im Repo, `_Crew/` im Vault) für Aufträge an lokale Worker. Worker lesen `RULES.md` und ihren Auftrag unter `tasks/`, arbeiten nur in den dort erlaubten Pfaden und schreiben einen Report unter `reports/`. Worker committen nie. Der Teamleader (Claude-Session, Skill `team-lead`) integriert.
+
+## Abweichungen von der Leitkonvention
+
+Comply-or-explain (CORE-AGENT-01): Diese Abweichungen sind bekannt und gewollt oder noch offen.
+
+- **Sektionsnamen (CORE-AGENT-01):** Das Skelett steht unter eigenen Überschriften: „What this is“ = Project character, „Architecture notes“ = Architecture principles, „Workflow conventions“ = Commands + Conventions + Gotchas (die Tone.js-Gotchas stehen dort), „Memory + logs“ = Memory. Einen eigenen Context index (CORE-AGENT-15) gibt es nicht: die Datei ist kurz, und es existiert kein `.claude/rules/`.
+- **Memory im Repo (CORE-AGENT-02):** Neben dem Daemon-Memory unter `~/.claude/projects/…` liegt ein getracktes Vault-Memory in `claude/memory/`. Das ist der Altbestand aus der Zeit vor dem Cockpit und bleibt der primäre Projektstand, bis er ins Cockpit überführt ist.
+- **Specs und Pläne (CORE-AGENT-04):** Der Altbestand `docs/superpowers/{specs,plans,research}/` bleibt als eingefrorenes Archiv im Repo. Neues entsteht im Cockpit.
+- **Hero-Bild (CORE-META-03):** Liegt noch unter `assets/hero.png` und wird nicht per Skript erzeugt. Offen, siehe oben.
