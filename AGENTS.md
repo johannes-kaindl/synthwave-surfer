@@ -71,7 +71,7 @@ from a seed. Long-term goal: an Obsidian plugin (the Kuro universe's audio layer
 ## Offene Konventions-Punkte
 
 - [ ] CORE-META-03 — Hero/Screenshots nach `docs/images/` verschieben (statt `assets/`) und reproduzierbar per Skript erzeugen.
-- [ ] CORE-META-08 — Doc-Lizenz `LICENSE-DOCS` (CC BY-SA 4.0) anlegen und im README verlinken.
+- [x] CORE-META-08 — Doc-Lizenz `LICENSE-DOCS` (CC BY-SA 4.0) angelegt (Text aus yijing) und im README verlinkt (Badge, Lizenz-Abschnitt, Baum) — erledigt 2026-11-03.
 - [x] CORE-META-10 — Beschreibung + Topics auf Forgejo (git.jkaindl.de)/GitHub setzen — erledigt 2026-06-08 (Description + Homepage=Live-Demo + 15 Topics auf beiden via API; manuell gepflegt).
 - [x] CORE-AGENT-01 — Abschnitt "Abweichungen von der Leitkonvention" ergänzt (siehe unten) — erledigt 2026-11-03.
 - [x] CORE-AGENT-05 — `.claude/*` gitignored (`!.claude/rules/` bleibt versionierbar); `.claude/launch.json` und `.claude/settings.local.json` aus dem Index genommen — erledigt 2026-11-03.

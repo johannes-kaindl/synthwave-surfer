@@ -4,6 +4,7 @@
 > seed, no build step. Pick a genre, hit play, get a full arrangement.
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-8a4dff?style=flat-square)](LICENSE)
+[![Docs: CC BY-SA 4.0](https://img.shields.io/badge/Docs-CC_BY--SA_4.0-lightgrey?style=flat-square)](LICENSE-DOCS)
 [![No build step](https://img.shields.io/badge/build-none-39ff7a?style=flat-square)](#quickstart)
 [![Single file](https://img.shields.io/badge/source-1_HTML_file-16e0e0?style=flat-square)](synthwave_surfer.html)
 [![Powered by Tone.js](https://img.shields.io/badge/audio-Tone.js_14-ff5d8f?style=flat-square)](https://tonejs.github.io/)
@@ -203,6 +204,7 @@ In all cases the page must be served over **HTTP/HTTPS**, not opened from
 │   ├── USAGE.md            # full user guide
 │   └── superpowers/        # internal design specs / plans / research (process docs)
 ├── LICENSE                 # AGPL-3.0-or-later
+├── LICENSE-DOCS            # CC BY-SA 4.0 (docs)
 ├── LICENSING.md            # dual-licensing model (AGPL + optional commercial)
 ├── CLA.md                  # contributor license agreement
 ├── CONTRIBUTING.md         # developer workflow + test procedures
@@ -275,6 +277,8 @@ full picture:
 - **Commercial license (on request):** for uses the AGPL does not fit — e.g. a
   proprietary product or an Apple App Store build. Details in
   [LICENSING.md](LICENSING.md); contributions are governed by the [CLA](CLA.md).
+
+**Documentation** (`README.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`, `AGENTS.md`, `docs/`) is licensed under [CC BY-SA 4.0](LICENSE-DOCS).
 
 [Tone.js](https://tonejs.github.io/) is © its authors, MIT-licensed, loaded from
 a CDN and not redistributed here.
