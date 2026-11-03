@@ -2,7 +2,7 @@
 # Deploy the game to pages.jkaindl.de.
 #
 # Deploys ONLY the shipped artifact — index.html (redirect shim),
-# synthwave_surfer.html (the whole app, inline) and assets/ — from committed
+# synthwave_surfer.html (the whole app, inline) — from committed
 # HEAD to the pages server (/srv/pages/synthwave-surfer/, served at
 # https://pages.jkaindl.de/synthwave-surfer/).
 #
@@ -38,7 +38,7 @@ cd "$(git rev-parse --show-toplevel)"
 echo "=== Gate ==="
 node scripts/check-syntax.mjs
 
-if [[ -n "$(git status --porcelain -- index.html synthwave_surfer.html assets/)" ]]; then
+if [[ -n "$(git status --porcelain -- index.html synthwave_surfer.html)" ]]; then
   echo "NOTE: artifact files have uncommitted changes — deploying committed HEAD." >&2
 fi
 
@@ -46,7 +46,7 @@ STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 
 echo "=== Snapshot artifact from HEAD ==="
-git archive HEAD index.html synthwave_surfer.html assets | tar -x -C "$STAGE"
+git archive HEAD index.html synthwave_surfer.html | tar -x -C "$STAGE"
 
 echo "=== Publishing via rsync ==="
 "$RSYNC" -az --delete --chmod=D755,F644 "$STAGE"/ "$DEST"

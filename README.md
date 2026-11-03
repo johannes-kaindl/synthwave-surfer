@@ -18,7 +18,7 @@
 
 <p align="center">
   <a href="https://pages.jkaindl.de/synthwave-surfer/">
-    <img src="assets/hero.png" alt="Synthwave Surfer — the Outrun engine with the genre selector and instrument panels" width="820">
+    <img src="docs/images/hero.png" alt="Synthwave Surfer — the Outrun engine with the genre selector and instrument panels" width="820">
   </a>
 </p>
 
@@ -197,11 +197,11 @@ In all cases the page must be served over **HTTP/HTTPS**, not opened from
 .
 ├── synthwave_surfer.html   # the entire app (UI + engines + voicings + audio graph + tests)
 ├── index.html              # redirect to synthwave_surfer.html (for the hosted root URL)
-├── assets/                 # README images
 ├── scripts/                # headless test runners (check-syntax, fullsuite)
 ├── docs/
 │   ├── ARCHITECTURE.md     # how the engines, audio graph, .swmd codec, and API work
 │   ├── USAGE.md            # full user guide
+│   ├── images/             # README hero (scripts/shoot-hero.mjs)
 │   └── superpowers/        # internal design specs / plans / research (process docs)
 ├── LICENSE                 # AGPL-3.0-or-later
 ├── LICENSE-DOCS            # CC BY-SA 4.0 (docs)
