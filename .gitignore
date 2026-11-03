@@ -2,3 +2,7 @@
 .superpowers/
 node_modules/
 *.log
+
+# Claude Code (CORE-AGENT-05): lokale Dateien nicht versionieren, Regeln schon
+.claude/*
+!.claude/rules/

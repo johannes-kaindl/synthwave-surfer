@@ -74,7 +74,7 @@ from a seed. Long-term goal: an Obsidian plugin (the Kuro universe's audio layer
 - [ ] CORE-META-08 — Doc-Lizenz `LICENSE-DOCS` (CC BY-SA 4.0) anlegen und im README verlinken.
 - [x] CORE-META-10 — Beschreibung + Topics auf Forgejo (git.jkaindl.de)/GitHub setzen — erledigt 2026-06-08 (Description + Homepage=Live-Demo + 15 Topics auf beiden via API; manuell gepflegt).
 - [ ] CORE-AGENT-01 — Abschnitt "Abweichungen von der Leitkonvention" in AGENTS.md ergaenzen (Skeleton vervollstaendigen).
-- [ ] CORE-AGENT-05 — `.claude/` gitignoren (nur `.claude/settings.local.json` erlauben); bereits getrackte `.claude/launch.json` aus dem Index nehmen.
+- [x] CORE-AGENT-05 — `.claude/*` gitignored (`!.claude/rules/` bleibt versionierbar); `.claude/launch.json` und `.claude/settings.local.json` aus dem Index genommen — erledigt 2026-11-03.
 
 ## Crew-Ordner
 
