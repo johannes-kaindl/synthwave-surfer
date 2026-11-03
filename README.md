@@ -254,12 +254,6 @@ Capability-layer expansion (in progress):
   node in the bass bus (the bus LFO can't reach the PolySynth's per-voice filter);
   Dubstep is parked until then.
 
-- [ ] **Layer B** — extended jazz voicings for Lo-fi / DnB, per-track
-  swing + humanisation, lo-fi texture (crackle / bitcrush)
-- [ ] More genres riding the existing layers (Chillstep, Lo-fi, DnB)
-- [ ] **Tier 3 — Bach**: a polyphonic counterpoint engine with functional
-  voice-leading (the genuinely hard generative problem; not note-for-note Bach)
-
 Beyond the generator:
 
 - [ ] **Obsidian plugin** (TypeScript port + `swdrum` renderer) — also resolves

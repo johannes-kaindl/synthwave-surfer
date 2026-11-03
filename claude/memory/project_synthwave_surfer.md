@@ -64,7 +64,7 @@ Ziel: viele Genres generativ-authentisch (Acid House, Dubstep, Prog House, Tranc
 
 **Roadmap (übergeordnet):**
 - Phase 1.5 (Sound/generative Qualität) — erledigt. Neufassung (settings-first) — erledigt & gemerged.
-- **Genre-Expansion (Layer A→B→C, Bach als Tier 3)** — AKTUELL.
+- **Genre-Expansion (Layer A→B→C, Bach als Tier 3)** — ~~AKTUELL~~ **GESTRICHEN 2026-11-03 (Jay):** Lo-fi, Chillstep, DnB, Layer-B-Rest (Jazz-Voicings, Swing/Humanize, Lo-fi-Textur) und Tier 3 Bach werden nicht gebaut; Stand ist v0.2.0 mit acht sichtbaren Engines (Dubstep geparkt). Weiter: tonwerk P2b, siehe unten.
 - Phase 2: Plugin-Migration (TS, Obsidian View, swdrum-Renderer). Phase 4: Kuro-Integration + Marketplace.
 
 **Why:** Phase 1 legt das Fundament: SWMD als Brücken-Format, Multi-Phase-Presets als kuratierter Einstieg, externe API für Animation-Sync. Phase 1.5 macht den Sound gut bevor Plugin-Migration den Iteration-Speed verlangsamt.
